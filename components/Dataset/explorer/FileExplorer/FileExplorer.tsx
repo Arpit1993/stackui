@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import FilePopup from "../../popups/FilePopup";
 
 const FileExplorer = (props) => {

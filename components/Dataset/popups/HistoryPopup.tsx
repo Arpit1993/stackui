@@ -34,7 +34,7 @@ const HistoryPopup = (props) => {
     const [history, setHistory] = useState([])
     const [page, setPage] = useState(0)
     const [buttons, setButtons] = useState([])
-    const max_commits = 8
+    const max_commits = 7
     const [max_pages, setMaxPages] = useState(0)
 
     useEffect(() => {
@@ -47,11 +47,11 @@ const HistoryPopup = (props) => {
     for(var i = Object.keys(history).length-1; i >= 0; i--){
         commits.push(
             {
-                version: i, changes: Object.values(history)[(i).toString()].commits.length, date: Object.values(history)[i].date
+                version: i+1, changes: Object.values(history)[(i).toString()].commits.length, date: Object.values(history)[i].date
             }
         )
     }
-
+    
     if (props.history == 0) {
         return <div></div>
     } else {
@@ -69,7 +69,7 @@ const HistoryPopup = (props) => {
                 <ul className="text-xs h-[570px] w-full font-medium rounded-lg border 
                         text-gray-900 bg-white border-gray-200
                         dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    {commits.filter((item, index) => index < max_commits*(page+1) && index > max_commits*(page)).map((cmit) => <ItemCommit version={cmit.version} changes={cmit.changes} date={cmit.date}/>)}
+                    {commits.filter((item, index) => index < max_commits*(page+1) && index >= max_commits*(page)).map((cmit) => <ItemCommit version={cmit.version} changes={cmit.changes} date={cmit.date}/>)}
                 </ul>
             </div>
             <div className="flex justify-evenly mt-5">

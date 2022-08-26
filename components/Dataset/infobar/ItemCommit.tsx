@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CommitPopup from "../popups/CommitPopup";
 
 function revert(version: number) {
     fetch('http://127.0.0.1:8000/revert?version='.concat(version))
+    window.location.reload(false);
     return true
 }
 

@@ -4,6 +4,14 @@ const FilePopup = (props) => {
 
     const [page, setPage] = useState(0)
 
+    useEffect(() => {
+        setPage(JSON.parse(window.sessionStorage.getItem("page_filepopup")));
+    }, []);
+    
+    useEffect(() => {
+        window.sessionStorage.setItem("page_filepopup", page);
+    }, [page]);
+
     if (props.popup == 0) {
         return <div></div>
     } else {

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import ItemChange from "../infobar/ItemChange";
 
 
-function generateButtons(page, max_pages, setPage){
+function generateButtons(page, setPage){
     var listofButtons = []
     listofButtons.push(
         <div  className="flex">
@@ -33,22 +33,16 @@ const CommitPopup = (props) => {
 
     const [changes, setChanges] = useState([])
     const [page, setPage] = useState(0)
-    const [buttons, setButtons] = useState([])
     const max_commits = 8
-    const [max_pages, setMaxPages] = useState(0)
 
     useEffect(() => {
         if (props.popup){
-            fetch('http://127.0.0.1:8000/commits_version?version='.concat(props.version).concat('&l=7&page=').concat(page)).then((response) => response.json()).then((data) => setChanges(Object.values(data))).then(() => {
-                setMaxPages(Object.keys(changes).length/max_commits)
-                setButtons(generateButtons(page, max_pages, setPage))
-            });
+            fetch('http://127.0.0.1:8000/commits_version?version='.concat(props.version).concat('&l=7&page=').concat(page))
+            .then((response) => response.json()).then((data) => setChanges(Object.values(data)));
         }
     }, [])
 
-    console.log('version: '.concat(props.version))
-    console.log('page:'.concat(page))
-    console.log('http://127.0.0.1:8000/commits_version?version='.concat(props.version).concat('&l=8&page=').concat(page))
+    const buttons = generateButtons(page, setPage)
 
     if (props.popup == 0) {
         return <div></div>
