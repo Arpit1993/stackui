@@ -1,4 +1,18 @@
+import { useState } from "react";
+
 const TopBar = (props) => {
+
+    const [txt, setText] = useState('')
+
+    const handleChange = (event) => {
+        setText(event.target.value)
+    }
+
+    const handleSubmit = (event) => {
+        event.preventDefault()
+        props.fcn(txt)
+    }
+    
     return (    
         <div className="flex w-full justify-between ">
             <div className="pr-10 py-2 w-min">
@@ -9,13 +23,14 @@ const TopBar = (props) => {
             </div>
 
             <div className="w-full py-6 text-black inline-block align-middle">
-                <form className="px-5">
+                <form className="px-5" onSubmit={handleSubmit}>
                     <label className="flex justify-end gap-2"> 
                         <div className="">
-                            <input className="p-2 shadow-inner rounded-lg border 
-                            border-gray-600 outline-2" placeholder="Filter" type="text" />   
+                            <input onChange={handleChange}
+                            className= "p-2 shadow-inner border rounded-dm border-gray-200 outline-2 bg-white dark:bg-gray-500" 
+                            placeholder="Filter" type="text" />   
                         </div>
-                        <input className="bg-gray-200 rounded-lg px-2 shadow-inner hover:bg-gray-400 border-2 border-gray-400" type="submit"/>
+                        <input className="bg-gray-200 text-sm px-2 rounded-md hover:bg-gray-400" type="submit"/>
                     </label> 
                 </form> 
             </div>
