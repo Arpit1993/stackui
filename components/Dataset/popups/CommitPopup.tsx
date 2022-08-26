@@ -20,7 +20,7 @@ function generateButtons(page, max_pages, setPage){
 
     listofButtons.push(
         <div  className="flex">
-            <button className=" bg-gray-200 rounded-md px-2 shadow-sm dark: text-black hover:bg-gray-300" onClick={() => setPage(Math.min(page+1|0))}>
+            <button className=" bg-gray-200 rounded-md px-2 shadow-sm dark: text-black hover:bg-gray-300" onClick={() => setPage(page+1)}>
                 {'>'}
             </button>
         </div>
@@ -39,7 +39,7 @@ const CommitPopup = (props) => {
 
     useEffect(() => {
         if (props.popup){
-            fetch('http://127.0.0.1:8000/commits_version?version='.concat(props.version).concat('&l=8&page=').concat(page)).then((response) => response.json()).then((data) => setChanges(Object.values(data))).then(() => {
+            fetch('http://127.0.0.1:8000/commits_version?version='.concat(props.version).concat('&l=7&page=').concat(page)).then((response) => response.json()).then((data) => setChanges(Object.values(data))).then(() => {
                 setMaxPages(Object.keys(changes).length/max_commits)
                 setButtons(generateButtons(page, max_pages, setPage))
             });
@@ -63,10 +63,10 @@ const CommitPopup = (props) => {
             </div>
             <div></div>
         </div>
-        <ul className="text-xs font-medium rounded-lg border 
+        <ul className="text-xs h-[570px] font-medium rounded-lg border 
                 text-gray-900 bg-white border-gray-200
                   dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            {changes.filter((item, index) => index < max_commits*(page+1) && index > max_commits*(page)).map((cmit) => <ItemChange author={cmit.source} comment={cmit.comment} date={cmit.date}/>)}
+            {changes.map((cmit) => <ItemChange author={cmit.source} comment={cmit.comment} date={cmit.date}/>)}
         </ul>
         <div className="flex justify-evenly mt-5">
             {buttons}

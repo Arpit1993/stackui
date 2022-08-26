@@ -13,13 +13,13 @@ function generateButtons(page, max_pages, setPage){
 
     listofButtons.push(
         <div>
-            Page {page} of {max_pages | 0}
+            Page {page}
         </div>
     )
 
     listofButtons.push(
         <div  className="flex">
-            <button className=" bg-gray-200 rounded-md px-2 shadow-sm dark: text-black hover:bg-gray-300" onClick={() => setPage(Math.min(page+1|0))}>
+            <button className=" bg-gray-200 rounded-md px-2 shadow-sm dark: text-black hover:bg-gray-300" onClick={() => setPage(Math.min(page+1))}>
                 {'>'}
             </button>
         </div>
@@ -66,7 +66,7 @@ const HistoryPopup = (props) => {
                     </div>
                     <div></div>
                 </div>
-                <ul className="text-xs w-full font-medium rounded-lg border 
+                <ul className="text-xs h-[570px] w-full font-medium rounded-lg border 
                         text-gray-900 bg-white border-gray-200
                         dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                     {commits.filter((item, index) => index < max_commits*(page+1) && index > max_commits*(page)).map((cmit) => <ItemCommit version={cmit.version} changes={cmit.changes} date={cmit.date}/>)}

@@ -21,7 +21,7 @@ const TopBar = (props) => {
                     <a href={props.props.URI}> {props.props.URI} </a>
                 </div>
             </div>
-
+            
             <div className="w-full py-6 text-black inline-block align-middle">
                 <form className="px-5" onSubmit={handleSubmit}>
                     <label className="flex justify-end gap-2"> 
