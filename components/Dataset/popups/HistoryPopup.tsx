@@ -25,8 +25,6 @@ function generateButtons(page, max_pages, setPage){
         </div>
     )
 
-    console.log(listofButtons)
-
     return listofButtons
 }
 

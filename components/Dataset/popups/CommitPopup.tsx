@@ -26,8 +26,6 @@ function generateButtons(page, max_pages, setPage){
         </div>
     )
 
-    console.log(listofButtons)
-
     return listofButtons
 }
 
@@ -41,15 +39,16 @@ const CommitPopup = (props) => {
 
     useEffect(() => {
         if (props.popup){
-            fetch('http://127.0.0.1:8000/commits_version?n='.concat(props.version).concat('&l=8&page=').concat(page)).then((response) => response.json()).then((data) => setChanges(Object.values(data))).then(() => {
+            fetch('http://127.0.0.1:8000/commits_version?version='.concat(props.version).concat('&l=8&page=').concat(page)).then((response) => response.json()).then((data) => setChanges(Object.values(data))).then(() => {
                 setMaxPages(Object.keys(changes).length/max_commits)
                 setButtons(generateButtons(page, max_pages, setPage))
             });
         }
     }, [])
 
-    console.log(changes)
-
+    console.log('version: '.concat(props.version))
+    console.log('page:'.concat(page))
+    console.log('http://127.0.0.1:8000/commits_version?version='.concat(props.version).concat('&l=8&page=').concat(page))
 
     if (props.popup == 0) {
         return <div></div>
