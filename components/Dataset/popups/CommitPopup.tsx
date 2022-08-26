@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import ItemChange from "../infobar/ItemChange";
 
 
-function generateButtons(page, setPage){
+function generateButtons(page, handleClick){
     var listofButtons = []
     listofButtons.push(
         <div  className="flex">
-            <button className=" bg-gray-200 rounded-md p-2 shadow-sm dark: text-black hover:bg-gray-300" onClick={() => setPage(Math.max(page-1,0))}>
+            <button className=" bg-gray-200 rounded-md p-2 shadow-sm dark: text-black hover:bg-gray-300" onClick={() => handleClick(page, Math.max(page-1,0))}>
                 {'<'}
             </button>
         </div>
@@ -20,7 +20,7 @@ function generateButtons(page, setPage){
 
     listofButtons.push(
         <div  className="flex">
-            <button className=" bg-gray-200 rounded-md px-2 shadow-sm dark: text-black hover:bg-gray-300" onClick={() => setPage(page+1)}>
+            <button className=" bg-gray-200 rounded-md px-2 shadow-sm dark: text-black hover:bg-gray-300" onClick={() => handleClick(page,page+1)}>
                 {'>'}
             </button>
         </div>
@@ -33,16 +33,34 @@ const CommitPopup = (props) => {
 
     const [changes, setChanges] = useState([])
     const [page, setPage] = useState(0)
-    const max_commits = 8
+    const max_commits = 7
 
     useEffect(() => {
         if (props.popup){
-            fetch('http://127.0.0.1:8000/commits_version?version='.concat(props.version).concat('&l=7&page=').concat(page))
-            .then((response) => response.json()).then((data) => setChanges(Object.values(data)));
+            const getChanges = async (page) =>  {
+                const res = await fetch('http://127.0.0.1:8000/commits_version?version='.concat(props.version).concat('&l=7&page=0'))
+                const data = await res.json();
+                setChanges(Object.values(data))
+            }
+            getChanges(page)
         }
     }, [])
 
-    const buttons = generateButtons(page, setPage)
+    const fetchChanges = async (page) => {
+        if (props.popup){
+            const res = await fetch('http://127.0.0.1:8000/commits_version?version='.concat(props.version).concat('&l=7&page=').concat(page))        
+            const data = await res.json();
+            return data
+        }
+    }
+
+    const handleClick = async (page, next_page) => {
+        setPage(next_page);
+        const newChanges = await fetchChanges(next_page);
+        setChanges(Object.values(newChanges))
+    }
+
+    var buttons = generateButtons(page, handleClick)
 
     if (props.popup == 0) {
         return <div></div>
