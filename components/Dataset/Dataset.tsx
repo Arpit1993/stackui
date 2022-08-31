@@ -1,6 +1,6 @@
+import React from "react";
 import { useEffect, useState } from "react";
 import Explorer from "./explorer/Explorer";
-import Commit from "./infobar/ItemChange";
 import Infobar from "./infobar/Infobar"
 import Stats from "./stats/Stats"
 
@@ -14,20 +14,20 @@ const Dataset = () => {
 
     // reads the API endpoints
     useEffect(() => {
-        fetch(`http://127.0.0.1:8000/status/`)
+        fetch(`http://localhost:8000/status/`)
          .then((response) => response.json()).then(setCurrent);
-    }, [])
+    }, [setCurrent])
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:8000/uri/`)
+        fetch(`http://localhost:8000/uri/`)
          .then((response) => response.json()).then(setURI);
-    }, [])
+    }, [setURI])
 
     useEffect(() => {
-        const newLocal = 5;
-        fetch(`http://127.0.0.1:8000/last_n_commits/?n=`.concat(newLocal))
-         .then((response) => response.json()).then((data) => Object.values(data)).then(setCommits);
-    }, [])
+        const newLocal: number = 5;
+        const data = fetch(`http://localhost:8000/last_n_commits/?n=`.concat(newLocal.toString()))
+            .then((response) => response.json()).then((data) => Object.values(data)).then((res) => setCommits(res as []));
+    }, [setCommits])
 
     for(var i = 0; i < currentJson.keys.length; i++){
         files.push({

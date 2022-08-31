@@ -1,25 +1,50 @@
-
+import Image from "next/image"
+import Link from "next/link"
+import React from "react"
 
 const Sidebar = () => {
+
     return (
-        <div className='p-2 h-screen flex-none w-60 shadow-lg'>
-                <div className=''>
-                    <h1 className='py-5 w-50 justify-between text-2xl font-bold text-center'>
-                        <img className="dark:invert" src="/stack-logo.png"></img>
+        <div className='p-2 h-screen w-[225px] shadow-lg'>
+                <div className='flex flex-col'>
+                    <h1 className='py-5 w-full justify-center text-2xl font-bold text-center'>
+                        <Image className="dark:invert" src="/stack-logo.png" width={'200'} height={'50'} objectFit={'contain'} alt=''></Image>
                     </h1>
-                    <div className='mt-5 list-none font-thin'>
-                        <li className="py-3  px-4 hover:bg-gray-200  dark:hover:bg-gray-800">
-                            <a href='/Home'>Home</a>
-                        </li>
-                        <li className="py-3 px-4 hover:bg-gray-200  dark:hover:bg-gray-800">
-                            <a href='/Datasets'>Datasets</a>
-                        </li>
-                        <li className="py-3 px-4 hover:bg-gray-200  dark:hover:bg-gray-800">
-                            <a href='/Pulls'>Pull Requests</a>
-                        </li>
-                        <li className="py-3 px-4 hover:bg-gray-200  dark:hover:bg-gray-800">
-                            <a href='/'>Logout</a>
-                        </li>
+                    <div className="flex justify-center">
+                        <div className='mt-5 w-ful flex flex-col list-none font-thin'>
+                            <Link href='/Home' passHref>
+                                <button className="py-3 px-4 w-[200px] rounded-md hover:bg-black hover:text-white dark:hover:bg-gray-800">
+                                    <div className="flex grid-cols-2 gap-6">
+                                        <div> 🏠 </div>
+                                        <div> Home </div>
+                                    </div>
+                                </button>
+                            </Link>
+                            <Link href='/Datasets' passHref>
+                                <button className="py-3 px-4 w-[200px] rounded-md hover:bg-black hover:text-white dark:hover:bg-gray-800">
+                                    <div className="flex grid-cols-2 gap-6">
+                                        <div> 📚 </div>
+                                        <div> Datasets </div>
+                                    </div>
+                                </button>
+                            </Link>
+                            <Link href='/Pulls' passHref>
+                                <button className="py-3 px-4 w-[200px] rounded-md hover:bg-black hover:text-white  dark:hover:bg-gray-800">
+                                    <div className="flex grid-cols-2 gap-6">
+                                        <div> 🩺 </div>
+                                        <div> Pull Requests </div>
+                                    </div>
+                                </button>
+                            </Link>
+                            <Link href='/' passHref>
+                                <button className="py-3 px-4 w-[200px] rounded-md hover:bg-black hover:text-white dark:hover:bg-gray-800">
+                                    <div className="flex grid-cols-2 gap-6">
+                                        <div> 🚪 </div>
+                                        <div> Logout </div>
+                                    </div>
+                                </button>
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>

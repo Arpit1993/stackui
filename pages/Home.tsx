@@ -1,4 +1,6 @@
-import Dataset from "../components/Dataset/Dataset"
+import Link from "next/link"
+import React from "react"
+
 export default function Main () {    
     return (
         <div>
@@ -6,25 +8,25 @@ export default function Main () {
                 Welcome to stack! 👋 
             </div>
             <div className='text-xl  flex flex-col justify-center items-center text-center p-20'> 
-                You don't have any updates 
+                You don not have any updates 
             </div>
 
             <div className='px-20 flex justify-between gap-2'> 
-                <a href='/dataset/test'>
-                    <div className='border-2  flex flex-col justify-center items-center border-blue-300 text-center rounded-3xl w-[300px] h-[300px] p-20'> 
+                <Link href='/dataset/test' passHref>
+                    <button className='border-2 flex flex-col justify-center items-center border-blue-300 text-center rounded-3xl w-[300px] h-[300px] p-20'> 
                         See your dataset 
-                    </div>
-                </a>
-                <a href ='/Pulls'>
-                    <div className='border-2  flex flex-col justify-center items-center border-blue-300 text-center rounded-3xl w-[300px] h-[300px] p-20'> 
+                    </button>
+                </Link>
+                <Link href ='/Pulls' passHref>
+                    <button className='border-2 flex flex-col justify-center items-center border-blue-300 text-center rounded-3xl w-[300px] h-[300px] p-20'> 
                         See your pull requests
-                    </div>
-                </a>
-                <a href ='https://www.getstack.ai/'>
-                    <div className='border-2  flex flex-col justify-center items-center border-blue-300 text-center rounded-3xl w-[300px] h-[300px] p-20'> 
+                    </button>
+                </Link>
+                <Link href ='https://www.getstack.ai/' passHref>
+                    <button className='border-2 flex flex-col justify-center items-center border-blue-300 text-center rounded-3xl w-[300px] h-[300px] p-20'> 
                         Learn more about stack
-                    </div>
-                </a>
+                    </button>
+                </Link>
             </div>
         </div>
     )

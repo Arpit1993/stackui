@@ -1,13 +1,13 @@
 import TopBar from "./topbar/topbar";
 import FileExplorer from "./FileExplorer/FileExplorer";
-import { useCallback, useState } from "react";
+import { SetStateAction, useCallback, useState } from "react";
 
-const Explorer = (props) => {
+const Explorer = (props: { props: { dataprops: any; files: any; dataset: any; }; }) => {
 
     const [filter, setFilter]= useState('')
 
-    const changeFilter = useCallback(val => {
-        setFilter(val);
+    const changeFilter = useCallback((val: String) => {
+        setFilter(val as SetStateAction<string>);
       }, [setFilter]);
 
     return (
