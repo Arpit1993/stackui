@@ -1,6 +1,7 @@
 import FilePopup from "../../popups/FilePopup";
 import Image from "next/image";
 import { SetStateAction, useState } from "react";
+import React from "react";
 
 const FileExplorer = (props: { state: any; files: any[]; dataset: string | any[]; }) => {
     const [view, setView] = useState(1);
@@ -107,7 +108,8 @@ const FileExplorer = (props: { state: any; files: any[]; dataset: string | any[]
                                 <Image  
                                     className="h-12 flex mx-auto"
                                     src={file['thumbnail']} 
-                                    layout="fill"
+                                    width={50}
+                                    height={50}
                                     alt='.'/>
                                 <div className="text-xs truncate whitespace-normal h-8">
                                     {file['name'].substring(props.dataset.length)}

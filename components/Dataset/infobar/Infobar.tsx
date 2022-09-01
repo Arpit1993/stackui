@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect, JSXElementConstructor, ReactElement, ReactFragment, ReactPortal } from "react";
 import ItemChange from "../Items/ItemChange";
 import HistoryPopup from "../popups/HistoryPopup";

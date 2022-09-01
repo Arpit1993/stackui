@@ -3,12 +3,17 @@ import { useState, useEffect } from "react";
 import LoadingScreen from "../../LoadingScreen";
 import ItemFileVersion from "../Items/ItemFileVersion";
 import FileHistoryPopUp from "./FileHistoryPopUp";
+import Image from "next/image";
 
 const FilePopup = (props) => {
     
     const [popup, setPopup] = useState(0)
     const [loading, setLoading] = useState(0)
+    const [loadingViz, setLoadingViz] = useState(1)
     const [version, setVersions] = useState([{version: 'loading...', date: 'loading...',commit: 'loading...'}])
+    const [image, setImage] = useState('')
+
+    const isImage = ['jpg','png','jpeg','tiff','bmp','eps'].includes(props.keyId.split('.').pop())
 
     const handleDelete = async () => {
         setLoading(1)
@@ -24,10 +29,42 @@ const FilePopup = (props) => {
         return true
     }
 
+    const fetchVersions = async () => {
+        if (props.popup) {
+            await fetch('http://localhost:8000/key_versions?key='.concat(props.keyId).concat('&l=4&page=').concat(0))
+            .then((data) => data.json()).then((res) => setVersions(Object.values(res.commits)))
+        }
+    }
+
+    const fetchData = async () => {
+        if (isImage){
+            const res = await fetch('http://localhost:8000/pull_file_api?file='.concat(props.keyId)).
+            then((res) => res.body.getReader()).then((reader) =>
+            new ReadableStream({
+                start(controller) {
+                    return pump();
+                    function pump() {
+                        return reader.read().then(({ done, value }) => {
+                            if (done) {
+                            controller.close();
+                            return;
+                            }
+                            
+                            controller.enqueue(value);
+                            return pump();
+                        });
+                    }
+                }
+                })).then((stream) => new Response(stream)).then((response) => response.blob())
+                .then((blob) => URL.createObjectURL(blob)).then(setImage)
+                setLoadingViz(0)
+            }
+    }
+
     useEffect(() => {
         if (props.popup) {
-            fetch('http://localhost:8000/key_versions?key='.concat(props.keyId).concat('&l=4&page=').concat(0))
-            .then((data) => data.json()).then((res) => setVersions(Object.values(res.commits)))
+            fetchData()
+            fetchVersions()
         }
     }, [props])
 
@@ -44,6 +81,14 @@ const FilePopup = (props) => {
     ] : [<></>]
 
     const LoadingPopup = loading ? [<LoadingScreen  key={'lscpp'}/>] : [null]
+
+    const ImageDisp = props.popup ? [<Image className="w-full h-max" src={image} objectFit={'contain'}  width={100} height={5000}/>] : 
+    [<div> Loading image... </div>]
+
+    const fileDisp = isImage ? (!loadingViz ? ImageDisp : [
+    <div>
+        Loading image...
+    </div>]) : [<div> Not an image </div>]
 
     if (props.popup == 0) {
         return <div></div>
@@ -63,8 +108,8 @@ const FilePopup = (props) => {
                         text-gray-900 bg-white
                         dark:bg-gray-700 dark:text-white">
                     <div className="flex h-[500px]">
-                        <div className="w-[800px] dark:text-black border-2 text-center flex flex-col justify-center border-black bg-white">
-                            Loading visualization...
+                        <div className="w-[800px] dark:text-black text-center border-2 flex flex-col justify-center border-black bg-white">
+                            {fileDisp}
                         </div>
                         <div className="w-[300px]">
                             <div className="flex py-5 h-[75px] justify-end px-5 gap-2"> 

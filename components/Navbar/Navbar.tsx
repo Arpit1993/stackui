@@ -14,7 +14,7 @@ const Navbar = () => {
                     dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500
                     dark:focus:border-green-500" placeholder="Search datasets" required>
                     </input>
-                <button type="submit" className="text-white absolute right-2.5 bottom-3.5 bg-green-700
+                <button type="submit" className="text-white absolute right-2.5 bottom-2.5 bg-green-700
                     hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium
                     rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700
                     dark:focus:ring-green-800">
@@ -31,7 +31,7 @@ const Navbar = () => {
             </div>
 
             <div className='py-2 px-20 w-min flex gap-2'> 
-                <Image src="/user_icon.png" width={'30px'} height={'30px'} alt=''/>
+                <Image src="/user_icon.png" width={'100'} height={'100'} alt=''/>
                 <Link href='/user/bernardo' className="relative top-2"> User </Link>
             </div>
         </div>
