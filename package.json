@@ -20,6 +20,7 @@
     "json-loader": "^0.5.7",
     "next": "12.2.5",
     "react": "18.2.0",
+    "react-csv-to-table": "0.0.1",
     "react-dom": "18.2.0",
     "sharp": "^0.30.7"
   },

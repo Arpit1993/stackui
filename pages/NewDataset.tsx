@@ -72,7 +72,7 @@ export default function NewDatasets() {
                     "Content-Type": "application/json" 
                 }, 
                 body: data}
-            ).then(console.log)
+            )
 
             if (response.success) {
                 window.location.href='/dataset/'.concat(encodeURIComponent(name));

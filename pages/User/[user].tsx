@@ -1,6 +1,6 @@
 export default function user() {    
 
     return (
-        <div> yeah </div>
+        <div> On its way...</div>
     )
 }

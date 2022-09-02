@@ -4,6 +4,7 @@ import LoadingScreen from "../../LoadingScreen";
 import ItemFileVersion from "../Items/ItemFileVersion";
 import FileHistoryPopUp from "./FileHistoryPopUp";
 import Image from "next/image";
+import { CsvToHtmlTable } from 'react-csv-to-table';
 
 const FilePopup = (props) => {
     
@@ -11,9 +12,11 @@ const FilePopup = (props) => {
     const [loading, setLoading] = useState(0)
     const [loadingViz, setLoadingViz] = useState(1)
     const [version, setVersions] = useState([{version: 'loading...', date: 'loading...',commit: 'loading...'}])
-    const [image, setImage] = useState('')
+    const [dataComp, setDataComp] = useState(null)
 
     const isImage = ['jpg','png','jpeg','tiff','bmp','eps'].includes(props.keyId.split('.').pop())
+    const isCSV =['csv'].includes(props.keyId.split('.').pop())
+    const isText = ['json','txt'].includes(props.keyId.split('.').pop())
 
     const handleDelete = async () => {
         setLoading(1)
@@ -38,7 +41,7 @@ const FilePopup = (props) => {
 
     const fetchData = async () => {
         if (isImage){
-            const res = await fetch('http://localhost:8000/pull_file_api?file='.concat(props.keyId)).
+            const img = await fetch('http://localhost:8000/pull_file_api?file='.concat(props.keyId)).
             then((res) => res.body.getReader()).then((reader) =>
             new ReadableStream({
                 start(controller) {
@@ -55,18 +58,77 @@ const FilePopup = (props) => {
                         });
                     }
                 }
-                })).then((stream) => new Response(stream)).then((response) => response.blob())
-                .then((blob) => URL.createObjectURL(blob)).then(setImage)
-                setLoadingViz(0)
-            }
+            })).then((stream) => new Response(stream)).then((response) => response.blob())
+            .then((blob) => URL.createObjectURL(blob))
+            setLoadingViz(0)
+            setDataComp([<Image alt='' key="cmp1" className="w-full h-max" src={img} objectFit={'contain'}  width={100} height={5000}/>])
+        } else if (isCSV) {
+            const data = await fetch('http://localhost:8000/pull_file_api?file='.concat(props.keyId)).
+            then((res) => res.body.getReader()).then((reader) =>
+            new ReadableStream({
+                start(controller) {
+                    return pump();
+                    function pump() {
+                        return reader.read().then(({ done, value }) => {
+                            if (done) {
+                            controller.close();
+                            return;
+                            }
+                            
+                            controller.enqueue(value);
+                            return pump();
+                        });
+                    }
+                }
+            })).then((stream) => new Response(stream)).then((response) => response.blob())
+            .then((blob) => blob.text())
+            setLoadingViz(0)
+            const table = [
+            <div key="cmp2" className="flex justify-center font-thin overflow-scroll">
+            <CsvToHtmlTable tableRowClassName='border-1 shadow-inner p-2 border-black' tableColumnClassName='border-[1.5px] shadow-inner p-2 border-black' tableClassName='table-auto overflow-auto' data={data} csvDelimiter=","/>
+            </div>]
+            setDataComp(table)
+            setLoadingViz(0)
+        } else if (isText) {
+            const data = await fetch('http://localhost:8000/pull_file_api?file='.concat(props.keyId)).
+            then((res) => res.body.getReader()).then((reader) =>
+            new ReadableStream({
+                start(controller) {
+                    return pump();
+                    function pump() {
+                        return reader.read().then(({ done, value }) => {
+                            if (done) {
+                            controller.close();
+                            return;
+                            }
+                            
+                            controller.enqueue(value);
+                            return pump();
+                        });
+                    }
+                }
+            })).then((stream) => new Response(stream)).then((response) => response.blob())
+            .then((blob) => blob.text())
+            setLoadingViz(0)
+            const text = [
+            <div key="cmp3" className="flex justify-center font-thin overflow-scroll">
+                {data}
+            </div>]
+            setDataComp(text)
+            setLoadingViz(0)
+        }
+    }
+
+    const fetchStuff = async () => {
+        await fetchData()
+        await fetchVersions()
     }
 
     useEffect(() => {
         if (props.popup) {
-            fetchData()
-            fetchVersions()
+            fetchStuff()
         }
-    }, [props])
+    }, [props, fetchStuff])
 
     const CloseComponent = [
         <button key={'ccb'} onClick={() => props.setPopup(0)} className="bg-transparent absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
@@ -81,14 +143,7 @@ const FilePopup = (props) => {
     ] : [<></>]
 
     const LoadingPopup = loading ? [<LoadingScreen  key={'lscpp'}/>] : [null]
-
-    const ImageDisp = props.popup ? [<Image className="w-full h-max" src={image} objectFit={'contain'}  width={100} height={5000}/>] : 
-    [<div> Loading image... </div>]
-
-    const fileDisp = isImage ? (!loadingViz ? ImageDisp : [
-    <div>
-        Loading image...
-    </div>]) : [<div> Not an image </div>]
+    const fileDisp = props.popup ? (loadingViz ? [null] : dataComp) : [null]
 
     if (props.popup == 0) {
         return <div></div>
@@ -107,8 +162,8 @@ const FilePopup = (props) => {
                 <ul className="text-xs font-medium rounded-lg 
                         text-gray-900 bg-white
                         dark:bg-gray-700 dark:text-white">
-                    <div className="flex h-[500px]">
-                        <div className="w-[800px] dark:text-black text-center border-2 flex flex-col justify-center border-black bg-white">
+                    <div className="flex h-[500px] ">
+                        <div className="w-[800px]  rounded-md dark:text-black text-center border-2 flex flex-col justify-center border-black bg-white">
                             {fileDisp}
                         </div>
                         <div className="w-[300px]">

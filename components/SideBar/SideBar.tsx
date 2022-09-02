@@ -28,7 +28,7 @@ const Sidebar = () => {
                                     </div>
                                 </button>
                             </Link>
-                            <Link href='/Pulls' passHref>
+                            <Link href='/' passHref>
                                 <button className="py-3 px-4 w-[200px] rounded-md hover:bg-black hover:text-white  dark:hover:bg-gray-800">
                                     <div className="flex grid-cols-2 gap-6">
                                         <div> 🩺 </div>
