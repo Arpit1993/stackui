@@ -1,6 +1,7 @@
 import TopBar from "./topbar/topbar";
 import FileExplorer from "./FileExplorer/FileExplorer";
 import { SetStateAction, useCallback, useState } from "react";
+import React from "react";
 
 const Explorer = (props: { props: { dataprops: any; files: any; dataset: any; }; }) => {
 

@@ -10,13 +10,14 @@ const FilePopup = (props) => {
     
     const [popup, setPopup] = useState(0)
     const [loading, setLoading] = useState(0)
-    const [loadingViz, setLoadingViz] = useState(1)
+    const [loadingViz, setLoadingViz] = useState(0)
     const [version, setVersions] = useState([{version: 'loading...', date: 'loading...',commit: 'loading...'}])
     const [dataComp, setDataComp] = useState(null)
 
     const isImage = ['jpg','png','jpeg','tiff','bmp','eps'].includes(props.keyId.split('.').pop())
     const isCSV =['csv'].includes(props.keyId.split('.').pop())
-    const isText = ['json','txt'].includes(props.keyId.split('.').pop())
+    const isText = ['txt'].includes(props.keyId.split('.').pop())
+    const isJSON = ['json'].includes(props.keyId.split('.').pop())
 
     const handleDelete = async () => {
         setLoading(1)
@@ -32,16 +33,19 @@ const FilePopup = (props) => {
         return true
     }
 
-    const fetchVersions = async () => {
+    const fetchVersions = () => {
         if (props.popup) {
-            await fetch('http://localhost:8000/key_versions?key='.concat(props.keyId).concat('&l=4&page=').concat(0))
-            .then((data) => data.json()).then((res) => setVersions(Object.values(res.commits)))
+            fetch('http://localhost:8000/key_versions?key='.concat(props.keyId).concat('&l=4&page=').concat(0))
+            .then((data) => data.json()).then((res) => {
+                console.log(res)
+                setVersions(Object.values(res.commits))
+            })
         }
     }
 
-    const fetchData = async () => {
+    const fetchData = () => {
         if (isImage){
-            const img = await fetch('http://localhost:8000/pull_file_api?file='.concat(props.keyId)).
+            fetch('http://localhost:8000/pull_file_api?file='.concat(props.keyId)).
             then((res) => res.body.getReader()).then((reader) =>
             new ReadableStream({
                 start(controller) {
@@ -59,11 +63,12 @@ const FilePopup = (props) => {
                     }
                 }
             })).then((stream) => new Response(stream)).then((response) => response.blob())
-            .then((blob) => URL.createObjectURL(blob))
-            setLoadingViz(0)
-            setDataComp([<Image alt='' key="cmp1" className="w-full h-max" src={img} objectFit={'contain'}  width={100} height={5000}/>])
-        } else if (isCSV) {
-            const data = await fetch('http://localhost:8000/pull_file_api?file='.concat(props.keyId)).
+            .then((blob) => URL.createObjectURL(blob)).then((img) => 
+            [<Image alt='' key="cmp1" className="w-full h-max" src={img} objectFit={'contain'}  width={100} height={5000}/>])
+            .then(setDataComp)
+        } 
+        else if (isCSV) {
+            fetch('http://localhost:8000/pull_file_api?file='.concat(props.keyId)).
             then((res) => res.body.getReader()).then((reader) =>
             new ReadableStream({
                 start(controller) {
@@ -81,16 +86,13 @@ const FilePopup = (props) => {
                     }
                 }
             })).then((stream) => new Response(stream)).then((response) => response.blob())
-            .then((blob) => blob.text())
-            setLoadingViz(0)
-            const table = [
-            <div key="cmp2" className="flex justify-center font-thin overflow-scroll">
-            <CsvToHtmlTable tableRowClassName='border-1 shadow-inner p-2 border-black' tableColumnClassName='border-[1.5px] shadow-inner p-2 border-black' tableClassName='table-auto overflow-auto' data={data} csvDelimiter=","/>
-            </div>]
-            setDataComp(table)
-            setLoadingViz(0)
-        } else if (isText) {
-            const data = await fetch('http://localhost:8000/pull_file_api?file='.concat(props.keyId)).
+            .then((blob) => blob.text()).then((data) =>
+            [<div key="cmp2" className="flex font-thin overflow-scroll">
+                <CsvToHtmlTable tableRowClassName='border-1 shadow-inner p-2 border-black' tableColumnClassName='border-[1.5px] shadow-inner p-2 border-black' tableClassName='table-auto overflow-auto' data={data} csvDelimiter=","/>
+            </div>]).then(setDataComp)
+        } 
+        else if (isText) {
+            fetch('http://localhost:8000/pull_file_api?file='.concat(props.keyId)).
             then((res) => res.body.getReader()).then((reader) =>
             new ReadableStream({
                 start(controller) {
@@ -108,27 +110,47 @@ const FilePopup = (props) => {
                     }
                 }
             })).then((stream) => new Response(stream)).then((response) => response.blob())
-            .then((blob) => blob.text())
-            setLoadingViz(0)
-            const text = [
-            <div key="cmp3" className="flex justify-center font-thin overflow-scroll">
-                {data}
-            </div>]
-            setDataComp(text)
-            setLoadingViz(0)
+            .then((blob) => blob.text()).then( (data) =>  [
+                <div key="cmp3" className="flex justify-center font-thin overflow-scroll">
+                    {data}
+                </div>]).then(setDataComp)
+        }
+        else if (isJSON) {
+            fetch('http://localhost:8000/pull_file_api?file='.concat(props.keyId)).
+            then((res) => res.body.getReader()).then((reader) =>
+            new ReadableStream({
+                start(controller) {
+                    return pump();
+                    function pump() {
+                        return reader.read().then(({ done, value }) => {
+                            if (done) {
+                            controller.close();
+                            return;
+                            }
+                            
+                            controller.enqueue(value);
+                            return pump();
+                        });
+                    }
+                }
+            })).then((stream) => new Response(stream)).then((response) => response.blob())
+            .then((blob) => blob.text()).then( (data) =>  [
+                <div key="cmp3" className="flex font-thin w-[800px] overflow-scroll">
+                    <pre className="w-[1px] break-all"> <div className="w-[1px]">{data}</div></pre>
+                </div>]).then(setDataComp)
         }
     }
 
-    const fetchStuff = async () => {
-        await fetchData()
-        await fetchVersions()
-    }
 
     useEffect(() => {
+        const fetchStuff = async () => {
+            await fetchData()
+            await fetchVersions()
+        }
         if (props.popup) {
             fetchStuff()
         }
-    }, [props, fetchStuff])
+    }, [props, setDataComp])
 
     const CloseComponent = [
         <button key={'ccb'} onClick={() => props.setPopup(0)} className="bg-transparent absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">

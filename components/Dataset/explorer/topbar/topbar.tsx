@@ -43,7 +43,7 @@ const TopBar = (props: { fcn: (arg0: string) => void; props: { dataset: string |
                         <button onClick={()=>refresh()} className="h-10 w-max flex text-white flex-col justify-center bg-black text-sm px-2 hover:bg-gray-400" > refresh 🔄
                         </button>
 
-                        <button onClick={()=>commit('')} className="h-10 flex text-white flex-col justify-center bg-black text-sm px-2 hover:bg-gray-400" > commit
+                        <button onClick={()=>commit('')} className="h-10 flex text-white flex-col justify-center bg-black text-sm px-2 hover:bg-gray-400" > sync
                         </button>
                         
                         <button onClick={()=>setAddPopup(1)} className="h-10 flex flex-col justify-center text-white bg-black text-sm px-2 hover:bg-gray-400" > add

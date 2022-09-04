@@ -45,7 +45,7 @@ const Dataset = () => {
     return (
         <div className='flex justify-between h-full'>
             <div className='w-full h-full'> 
-                <Stats props={files}/>
+                {/* <Stats props={files}/> */}
                 <Explorer props={props} />
             </div>
             <Infobar commits={commits} description={description}/>
