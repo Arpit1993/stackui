@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect } from "react";
 import ItemFileVersion from "../Items/ItemFileVersion";
 
@@ -5,7 +6,7 @@ import ItemFileVersion from "../Items/ItemFileVersion";
 function generateButtons(page, handleClick){
     var listofButtons = []
     listofButtons.push(
-        <div  className="flex">
+        <div key="gs" className="flex">
             <button className=" bg-gray-200 flex flex-col justify-center rounded-full h-[25px] w-[25px] p-2 shadow-sm dark: text-black hover:bg-gray-300" onClick={() => handleClick(page, Math.max(page-1,0))}>
                 {'<'}
             </button>
@@ -13,13 +14,13 @@ function generateButtons(page, handleClick){
     )
 
     listofButtons.push(
-        <div>
+        <div key="bgs">
             Page {page}
         </div>
     )
 
     listofButtons.push(
-        <div  className="flex">
+        <div key="bbgs" className="flex">
             <button className=" bg-gray-200 flex flex-col justify-center rounded-full h-[25px] w-[25px] p-2  shadow-sm dark: text-black hover:bg-gray-300" onClick={() => handleClick(page,page+1)}>
                 {'>'}
             </button>

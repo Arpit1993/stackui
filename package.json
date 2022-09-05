@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui/react": "^1.6.6",
     "FileReader": "^0.10.2",
     "aws-sdk": "^2.1200.0",
     "chonky-icon-fontawesome": "^2.3.2",

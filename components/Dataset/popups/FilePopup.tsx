@@ -5,13 +5,16 @@ import ItemFileVersion from "../Items/ItemFileVersion";
 import FileHistoryPopUp from "./FileHistoryPopUp";
 import Image from "next/image";
 import { CsvToHtmlTable } from 'react-csv-to-table';
+import FileDiffPopup from "./FileDiffPopup";
 
 const FilePopup = (props) => {
     
     const [popup, setPopup] = useState(0)
+    const [compare, setCompare] = useState(0)
     const [loading, setLoading] = useState(0)
     const [loadingViz, setLoadingViz] = useState(0)
     const [version, setVersions] = useState([{version: 'loading...', date: 'loading...',commit: 'loading...'}])
+    const [Nversion, setNVersions] = useState(0)
     const [dataComp, setDataComp] = useState(null)
 
     const isImage = ['jpg','png','jpeg','tiff','bmp','eps'].includes(props.keyId.split('.').pop())
@@ -35,10 +38,10 @@ const FilePopup = (props) => {
 
     const fetchVersions = () => {
         if (props.popup) {
-            fetch('http://localhost:8000/key_versions?key='.concat(props.keyId).concat('&l=4&page=').concat(0))
+            fetch('http://localhost:8000/key_versions?key='.concat(props.keyId).concat('&l=4&page=0'))
             .then((data) => data.json()).then((res) => {
-                console.log(res)
                 setVersions(Object.values(res.commits))
+                setNVersions(res.len)
             })
         }
     }
@@ -135,12 +138,11 @@ const FilePopup = (props) => {
                 }
             })).then((stream) => new Response(stream)).then((response) => response.blob())
             .then((blob) => blob.text()).then( (data) =>  [
-                <div key="cmp3" className="flex font-thin w-[800px] overflow-scroll">
+                <div key="cmp3" className="flex font-thin w-[750px] overflow-scroll">
                     <pre className="w-[1px] break-all"> <div className="w-[1px]">{data}</div></pre>
                 </div>]).then(setDataComp)
         }
     }
-
 
     useEffect(() => {
         const fetchStuff = async () => {
@@ -158,9 +160,15 @@ const FilePopup = (props) => {
         </button>
     ]
     
-    const Versionspopup =  popup ? [
+    const Versionspopup = popup ? [
         <>
             <FileHistoryPopUp keyId={props.keyId} setPopup={setPopup} popup={popup}/>
+        </>
+    ] : [<></>]
+
+    const Diffpopup =  compare ? [
+        <>
+            <FileDiffPopup keyId={props.keyId} setPopup={setCompare} popup={compare} len={Nversion}/>
         </>
     ] : [<></>]
 
@@ -185,7 +193,7 @@ const FilePopup = (props) => {
                         text-gray-900 bg-white
                         dark:bg-gray-700 dark:text-white">
                     <div className="flex h-[500px] ">
-                        <div className="w-[800px]  rounded-md dark:text-black text-center border-2 flex flex-col justify-center border-black bg-white">
+                        <div className="w-[800px] rounded-md dark:text-black text-center border-2 flex flex-col justify-center border-black bg-white">
                             {fileDisp}
                         </div>
                         <div className="w-[300px]">
@@ -206,16 +214,24 @@ const FilePopup = (props) => {
                                     version.map((data, index) => <ItemFileVersion  key={index.toString()} keyId={props.keyId} version={data.version} date={data.date} commit={data.commit}/>)
                                 }
                             </div>
-                            <div className="flex py-2 h-[25px] justify-center px-2"> 
-                                <button onClick={() => setPopup(1)} className="bg-green-700 ring-2 ring-black rounded-md h-[50px] w-[200px] hover:bg-green-900 text-white font-thin text-lg px-5"> 
-                                    See History 
-                                </button>
+                            <div className="">
+                                <div className="flex py-2 h-[25px] justify-center px-2"> 
+                                    <button onClick={() => setPopup(1)} className="bg-green-700 ring-2 ring-black rounded-t-md h-[50px] w-[200px] hover:bg-green-900 text-white font-thin text-lg px-5"> 
+                                        See History 
+                                    </button>
+                                </div>
+                                <div className="flex py-2 h-[30px] mt-7 justify-center px-2"> 
+                                    <button onClick={() => setCompare(1)} className="bg-green-700 ring-2 ring-black rounded-b-md h-[50px] w-[200px] hover:bg-green-900 text-white font-thin text-lg px-5"> 
+                                        Compare versions
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </ul>
             </div>
             {Versionspopup}
+            {Diffpopup}
             {LoadingPopup}
         </>)}
 }

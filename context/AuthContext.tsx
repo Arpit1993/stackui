@@ -5,13 +5,13 @@ import {doc, getDoc} from 'firebase/firestore'
 import { CidrAuthorizationContext } from 'aws-sdk/clients/ec2'
 import { createContext } from 'react'
 
-const AuthContext = React.createContext()
+const AuthContext = React.createContext(undefined)
 
 export function useAuth() {
     return useContext(AuthContext)
 }
 
-export function AuthProvier({children}){
+export function AuthProvier({children} : any){
     const [currentUser, setCurrentUser] = useState(null)
     const [loading, setLoading] = useState(true)
     const userInfo = useRef()
@@ -31,7 +31,7 @@ export function AuthProvier({children}){
 
     useEffect(()=> {
         const unsubscribe = onAuthStateChanged(auth, async user => {
-            setCurrentUser(user)
+            setCurrentUser(user as any)
             setLoading(false)
         })
 
