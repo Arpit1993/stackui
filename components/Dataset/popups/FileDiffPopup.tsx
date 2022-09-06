@@ -111,8 +111,8 @@ const fetchData = async (keyId, version, setD) => {
 
 const FileDiffPopup = (props) => {
 
-    const [v1, setV1] = useState('current')
-    const [v2, setV2] = useState('current')
+    const [v1, setV1] = useState(props.len)
+    const [v2, setV2] = useState(props.len)
     const [d1, setD1] = useState(null)
     const [d2, setD2] = useState(null)
 
@@ -146,7 +146,7 @@ const FileDiffPopup = (props) => {
                 </div>
             </div>
             <div className="mt-2">
-                <DropdownVersion keyId={props.keyId} setV={setV2} len={props.len} v={v1} />
+                <DropdownVersion keyId={props.keyId} setV={setV2} len={props.len} v={v2} />
                 <div className="w-[500px] h-[500px] rounded-md dark:text-black text-center border-2 flex flex-col justify-center border-black bg-white">
                     {d2}
                 </div>
