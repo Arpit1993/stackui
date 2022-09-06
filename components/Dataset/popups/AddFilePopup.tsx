@@ -18,8 +18,9 @@ const AddFilePopup = (props: { popup: any; setPopup: (arg0: number) => void }) =
         }
 
         setLoading(1)
+        
         const res1 = await fetch('http://localhost:8000/add_file/',reqOptions)
-        const res2 = await fetch('http://localhost:8000/commit/')
+        const res2 = await fetch('http://localhost:8000/commit_req/')
 
         window.location.reload();
     }

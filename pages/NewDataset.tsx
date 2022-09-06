@@ -62,11 +62,11 @@ export default function NewDatasets() {
                     method: 'POST',
                     body: data
                 }
-                const response2 = await fetch('http://127.0.0.1:8000/init_gskey/', reqOptions)
+                const response2 = await fetch('http://localhost:8000/init_gskey/', reqOptions)
             }
 
             const data = JSON.stringify({"uri": uri, "name": name,"key1": accessKey, "key2": secretKey, "key3": region})
-            const response = await fetch('http://127.0.0.1:8000/init_web/', {
+            const response = await fetch('http://localhost:8000/init_web/', {
                 method: 'POST',
                 headers: { 
                     "Content-Type": "application/json" 
