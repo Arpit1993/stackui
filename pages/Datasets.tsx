@@ -7,7 +7,8 @@ function datasetComponent(dataset, setLoading) {
     
     const handleClick = async (dataset, setLoading) => {
         setLoading(1)
-        const response = await fetch('http://localhost:8000/init?uri='.concat(encodeURIComponent(dataset.storage)).concat('&name=').concat(encodeURIComponent(dataset.name))).then( (res) => res.json())
+        const response = await fetch('http://localhost:8000/connect/?uri='.concat(encodeURIComponent(dataset.storage)))
+        console.log(dataset)
         window.location.href='/dataset/'.concat(encodeURIComponent(dataset.name));
     }
 

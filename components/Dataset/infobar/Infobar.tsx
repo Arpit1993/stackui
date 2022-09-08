@@ -13,17 +13,17 @@ const Infobar = (props: { description: string | number | boolean | ReactFragment
         <div className='p-2 w-80 grow flew-col shadow-lg'>
             {HistPopup}
             <div className="p-4">
-                <h2 className='text-center p-4'>
+                <h2 className='text-center text-lg p-4'>
                     Description
                 </h2>
                 <p className='text-xs p-4 '>
-                    {props.description} 
+                    {/* {props.description}  */}
                 </p>
             </div>
 
             <div className="p-1">
-                <h2 className='text-center p-4 text-bold under'>
-                    Activity
+                <h2 className='text-center text-lg p-4 text-bold under'>
+                    Recent Activity
                 </h2>
                 <ul className="text-xs font-medium rounded-sm border 
                 text-gray-900 bg-white border-gray-200
@@ -31,8 +31,8 @@ const Infobar = (props: { description: string | number | boolean | ReactFragment
                     {props.commits.map((cmit: { source: any; comment: any; date: any; }, index: { toString: () => any; }) => <ItemChange key={index.toString()} author={cmit.source} comment={cmit.comment} date={cmit.date}/>)}
                     <button onClick={() => setPopup(1)} className="w-full">
                         <li className="text-center py-4 px-2 justify-between flex-col w-full 
-                        hover:bg-green-800 bg-green-700 text-white font-medium ring-2 ring-black mt-2 rounded-lg border-b text-sm border-gray-200 dark:border-gray-600">
-                            View History
+                        hover:bg-green-800 bg-green-700 text-white font-medium ring-2 ring-black mt-2 rounded-lg border-b text-base border-gray-200 dark:border-gray-600">
+                            View All Versions
                         </li>
                     </button>
                 </ul>

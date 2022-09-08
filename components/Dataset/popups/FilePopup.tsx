@@ -191,7 +191,7 @@ const FilePopup = (props) => {
                 </div>
                 <ul className="text-xs font-medium rounded-lg 
                         text-gray-900 bg-white
-                        dark:bg-gray-700 dark:text-white">
+                        dark:bg-gray-600 dark:text-white">
                     <div className="flex h-[500px] ">
                         <div className="w-[800px] rounded-md dark:text-black text-center border-2 flex flex-col justify-center border-black bg-white">
                             {fileDisp}

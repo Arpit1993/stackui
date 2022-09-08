@@ -39,14 +39,11 @@ const TopBar = (props: { fcn: (arg0: string) => void; props: { dataset: string |
                     </div>
                 </div>
                 <div className="flex">
-                    <div className="flex grid-cols-3 gap-2 mt-6">
-                        <button onClick={()=>refresh()} className="h-10 w-max flex text-white flex-col justify-center bg-black text-sm px-2 hover:bg-gray-400" > refresh 🔄
-                        </button>
-
-                        <button onClick={()=>commit('')} className="h-10 flex text-white flex-col justify-center bg-black text-sm px-2 hover:bg-gray-400" > sync
+                    <div className="flex grid-cols-3 gap-2 mt-6 w-full">
+                        <button onClick={()=>commit('')} className="h-[40px] w-max flex text-white flex-col justify-center bg-black text-sm px-2 hover:bg-gray-400" > refresh 🔄
                         </button>
                         
-                        <button onClick={()=>setAddPopup(1)} className="h-10 flex flex-col justify-center text-white bg-black text-sm px-2 hover:bg-gray-400" > add
+                        <button onClick={()=>setAddPopup(1)} className="h-[40px] flex flex-col justify-center text-white bg-black text-sm px-2 hover:bg-gray-400" > Upload a file
                         </button>
                     </div>
                     <div className="w-full py-6 text-black inline-block align-middle">
@@ -57,7 +54,9 @@ const TopBar = (props: { fcn: (arg0: string) => void; props: { dataset: string |
                                     className= "p-2 shadow-inner border rounded-dm border-gray-200 outline-2 bg-white dark:bg-gray-500" 
                                     placeholder="Filter" type="text" />   
                                 </div>
-                                <input className="bg-black text-white h-[30px] text-sm px-2 hover:bg-gray-400" type="submit"/>
+                                <div className="flex flex-col justify-center">
+                                    <input className="bg-black text-white h-[40px] text-sm px-2 hover:bg-gray-400" type="submit"/>
+                                </div>
                             </label> 
                         </form> 
                     </div>

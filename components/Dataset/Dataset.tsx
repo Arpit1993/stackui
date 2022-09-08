@@ -9,7 +9,7 @@ const Dataset = () => {
 
     // states for each json
     const [currentJson, setCurrent] = useState({keys: [], lm: []});
-    const [URI, setURI] = useState({storage: '', dataset: ''});
+    const [URI, setURI] = useState({storage: '', dataset: '', storage_dataset: ''});
     const [commits, setCommits] = useState([]);    
 
     // reads the API endpoints
@@ -38,9 +38,9 @@ const Dataset = () => {
     }
 
     const description = "placeholder text";
-    const dataprops = {dataset: URI.dataset, URI: URI.storage};
+    const dataprops = {dataset: URI.dataset, URI: URI.storage, storage_dataset: URI.storage_dataset};
 
-    let props = {files: files, dataprops: dataprops, dataset: URI.dataset};
+    let props = {files: files, dataprops: dataprops, dataset: URI.storage_dataset};
 
     return (
         <div className='flex justify-between h-full'>

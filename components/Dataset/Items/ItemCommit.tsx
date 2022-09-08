@@ -42,8 +42,8 @@ const ItemCommit = (props: { version: string | number | boolean | ReactElement<a
 
 
                     <button onClick={() => revert(props.version as number)} className=" text-start w-[200px]">
-                        <li className="dark:hover:text-black bg-red-200 dark:text-black font-medium text-center flex-col flex justify-center h-full py-4 px-4 w-[200px] hover:bg-red-400 border-b border-l border-gray-200 dark:border-gray-600">
-                            revert
+                        <li className="dark:hover:text-black bg-red-200 dark:text-black font-base text-center flex-col flex justify-center h-full py-4 px-4 w-[200px] hover:bg-red-400 border-b border-l border-gray-200 dark:border-gray-600">
+                            revert to version {props.version}
                         </li>
                     </button>
                 </div>

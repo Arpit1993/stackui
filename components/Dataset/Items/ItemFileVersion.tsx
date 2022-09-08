@@ -11,7 +11,7 @@ const ItemFileVersion = (props: { version: string | number | boolean | ReactFrag
 
     return (
         <div className="flex w-full">
-            <button onClick={() => setPopup(1)} className="text-start w-3/4">
+            <button onClick={() => setPopup(1)} className="text-start w-[210px]">
                 <li className=" py-4 px-4 justify-between flex-col w-full hover:bg-gray-300 border-b dark:hover:bg-gray-600 border-gray-200 dark:border-gray-600">
                     <div className="w-full flex truncate">
                         <div className="w-[100px]"> Version: </div>
@@ -27,9 +27,9 @@ const ItemFileVersion = (props: { version: string | number | boolean | ReactFrag
                     </div>
                 </li>
             </button>
-            <button onClick={() => revertKey(props.version as number, props.keyId as number)} className=" text-start w-1/4">
+            <button onClick={() => revertKey(props.version as number, props.keyId as number)} className=" text-start w-[90px]">
                 <li className="dark:hover:text-black w-full bg-red-200 dark:text-black font-medium text-center flex-col flex justify-center h-full py-4 px-4 hover:bg-red-400 border-b border-l border-gray-200 dark:border-gray-600">
-                    revert
+                    revert to V{props.version}
                 </li>
             </button>
         </div>
