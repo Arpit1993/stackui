@@ -8,7 +8,6 @@ function datasetComponent(dataset, setLoading) {
     const handleClick = async (dataset, setLoading) => {
         setLoading(1)
         const response = await fetch('http://localhost:8000/connect/?uri='.concat(encodeURIComponent(dataset.storage)))
-        console.log(dataset)
         window.location.href='/dataset/'.concat(encodeURIComponent(dataset.name));
     }
 
@@ -29,10 +28,6 @@ function datasetComponent(dataset, setLoading) {
                         <div className="w-full flex truncate">
                             <div className="w-[100px]"> Location</div> 
                             <div className="w-full truncate underline"> {dataset.storage} </div>
-                        </div>
-                        <div className="w-full truncate flex">
-                            <div className="w-[100px]"> Access</div>
-                            <div className="w-full truncate"> Not available yet... </div>
                         </div>
                     </li>
                 </ul>

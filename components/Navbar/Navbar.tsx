@@ -7,7 +7,7 @@ const Navbar = () => {
         <div className='flex'>
             <div className="w-full relative">
                 <div className="absolute inset-y-0 left-0 items-center pl-3 pointer-events-none flex flex-col align-middle justify-center">
-                    🔍
+                <Image src={'/../public/Icons/search-normal.png'} width={'20'} height={'20'} objectFit={'contain'} alt=''/>
                 </div>
                 <input type="search" id="search" className="block p-4 pl-10 w-full text-sm text-gray-900 
                     bg-gray-50 rounded-lg border border-gray-300 focus:ring-green-500 focus:border-green-500
@@ -30,10 +30,14 @@ const Navbar = () => {
                 </button>
             </div>
 
-            <div className='py-2 px-20 w-min flex gap-2'> 
-                <Image src="/user_icon.png" width={'100'} height={'100'} alt=''/>
-                <Link href='/user/bernardo' className="relative top-2"> User </Link>
-            </div>
+            <Link href='/'  passHref> 
+                <button className='justify-self-end px-20 w-[350px] flex gap-2'>
+                    <div className="h-max relative top-3">
+                        <Image src={"/Icons/profile.png"} width={'30px'} height={'30px'} objectFit={'contain'} alt=''/>
+                    </div>
+                    <div className="h-max relative top-3.5"> User </div>
+                </button>
+            </Link>
         </div>
     )
 }

@@ -9,7 +9,6 @@ export default function NewDatasets() {
     const [uri , setURI ] = useState('')
     const [storage , setStorage ] = useState('')
     const [name, setName] = useState('My Dataset')
-    const [instructions, setInstruction] = useState('If using local storage, please use directories relative to your home path')
 
     const [file, setFile] = useState(null)
     const [accessKey, setAccessKey] = useState('')
@@ -34,18 +33,10 @@ export default function NewDatasets() {
 
     const handleURIChange = (event) => {
         setURI(event.target.value)
-
-        console.log(event.target.value)
-
-        if (event.target.value.includes('s3')){
-            setInstruction('Add your AWS Access Key ID and AWS Secret Access Key to /home/.env')
-            setStorage('s3')
-        } else if (event.target.value.includes('gs')) {
-            setInstruction('Add your service account credentials .json as GOOGLE_APPLICATION_CREDENTIALS to /home/.env')
+        if (event.target.value.includes('gs://')) {
             setStorage('gs')
-        } else {
-            setInstruction('If using local storage, please use directories relative to your home path')
-            setStorage('local')
+        } else if (event.target.value.includes('s3://')) {
+            setStorage('s3')
         }
     }
 
@@ -69,8 +60,6 @@ export default function NewDatasets() {
 
             const data = JSON.stringify({"uri": uri, "name": name,"key1": accessKey, "key2": secretKey, "key3": region})
             
-            console.log(data)
-            
             const response = await fetch('http://localhost:8000/init_web/', {
                 method: 'POST',
                 headers: { 
@@ -78,8 +67,6 @@ export default function NewDatasets() {
                 }, 
                 body: data}
             )
-
-            console.log(response)
 
             if (response.success) {
                 window.location.href='/dataset/'.concat(encodeURIComponent(name));
@@ -142,9 +129,31 @@ export default function NewDatasets() {
         </div>
     ] : [<></>]
 
+    var placehoder = "e.g. s3://bucket/dataset or path/relative/to/home"
+    var instructions = 'If using local storage, please use directories relative to your home path'
+    if (storage == 's3'){
+        placehoder = "e.g. s3://bucket/dataset"
+        instructions = 'Please create an IAM user with AmazonS3FullAccess and add your keys'
+    } else if (storage == 'gs'){
+        placehoder = "e.g. gs://bucket/dataset"
+        instructions = 'Please create an Service Account with Storage Admin and add your keys'
+    } else {
+        placehoder = "e.g. path/relative/to/home"
+        instructions = 'Please use directories relative to your home path'
+    }
+    
+
+    const SelectForm = [
+        <div key={'sfff'} className='flex justify-center mt-5'>
+            <button onClick={()=>setStorage('local')} className="hover:bg-blue-900 w-[100px] border-r-2 border-black text-sm rounded-l-md px-5 text-white p-2 bg-blue-700"> Local </button>
+            <button onClick={()=>setStorage('s3')} className="hover:bg-blue-900 w-[100px] text-sm px-5 text-white p-2 bg-blue-700"> S3 </button>
+            <button onClick={()=>setStorage('gs')} className="hover:bg-blue-900 w-[100px]  border-l-2 border-black text-sm px-5 rounded-r-md text-white p-2 bg-blue-700"> GCS </button>
+        </div>
+    ]
+    
     const InputForm = [
             <div className="flex justify-center "  key={'ip'}>
-                <div className="p-5 mt-5 mb-5 w-[1000px] h-[600px] shadow-lg justify-start flex flex-col">    
+                <div className="p-5 mt-5 mb-5 w-[1000px] h-[600px] justify-start flex flex-col">    
                     
                     <div className="text-lg flex justify-center w-full">
                         Dataset name: 
@@ -173,13 +182,15 @@ export default function NewDatasets() {
                                 <div className="">
                                     <input onChange={handleURIChange} onInput={handleURIChange}
                                     className= "shadow appearance-none text-lg  border rounded w-[500px] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                                    placeholder="e.g. s3://bucket/dataset or path/relative/to/home" type="text" />   
+                                    placeholder={placehoder} type="text" />   
                                 </div>
                             </label>
                         </form>
                     </div>
 
-                    <a className="text-base flex justify-center dark:text-white underline mt-2 text-blue-500 hover:underline hover:text-gray-500" href="https://www.getstack.ai/">
+                    <a className="text-base flex justify-center dark:text-white underline mt-2 
+                    text-blue-500 hover:underline hover:text-gray-500" 
+                    href="https://docs.google.com/document/d/1ibEXIG_aD0RgRUkz-LbgBrfhdSj1Pf_0nWppmOcsNcQ/">
                         {instructions}
                     </a>
 
@@ -187,7 +198,7 @@ export default function NewDatasets() {
                         {gsKeys}
                         {awsKeys}
                     </div>
-                    
+
 
                     <div className="mt-5  flex justify-center">
                         <button onClick={() => handleSubmit()} className="w-[200px] text-center transition p-3 bg-black font-thin text-white hover:bg-gray-300 hover:text-black">
@@ -204,6 +215,7 @@ export default function NewDatasets() {
     return (
         <>  
             {LoadingComp}
+            {SelectForm}
             {InputForm}
         </>
     )

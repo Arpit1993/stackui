@@ -10,6 +10,22 @@ function classNames(...classes) {
 const DropdownVersion = (props) => {
     var options: Array = []
 
+    const renderButton = () => {
+      if (props.v == props.len){
+        return (
+          <Menu.Button className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-green-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-900 focus:outline-none focus:ring-2 focus:ring-black-500 focus:ring-offset-2 focus:ring-offset-black">
+            Version {props.v}
+          </Menu.Button>
+        )
+      } else {
+        return (
+          <Menu.Button className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-gray-100 px-4 py-2 text-sm font-medium text-black shadow-sm hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-black-500 focus:ring-offset-2 focus:ring-offset-black">
+            Version {props.v}
+          </Menu.Button>
+        )
+      }
+    }
+
     const handleClick = async (v_new, setV) => {
         setV(v_new)
     }
@@ -36,9 +52,7 @@ const DropdownVersion = (props) => {
     return (
         <Menu as="div" className="relative inline-block text-left mb-2">
           <div>
-            <Menu.Button className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-green-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-900 focus:outline-none focus:ring-2 focus:ring-black-500 focus:ring-offset-2 focus:ring-offset-black">
-              Version {props.v}
-            </Menu.Button>
+            {renderButton()}
           </div>
     
           <Transition

@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect } from "react";
 import ItemCommit from "../Items/ItemCommit";
 
@@ -13,7 +14,7 @@ function generateButtons(page, handleClick){
 
     listofButtons.push(
         <div>
-            Page {page}
+            Page {page+1}
         </div>
     )
 
@@ -41,7 +42,7 @@ const HistoryPopup = (props) => {
                 setMaxPages(Object.keys(history).length/max_commits)
             });
         }
-    }, [history, props])
+    }, [props])
 
     const handleClick = (next_page: number) => {
         setMaxPages(Object.keys(history).length/max_commits)
@@ -67,7 +68,7 @@ const HistoryPopup = (props) => {
     const HistComponent = props.history ? [
         <div key={'hc'}>
             {CloseComponent}
-            <div className="text-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 shadow-md bg-white dark:bg-gray-400 w-[1100px]  h-[700px]">
+            <div className="text-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 rounded-lg bg-white dark:bg-gray-400 w-[1100px]  h-[700px]">
                 <div className="flex-col justify-between">
                     <div className="w-full justify-between flex">
                         <button onClick={() => props.setHistory(0)} className= 'place-self-center justify-self-start w-[50px] h-[30px] flex-col bg-red-400 hover:bg-red-200 p-2 rounded-br-md'> x </button> 
