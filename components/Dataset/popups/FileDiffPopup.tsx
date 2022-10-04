@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { useState, useEffect } from "react";
 import DropdownVersion from "./Components/DropdownVersion";
 import ImageViz from "../Visualizers/ImageViz";
-import CsvToHtmlTable from "../Visualizers/CsvToHtmlTable";
+import CsvViz from "../Visualizers/CSVViz";
 
 const fetchData = async (keyId, version, setD, lr) => {
 
@@ -32,7 +32,7 @@ const fetchData = async (keyId, version, setD, lr) => {
             }
         })).then((stream) => new Response(stream)).then((response) => response.blob())
         .then((blob) => URL.createObjectURL(blob)).then((img) => 
-        [<ImageViz img={img} ww={500} wh={500} keyId={keyId} ox={0} oy={0}/>]).then(setD) 
+        [<ImageViz key={'imdpp'} img={img} ww={500} wh={500} keyId={keyId} ox={0} oy={0}/>]).then(setD) 
     } 
     else if (isCSV) {
        fetch(cmd).
@@ -53,9 +53,9 @@ const fetchData = async (keyId, version, setD, lr) => {
                 }
             }
         })).then((stream) => new Response(stream)).then((response) => response.blob()).then((blob) => blob.text())
-        .then((text) => [<div key="cmp2" className="flex font-thin overflow-scroll">
-            <CsvToHtmlTable data={text}/>
-        </div>]).then(setD)
+        .then((text) => [
+            <CsvViz data={text}/>
+        ]).then(setD)
     } 
     else if (isText) {
         fetch(cmd).

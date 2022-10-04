@@ -21,14 +21,10 @@ const ItemFileVersion = (props: { version: string | number | boolean | ReactFrag
     return (
         <div className="flex w-full mb-1 px-2 gap-2">
             <button onClick={() => setPopup(1)} className="text-start w-8/12">
-                <li className=" py-4 px-4 justify-between flex-col w-full rounded-md hover:bg-gray-300 border-[0.5px] border-gray-500 dark:hover:bg-gray-600  dark:border-gray-600">
+                <li className=" py-4 px-4 justify-between flex-col w-full rounded-md hover:bg-gray-300 border-[0.5px] border-gray-500 dark:border-gray-200 dark:hover:bg-gray-800">
                     <div className="w-full flex truncate">
                         <div className="w-[100px]"> Version: </div>
                         <div className="w-full truncate"> {props.version} </div>
-                    </div>
-                    <div className="w-full flex truncate">
-                        <div className="w-[100px]"> Commit:</div> 
-                        <div className="w-full truncate"> {props.commit} </div>
                     </div>
                     <div className="w-full truncate flex">
                         <div className="w-[100px]"> Date:</div>

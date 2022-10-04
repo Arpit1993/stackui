@@ -3,7 +3,7 @@ import Image from "next/image";
 import { SetStateAction, useState } from "react";
 import React from "react";
 
-const FileExplorer = (props: { state: any; files: any[]; dataset: string | any[]; page: number; setPage: any; view: any; setView: any; len: number}) => {
+const FileExplorer = (props: { state: any; files: any[]; dataset: string | any[]; page: number; setPage: any; view: any; setView: any; len: number; waiting: any;}) => {
     const [keyVar, setKey] = useState('');
     const [popup, setPopup] = useState(0)
 
@@ -32,7 +32,7 @@ const FileExplorer = (props: { state: any; files: any[]; dataset: string | any[]
         </div>
     )
 
-    const max_files: number = 11;
+    const max_files: number = 10;
     const max_images: number = 9;
     const max_pages =  props.view ? props.len / max_files : props.len / max_images;
 
@@ -71,7 +71,7 @@ const FileExplorer = (props: { state: any; files: any[]; dataset: string | any[]
                 <div className='grid grid-rows-20 gap-1'>
                     {
                         files.filter((item, index) =>  index < idx_max && index >= idx_min ).map((file,index) =>
-                            <button className="w-full text-left"  key={index.toString()}  onClick={() => handleObjectClick(file['name'].substring(props.dataset.length))}>
+                            <button className="w-full text-left"  key={`${index.toString()}abc`}  onClick={() => handleObjectClick(file['name'].substring(props.dataset.length))}>
                                 <div className="grid grid-cols-2 gap-1 text-xs py-2 px-4 bg-white rounded-lg dark:hover:bg-gray-500 justify-between w-full hover:bg-gray-300 border-b border-gray-200 dark:border-gray-600">
                                     <div className="h-5 truncate"> 
                                         {file['name'].substring(props.dataset.length)}
@@ -93,21 +93,21 @@ const FileExplorer = (props: { state: any; files: any[]; dataset: string | any[]
 
         container_var.push(
             <div key={'fctnr2'}>
-                <div className='z-0 grid grid-cols-3 w-[800px] grid-rows-3 gap-1'>
+                <div className='grid grid-cols-3 w-[800px] grid-rows-3 gap-1'>
                     {
                         files.filter(
                             (item, index) =>  index < idx_max && index >= idx_min ).map( (file, index) =>
-                            <button className="z-0 h-[150px] p-1 w-[260px] bg-gray-50 hover:bg-gray-100 rounded-md border-[0.5px] border-gray-400 w-15 text-left text-xs" key={index.toString()} onClick={() => handleObjectClick(file['name'].substring(props.dataset.length))}>
+                            <button className="h-[150px] w-[260px] bg-gray-50 dark:bg-gray-600 hover:bg-gray-100 hover:dark:bg-slate-700 rounded-md border-[0.5px] border-gray-400 text-left text-xs" key={`${index.toString()}defg`} onClick={() => handleObjectClick(file['name'].substring(props.dataset.length))}>
                                 <Image  
-                                    className="z-0 h-[12] justify-self-center flex mx-auto"
-                                    src={file.thumbnail} 
+                                    className="justify-self-center flex"
+                                    src={ props.waiting ? '/Icons/load_icon.png' : file.thumbnail} 
                                     width={260}
-                                    height={120}
+                                    height={props.waiting ? 40 : 145}
                                     objectFit={'contain'}
                                     alt='.'/>
-                                <div className="text-xs z-10 hover:w-max truncate whitespace-normal h-[20px]">
+                                {/* <div className="text-xs hover:w-max truncate whitespace-normal h-[20px]">
                                     {file.name.substring(props.dataset.length)}
-                                </div>
+                                </div> */}
                             </button>
                         )
                     }

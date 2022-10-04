@@ -11,13 +11,15 @@ const Dataset = () => {
     const [commits, setCommits] = useState([]);
     const [len, setLen] = useState(0);
     const [page, setPage] = useState(0);
-    const [view, setView] = useState(1);
+    const [waiting, setWaiting] = useState(0);
+    const [view, setView] = useState(0);
+    const [filtering, setFiltering] = useState(false);
 
     // reads the API endpoints
     useEffect(() => {
         
         const fetchFiles = async () => {
-            const max_view = view ? 11 : 9
+            const max_view = view ? 10 : 9
             const current = await fetch(`http://localhost:8000/current/?page=${page}&max_pp=${max_view}`)
             .then((response) => response.json());
             setLen(await current.len)
@@ -30,6 +32,7 @@ const Dataset = () => {
             for(var i = 0; i < current.keys.length; i++){
                 const isImage = ['jpg','png','jpeg','tiff','bmp','eps'].includes(current.keys[i].split('.').pop())
                 if (isImage && (view == 0)){
+                    setWaiting(1)
                     const thumbnail_  = 
                     await fetch('http://localhost:8000/pull_file_api?file='.concat(current.keys[i].substring(await uri.storage_dataset.length)))
                     .then((res) => res.body.getReader()).then((reader) =>
@@ -50,14 +53,14 @@ const Dataset = () => {
                     }))
                     .then((stream) => new Response(stream)).then((response) => response.blob())
                     .then((blob) => URL.createObjectURL(blob))
-                    
-                    console.log(current.keys[i].substring(await uri.storage_dataset.length))
 
                     files_.push({
                         name: current.keys[i],
                         last_modified: current.lm[i],
                         thumbnail: thumbnail_
                     })
+
+                    setWaiting(0)
                 } else{
                     const thumbnail_  = '/Icons/file-icon.jpeg'
                     if (isImage){
@@ -76,7 +79,7 @@ const Dataset = () => {
 
         fetchFiles()
 
-    }, [setFiles, page, view])
+    }, [setFiles, page, view, filtering])
 
     useEffect(() => {
         const newLocal: number = 5;
@@ -93,7 +96,7 @@ const Dataset = () => {
         <div className='flex justify-between h-full'>
             <div className='w-full h-full'> 
                 {/* <Stats props={files}/> */}
-                <Explorer props={props} page={page} setPage={setPage} view={view} setView={setView} len={len} />
+                <Explorer props={props} page={page} setPage={setPage} view={view} setView={setView} len={len} waiting={waiting} setFiltering={setFiltering} />
             </div>
             <Infobar commits={commits} description={description}/>
         </div>

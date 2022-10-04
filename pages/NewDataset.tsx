@@ -2,6 +2,8 @@ import React from "react"
 import { useState } from "react"
 import LoadingScreen from "../components/LoadingScreen"
 import FormData from "form-data";
+import DropdownSchema from "../components/Dataset/Items/DropdownSchema";
+
 
 export default function NewDatasets() {        
 
@@ -11,6 +13,7 @@ export default function NewDatasets() {
     const [name, setName] = useState('My Dataset')
 
     const [file, setFile] = useState(null)
+    const [schema, setSchema] = useState('files')
     const [accessKey, setAccessKey] = useState('')
     const [secretKey, setsecretKey] = useState('')
     const [region, setRegion] = useState('us-east-1')
@@ -58,7 +61,7 @@ export default function NewDatasets() {
                 const response2 = await fetch('http://localhost:8000/init_gskey/', reqOptions)
             }
 
-            const data = JSON.stringify({"uri": uri, "name": name,"key1": accessKey, "key2": secretKey, "key3": region})
+            const data = JSON.stringify({"uri": uri, "name": name,"key1": accessKey, "key2": secretKey, "key3": region, "schema": schema})
             
             const response = await fetch('http://localhost:8000/init_web/', {
                 method: 'POST',
@@ -68,7 +71,7 @@ export default function NewDatasets() {
                 body: data}
             )
 
-            if (response.success) {
+            if (response.json().success) {
                 window.location.href='/dataset/'.concat(encodeURIComponent(name));
             } else {
                 window.location.href='/Datasets';
@@ -199,11 +202,15 @@ export default function NewDatasets() {
                         {awsKeys}
                     </div>
 
-
-                    <div className="mt-5  flex justify-center">
-                        <button onClick={() => handleSubmit()} className="w-[200px] text-center transition p-3 bg-black font-thin text-white hover:bg-gray-300 hover:text-black">
-                            SUBMIT
-                        </button>
+                    <div className="flex justify-center gap-5 mt-5">
+                        <div className="flex flex-col">
+                            <DropdownSchema schema={schema} setSchema={setSchema} />
+                            <div className="flex justify-center">
+                                <button onClick={() => handleSubmit()} className="w-[200px] h-[50px] text-center transition p-2 bg-black font-thin text-white hover:bg-gray-300 hover:text-black">
+                                    SUBMIT
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                 </div>

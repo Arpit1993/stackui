@@ -20,7 +20,7 @@ function partition(){
     return true
 }
 
-const TopBar = (props: { fcn: (arg0: string) => void; props: { dataset: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | ReactFragment | ReactPortal | null | undefined; URI: string; }; }) => {
+const TopBar = (props: { fcn: (arg0: string) => void; props: { dataset: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | ReactFragment | ReactPortal | null | undefined; URI: string; }; setFiltering: any}) => {
 
     const [filterPopup, setFilterPopup] = useState(0)
     const [addPopup, setAddPopup] = useState(0)
@@ -35,8 +35,8 @@ const TopBar = (props: { fcn: (arg0: string) => void; props: { dataset: string |
         props.fcn(txt)
     }
     
-    const FilterComponent = filterPopup ? [<FilterPopup popup={filterPopup} setPopup={setFilterPopup} key={'fffp'}/>] : [<></>]
-    const PopupComponent = addPopup ? [<AddFilePopup popup={addPopup} setPopup={setAddPopup} key={'afp'}/>] : [<></>]
+    const FilterComponent = filterPopup ? [<FilterPopup popup={filterPopup} setFiltering={props.setFiltering} setPopup={setFilterPopup} key={'fffp'}/>] : [<></>]
+    const PopupComponent = addPopup ? [<AddFilePopup popup={addPopup} setPopup={setAddPopup} key={'afpp'}/>] : [<></>]
 
     return (    
         <>
@@ -49,10 +49,7 @@ const TopBar = (props: { fcn: (arg0: string) => void; props: { dataset: string |
                 </div>
                 <div className="flex">
                     <div className="flex gap-2 mt-6 w-full">
-                        <button onClick={()=>commit('')} className="h-[40px] w-max flex text-white flex-col rounded-md justify-center bg-green-700 text-sm px-2 hover:bg-green-900" > Refresh 🔄
-                        </button>
-                        
-                        <button onClick={()=>partition()} className="h-[40px] flex flex-col rounded-md justify-center text-white bg-green-700 text-sm px-2 hover:bg-green-900" > Partition
+                        <button onClick={()=>commit('')} className="h-[40px] w-max flex text-white flex-col rounded-md justify-center bg-green-700 text-sm px-2 hover:bg-green-900" > Refresh
                         </button>
 
                         <button onClick={()=>setAddPopup(1-addPopup)} className="h-[40px] flex flex-col rounded-md justify-center text-white bg-gray-500 text-sm px-2 hover:bg-gray-700" > Upload

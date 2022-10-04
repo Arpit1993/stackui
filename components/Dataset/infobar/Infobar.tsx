@@ -26,7 +26,7 @@ const Infobar = (props: { description: string | number | boolean | ReactFragment
                     Recent Activity
                 </h2>
                 <ul className="text-xs font-medium rounded-sm border 
-                text-gray-900">
+                text-gray-900 dark:text-gray-400">
                     {props.commits.map((cmit: { source: any; comment: any; date: any; }, index: { toString: () => any; }) => <ItemChange key={index.toString()} author={cmit.source} comment={cmit.comment} date={cmit.date}/>)}
                     <button onClick={() => setPopup(1)} className="w-full">
                         <li className="text-center py-4 px-2 justify-between flex-col w-full 

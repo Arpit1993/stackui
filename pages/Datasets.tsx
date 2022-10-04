@@ -20,7 +20,7 @@ function datasetComponent(dataset, setLoading) {
         <div className="w-full flex" key={'cp'}>
             <button onClick={() => handleClick(dataset,setLoading)} className='w-3/4'>
                 <ul className=" text-start mt-3 font-normal text-sm">
-                    <li className="dark:hover:text-black py-4 px-4 justify-between flex-col w-full hover:bg-gray-300 border-b border-gray-200 dark:border-gray-600">
+                    <li className="py-4 px-4 justify-between flex-col w-full hover:bg-gray-300 border-b border-gray-200 dark:border-gray-600 dark:hover:bg-gray-800">
                         <div className="w-full flex truncate">
                             <div className="w-[100px]"> Dataset: </div>
                             <div className="w-full truncate"> {dataset.name} </div>

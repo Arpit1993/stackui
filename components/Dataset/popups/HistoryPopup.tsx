@@ -38,8 +38,9 @@ const HistoryPopup = (props) => {
 
     useEffect(() => {
         if (props.history) {
-            fetch(`http://localhost:8000/history/`).then((response) => response.json()).then((data) => setHistory(data)).then(() => {
-                setMaxPages(Object.keys(history).length/max_commits)
+            fetch(`http://localhost:8000/history/`).then((response) => response.json()).then((data) => { 
+                setHistory(data)                
+                setMaxPages(Object.keys(data).length/max_commits)
             });
         }
     }, [props])

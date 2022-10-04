@@ -4,7 +4,7 @@ import LoadingScreen from "../../LoadingScreen";
 import ItemFileVersion from "../Items/ItemFileVersion";
 import FileHistoryPopUp from "./FileHistoryPopUp";
 import ImageViz from "../Visualizers/ImageViz";
-import CsvToHtmlTable from "../Visualizers/CsvToHtmlTable";
+import CsvViz from "../Visualizers/CSVViz";
 import FileDiffPopup from "./FileDiffPopup";
 import DropdownFileOptions from "./Components/DropdownFileOptions";
 
@@ -66,12 +66,12 @@ const FilePopup = (props) => {
                         }
                     })).then((stream) => new Response(stream)).then((response) => response.blob())
                     .then((blob) => URL.createObjectURL(blob)).then((img) => 
-                    [<ImageViz img={img} keyId={props.keyId} ww={800} wh={500} ox={0} oy={0}/>])
+                    [<ImageViz key={'imgvz'} img={img} keyId={props.keyId} ww={800} wh={500} ox={0} oy={0}/>])
                     .then(setDataComp)
                 } 
                 else if (isCSV) {
                     const csv_metadata = await fetch('http://localhost:8000/pull_csv_metadata_api?file='.concat(props.keyId)).then((res) => res.json())
-                    
+                    setDataComp('')
                     fetch('http://localhost:8000/pull_csv_api?file='.concat(props.keyId).concat('&row_p=').concat(row).concat('&col_p=').concat(col)).
                     then((res) => res.body.getReader()).then((reader) =>
                     new ReadableStream({
@@ -92,20 +92,7 @@ const FilePopup = (props) => {
                     })).then((stream) => new Response(stream)).then((response) => response.blob())
                     .then((blob) => blob.text()).then((data) =>
                     [
-                        <div key="cmp2" className="overflow-scroll">
-                            <div className="p-1 flex border-2 border-black gap-2">
-                                <button className="p-1 rounded-full bg-gray-300" onClick={() => setRow(Math.max(0,row-1))}> {' U '} </button>
-                                <div className="p-1"> {row+1}-{Math.round(csv_metadata.rows)+1} </div>
-                                <button className="p-1 rounded-full bg-gray-300" onClick={() => setRow(Math.min(Math.round(csv_metadata.rows),row+1))}> {' D '} </button>
-                                
-                                <button className="p-1 rounded-full bg-gray-300" onClick={() => setCol(Math.max(0,col-1))}> {' L '} </button>
-                                <div className="p-1"> {col+1}-{Math.round(csv_metadata.cols)+1} </div>
-                                <button className="p-1 rounded-full bg-gray-300" onClick={() => setCol(Math.min(Math.round(csv_metadata.cols),col+1))}> {' R '} </button>
-                            </div>
-                            <div className="flex font-thin overflow-scroll">
-                                <CsvToHtmlTable data={data}/>
-                            </div>
-                        </div>
+                        <CsvViz key={'csvvizzz'} data={data} setRow={setRow} setCol={setCol} row={row} col={col} csv_metadata={csv_metadata} />
                     ]).then(setDataComp)
                 } 
                 else if (isText) {
@@ -171,12 +158,12 @@ const FilePopup = (props) => {
 
         const fetchStuff = async () => {
             await fetchData()
-            await fetchVersions()
+            fetchVersions()
         }
         if (props.popup) {
             fetchStuff()
         }
-    }, [props, setDataComp, setRow, setCol])
+    }, [props, setDataComp, row, col, setRow, setCol])
 
     const CloseComponent = [
         <button key={'ccb'} onClick={() => props.setPopup(0)} className="bg-transparent backdrop-blur-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
@@ -234,7 +221,7 @@ const FilePopup = (props) => {
                             </div>
                         </div>
                     </div>
-                    <div className="flex justify-center mt-10   ">
+                    <div className="flex justify-center mt-10">
                         <div className="flex py-2 h-[20px] justify-center px-2"> 
                             <button onClick={() => setPopup(1)} className="bg-green-700 ring-2 ring-black rounded-md h-[70px] w-[300px] hover:bg-green-900 text-white font-thin text-lg px-5"> 
                                 See History 

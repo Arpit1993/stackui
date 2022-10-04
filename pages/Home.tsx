@@ -5,7 +5,7 @@ export default function Main () {
     return (
         <div>
             <div className='p-10 text-5xl flex flex-col justify-center items-center font-bold h-max text-center'>
-                Welcome to stack v0.1 👋 
+                Welcome to stack v0.2  👋 
             </div>
     
             <div className="p-10 flex justify-center gap-2">
