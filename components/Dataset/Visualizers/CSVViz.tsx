@@ -8,7 +8,7 @@ const CsvViz = (props) => {
 
     return (
         <div className="overflow-scroll h-[1000px]">
-            <div className="p-1 flex border-2 border-black gap-2">
+            <div className="p-1 flex border border-black gap-2">
                 <button className="p-1 rounded-full bg-gray-300" onClick={() => props.setRow(Math.max(0,props.row-1))}> {' U '} </button>
                 <div className="p-1"> {props.row+1}-{Math.round(props.csv_metadata.rows)+1} </div>
                 <button className="p-1 rounded-full bg-gray-300" onClick={() => props.setRow(Math.min(Math.round(props.csv_metadata.rows),props.row+1))}> {' D '} </button>
@@ -20,12 +20,12 @@ const CsvViz = (props) => {
             <div className="font-thin overflow-scroll">
                 {
                     array.map( (row) =>
-                        <tr key={`rw-${row}`} className='border border-black'> 
+                        <tr key={`rw-${row}`}> 
                             {
                                 row.map(
                                     (val) =>
-                                    <td key={`rw-${row}-cl-${val}`} className='border h-[34px] w-[67.5px] px-[5px] py-[5px] border-black'>
-                                        <div className='overflow-scroll h-[34px] w-[67.5px]'>
+                                    <td key={`rw-${row}-cl-${val}`} className='border-[0.5px] h-[35px] w-[68.5px] px-[5px] py-[5px] border-black shadow-inner'>
+                                        <div className='overflow-scroll h-[35px] w-[68.5px]'>
                                             {val}
                                         </div>   
                                     </td>

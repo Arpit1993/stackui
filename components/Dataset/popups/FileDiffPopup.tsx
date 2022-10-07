@@ -54,7 +54,7 @@ const fetchData = async (keyId, version, setD, lr) => {
             }
         })).then((stream) => new Response(stream)).then((response) => response.blob()).then((blob) => blob.text())
         .then((text) => [
-            <CsvViz data={text}/>
+            <CsvViz key={'csv_viz_data'} data={text}/>
         ]).then(setD)
     } 
     else if (isText) {

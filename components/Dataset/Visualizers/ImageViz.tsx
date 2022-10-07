@@ -31,14 +31,12 @@ const Box = (props) => {
     var splitString = `${props.class_number}`.split("");
     var reverseArray = splitString.reverse();
     var joinArray = reverseArray.join("");
-    var rect = {x: props.x, y: props.y, w: props.w, h: props.h}
 
     var dragTL = false
     var dragBL = false 
     var dragTR = false 
     var dragBR = false
 
-    var drag = false
     var mouseX
     var mouseY
 
@@ -47,59 +45,107 @@ const Box = (props) => {
 
     useEffect(() => {
 
+        const canvas = canvasRef.current
+        const context = canvas.getContext('2d')
+        const client_rect = canvas.getBoundingClientRect()
+        
         const mouseDown = (e) => {
+            mouseX = e.pageX - client_rect.left;
+            mouseY = e.pageY - client_rect.top;
 
+            if (checkCloseEnough(mouseX, props.rect.x) && checkCloseEnough(mouseY, props.rect.y)) {
+                dragTL = true
+            }
+            else if (checkCloseEnough(mouseX, props.rect.x + props.rect.w) && checkCloseEnough(mouseY, props.rect.y)) {
+                dragTR = true
+            }
+            else if (checkCloseEnough(mouseX, props.rect.x) && checkCloseEnough(mouseY, props.rect.y + props.rect.h)) {
+                dragBL = true
+            }
+            else if (checkCloseEnough(mouseX, props.rect.x + props.rect.w) && checkCloseEnough(mouseY, props.rect.y + props.rect.h)) {
+                dragBR = true
+            }
         }
-
+    
         const mouseUp = () => {
-
+            dragTL = false 
+            dragTR = false 
+            dragBL = false
+            dragBR = false
         }
-
+    
         const mouseMove = (e) => {
+            mouseX = e.pageX - client_rect.left;
+            mouseY = e.pageY - client_rect.top;
+    
+            if (dragTL) {
+                props.rect.w = (props.rect.x + props.rect.w - mouseX);
+                props.rect.h = (props.rect.y + props.rect.h - mouseY);
+                props.rect.x = mouseX;
+                props.rect.y = mouseY;
+            } else if (dragTR) {
+                props.rect.w = (mouseX - props.rect.x);
+                props.rect.h = (props.rect.y + props.rect.h - mouseY);
+                props.rect.x = mouseX - props.rect.w;
+                props.rect.y = mouseY;
+            } else if (dragBL) {
+                props.rect.w = (props.rect.x + props.rect.w - mouseX);
+                props.rect.h = (mouseY - props.rect.y);
+                props.rect.x = mouseX;
+                props.rect.y = mouseY - props.rect.h;
+            } else if (dragBR) {
+                props.rect.w = (mouseX - props.rect.x);
+                props.rect.h = (mouseY - props.rect.y);
+                props.rect.x = mouseX - props.rect.w;
+                props.rect.y = mouseY - props.rect.h;
+            }
 
+            if(dragBL || dragBR || dragTL || dragTR){
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                context.lineWidth = 2;
+                context.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, 0.1)`
+                context.fillRect(props.rect.x, props.rect.y, props.rect.w, props.rect.h)
+                context.strokeStyle = color_hex
+                context.strokeRect(props.rect.x, props.rect.y, props.rect.w, props.rect.h)
+
+                context.font = '12px sans-serif';
+                context.fillStyle = '#ffff'
+                context.fillText(props.class_number, props.rect.x+2, props.rect.y+12);
+
+            }
         }
-
+    
         const checkCloseEnough = (p1, p2) => {
             return Math.abs(p1 - p2) < 10;
         }
 
-        const canvas = canvasRef.current
-        const context = canvas.getContext('2d')
-
-        canvas.addEventListener('mousedown', mouseDown, false);
-        canvas.addEventListener('mouseup', mouseUp, false);
-        canvas.addEventListener('mousemove', mouseMove, false);
-
+        window.addEventListener('mousedown', mouseDown);
+        window.addEventListener('mouseup', mouseUp);
+        window.addEventListener('mousemove', mouseMove);
+        
         context.lineWidth = 2;
-        context.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, 0.2)`
-        context.fillRect(rect.x, rect.y, rect.w, rect.h)
+        context.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, 0.1)`
+        context.fillRect(props.rect.x, props.rect.y, props.rect.w, props.rect.h)
         context.strokeStyle = color_hex
-        context.strokeRect(rect.x, rect.y, rect.w, rect.h)
-    }, [props, color, color_hex])
+        context.strokeRect(props.rect.x, props.rect.y, props.rect.w, props.rect.h)
 
-    return <canvas ref={canvasRef} {...props} width={800} height={500} />
-}
-
-const Name = (props) => {
-    const canvasRef = useRef(null)
-
-    useEffect(() => {
-        const canvas = canvasRef.current
-        const context = canvas.getContext('2d')
         context.font = '12px sans-serif';
         context.fillStyle = '#ffff'
-        context.fillText(props.class_number, props.x+2, props.y+12);
-    }, [props])
+        context.fillText(props.class_number, props.rect.x+2, props.rect.y+12);
+
+    }, [props, color, color_hex, props.rect])
 
     return <canvas ref={canvasRef} {...props} width={800} height={500} />
 }
 
 
 const BoundingBox = (props) => {
+
+    var rect = {x: props.x, y: props.y, h: props.h, w: props.w}
+
     return (
         <>
-            <Box className='absolute' class_number={props.class_number} x={props.x} y={props.y} w={props.w} h={props.h}/>
-            <Name className='absolute' class_number={props.class_number} x={props.x} y={props.y} w={props.w} h={props.h}/>
+            <Box className='absolute' class_number={props.class_number} rect={rect}/>
         </>
     )
 }
@@ -112,7 +158,7 @@ const ImageViz = (props) => {
     let im =  document.createElement('img');
     im.src = props.img
     const [width, setWidth] = useState(props.ww)
-    var [height, setHeight] = useState(props.wh)
+    const [height, setHeight] = useState(props.wh)
 
     im.onload = () => {
         
@@ -131,24 +177,16 @@ const ImageViz = (props) => {
         .then((response) => response.json()).then((res) => setLabels(Object.values(res)));
     }, [props.keyId])
 
-    if(props.wh/im.height*im.width < props.ww){
-        width = props.wh/im.height*im.width
-        height = props.wh
-    }
-    else {
-        width = props.ww
-        height = props.ww/im.width*im.height
-    }
-
     boxes = []
+
     for(var i = 0; i < labels.length; i++){
         const w = labels[i][3]*width
         const h = labels[i][4]*height
 
-        const x = (props.ww - width)/2 + labels[i][1]*width  - w/2 + props.ox
-        const y = (props.wh - height)/2 + labels[i][2]*height - h/2 + props.oy
+        const x = (props.ww - width)/2 + labels[i][1]*width  - w/2
+        const y = (props.wh - height)/2 + labels[i][2]*height - h/2
 
-        boxes.push(<BoundingBox class_number={labels[i][0]} x={Math.floor(x)} y={Math.floor(y)} w={Math.floor(w)} h={Math.floor(h)} />);
+        boxes.push(<BoundingBox class_number={labels[i][0]} x={Math.floor(x)} y={Math.floor(y)} w={Math.floor(w)} h={Math.floor(h)} ox={(props.ww - width)/2} oy={(props.wh - height)/2} />);
     }
 
     return (
