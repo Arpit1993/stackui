@@ -8,10 +8,8 @@ const FilterPopup = (props) => {
     const [operation, setOperation] = useState('OR')
     const [classes, setClasses] = useState(['01','02'])
     const [classesFilter, setClassFilter] = useState({'01': false,'02': false})
-    const cfilter = useRef({'01': false,'02': false})
     const [resolutions, setResolutions] = useState(['0x0','1x1'])
     const [resFilter, setResFilter] = useState({'0x0': false, '1x1': false})
-    const rfilter = useRef({'0x0': false, '1x1': false})
     
     useEffect( () => {
         const getMetadata = async () => {
@@ -31,9 +29,6 @@ const FilterPopup = (props) => {
                         rFilters[res.resolutions[i]] = false
                     }
 
-                    cfilter.current = cFilter
-                    rfilter.current = rFilters
-
                     setClassFilter(cFilter)
                     setResFilter(rFilters)
                 }
@@ -42,11 +37,14 @@ const FilterPopup = (props) => {
         getMetadata()
     }, [])
 
+    console.log('happebs')
+
     const handleClassChange = (cl) => {
-        var cf = classesFilter
+        const cf = classesFilter
         cf[cl] = !cf[cl]
         setClassFilter(cf)
-        cfilter.current = cf
+        console.log('hey')
+        setOperation(operation)
     }
 
     const toggleClasses = (toggle) => {
@@ -54,14 +52,12 @@ const FilterPopup = (props) => {
         for(var i = 0; i < Object.keys(cf).length; i++){
             cf[Object.keys(cf)[i]] = toggle
         }
-        cfilter.current = cf
         setClassFilter(cf)
     }
 
     const handleResChange = (rs) => {
         var rf = resFilter
         rf[rs] = !rf[rs]
-        rfilter.current = rf
         setResFilter(rf)
     }
 
@@ -70,7 +66,6 @@ const FilterPopup = (props) => {
         for(var i = 0; i < Object.keys(rf).length; i++){
             rf[Object.keys(rf)[i]] = toggle
         }
-        rfilter.current = rf
         setResFilter(rf)
     }
 
@@ -111,9 +106,6 @@ const FilterPopup = (props) => {
                 }, 
                 body: data}
         )
-
-        cfilter.current = classesFilter
-        rfilter.current = resFilter
     
         props.setFiltering(false)
     }
@@ -135,14 +127,57 @@ const FilterPopup = (props) => {
         }
 
         setResFilter(rFilter)
-        rfilter.current = rFilter
         setClassFilter(cFilter)
-        cfilter.current = cFilter
 
         props.setFiltering(false)
     }
 
     const branch_popup = branch ? [<BranchPopup key={'brpp'} setPopup={setBranch}/>] : [<></>]
+
+    const classes_buttons : Array<any> = []
+    const res_buttons : Array<any> = []
+
+    for(var i = 0; i < classes.length; i++){
+        const cl = classes.sort()[i]
+        if(classesFilter[cl]){
+            classes_buttons.push(
+                <ul key={`abc ${cl}`} className="w-full flex px-1 mb-1 mt-1">
+                    <button  onClick={()=>handleClassChange(cl)} className="w-full h-6 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        {cl}
+                    </button>
+                </ul>
+            )
+        } else {
+            classes_buttons.push(
+                <ul key={`abc ${cl}`} className="w-full flex px-1 mb-1 mt-1">
+                    <button  onClick={()=>handleClassChange(cl)} className="w-full h-6 bg-gray-200 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        {cl}
+                    </button>
+                </ul>
+            )
+        }
+    }
+
+    for(var i = 0; i < resolutions.length; i++){
+        const cl = resolutions.sort()[i]
+        if(resFilter[cl]){
+            res_buttons.push(
+                <ul key={`abc ${cl}`} className="w-full flex px-1 mb-1 mt-1">
+                    <button  onClick={()=>handleResChange(cl)} className="w-full h-6 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        {cl}
+                    </button>
+                </ul>
+            )
+        } else {
+            res_buttons.push(
+                <ul key={`abc ${cl}`} className="w-full flex px-1 mb-1 mt-1">
+                    <button  onClick={()=>handleResChange(cl)} className="w-full h-6 bg-gray-200 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        {cl}
+                    </button>
+                </ul>
+            )
+        }
+    }
 
     return (
         <>
@@ -167,16 +202,7 @@ const FilterPopup = (props) => {
                             </button>
                         </div>
                         <div className="overflow-scroll h-[100px]">
-                            {
-                                classes.sort().map( (cl) =>
-                                    <ul key={`abc ${cl}`} className="w-full flex px-1">
-                                        <input key={Math.random()} type="checkbox" checked={cfilter[cl]} onClick={()=>handleClassChange(cl)} className="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                                        <label className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                                            {cl}
-                                        </label>
-                                    </ul>
-                                )
-                            }
+                            {classes_buttons}
                         </div>
                     </div>
 
@@ -207,16 +233,7 @@ const FilterPopup = (props) => {
                             </button>
                         </div>
                         <div className="overflow-scroll h-[100px]">
-                            {
-                                resolutions.map( (cl) =>
-                                    <ul key={`def ${cl}`} className="w-full flex px-1">
-                                        <input key={Math.random()} type="checkbox" checked={rfilter[cl]} onClick={()=>handleResChange(cl)} className="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                                        <label className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                                            {cl}
-                                        </label>
-                                    </ul>
-                                )
-                            }
+                            {res_buttons}
                         </div>
                     </div>
                 </div>

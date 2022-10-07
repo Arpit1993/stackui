@@ -1,13 +1,15 @@
 import LoadingScreen from "../components/LoadingScreen"
 import { useState, useEffect } from 'react'
 import React from "react"
-
+import posthog from 'posthog-js'
 
 function datasetComponent(dataset, setLoading) {
     
     const handleClick = async (dataset, setLoading) => {
         setLoading(1)
         const response = await fetch('http://localhost:8000/connect/?uri='.concat(encodeURIComponent(dataset.storage)))
+        posthog.init('phc_kmcSvCxip2ebkgB3Tcn79f9zuK8eVk1PgnGlGTAYy2s', { api_host: 'https://app.posthog.com' })
+        posthog.capture('my event', { property: 'value' })
         window.location.href='/dataset/'.concat(encodeURIComponent(dataset.name));
     }
 

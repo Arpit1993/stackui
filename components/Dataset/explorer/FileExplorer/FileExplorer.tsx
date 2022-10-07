@@ -142,7 +142,7 @@ const FileExplorer = (props: { state: any; files: any[]; dataset: string | any[]
                 {container_var}
             </div>
             <div className="">
-                <div className="flex justify-between pt-2 pb-2 gap-2 rounded-sm">
+                <div className="flex justify-left pt-2 pb-2 gap-2 rounded-sm">
                     {listofButtons}
                 </div>
             </div>

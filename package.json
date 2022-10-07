@@ -19,6 +19,7 @@
     "fs": "^0.0.1-security",
     "json-loader": "^0.5.7",
     "next": "12.2.5",
+    "posthog-js": "^1.32.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-papaparse": "^4.1.0",

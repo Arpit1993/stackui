@@ -9,15 +9,15 @@ const CsvViz = (props) => {
     return (
         <div className="overflow-scroll h-[1000px]">
             <div className="p-1 flex border border-black gap-2">
-                <button className="p-1 rounded-full bg-gray-300" onClick={() => props.setRow(Math.max(0,props.row-1))}> {' U '} </button>
-                <div className="p-1"> {props.row+1}-{Math.round(props.csv_metadata.rows)+1} </div>
-                <button className="p-1 rounded-full bg-gray-300" onClick={() => props.setRow(Math.min(Math.round(props.csv_metadata.rows),props.row+1))}> {' D '} </button>
+                <button className="p-1 w-7 h-7 rounded-full bg-gray-300" onClick={() => props.setRow(Math.max(0,props.row-1))}> {' U '} </button>
+                <div className="p-1"> row {props.row+1}-{Math.round(props.csv_metadata.rows)+1} </div>
+                <button className="p-1 w-7 h-7 rounded-full bg-gray-300" onClick={() => props.setRow(Math.min(Math.round(props.csv_metadata.rows),props.row+1))}> {' D '} </button>
                 
-                <button className="p-1 rounded-full bg-gray-300" onClick={() => props.setCol(Math.max(0,props.col-1))}> {' L '} </button>
-                <div className="p-1"> {props.col+1}-{Math.round(props.csv_metadata.cols)+1} </div>
-                <button className="p-1 rounded-full bg-gray-300" onClick={() => props.setCol(Math.min(Math.round(props.csv_metadata.cols),props.col+1))}> {' R '} </button>
+                <button className="p-1 w-7 h-7 rounded-full bg-gray-300" onClick={() => props.setCol(Math.max(0,props.col-1))}> {' L '} </button>
+                <div className="p-1"> col {props.col+1}-{Math.round(props.csv_metadata.cols)+1} </div>
+                <button className="p-1 w-7 h-7 rounded-full bg-gray-300" onClick={() => props.setCol(Math.min(Math.round(props.csv_metadata.cols),props.col+1))}> {' R '} </button>
             </div>
-            <div className="font-thin overflow-scroll">
+            <div className="overflow-scroll">
                 {
                     array.map( (row) =>
                         <tr key={`rw-${row}`}> 

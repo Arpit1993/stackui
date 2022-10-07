@@ -143,6 +143,8 @@ const BoundingBox = (props) => {
 
     var rect = {x: props.x, y: props.y, h: props.h, w: props.w}
 
+    console.log(rect)
+
     return (
         <>
             <Box className='absolute' class_number={props.class_number} rect={rect}/>
