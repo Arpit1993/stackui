@@ -15,14 +15,14 @@ const FileExplorer = (props: { state: any; files: any[]; dataset: string | any[]
 
     const view_label = props.view ? 'Grid View' : 'List view';
     
-    var container_var = []
+    var container_var: Array<any> = []
 
     const handleObjectClick = (key_in: String) => {
         setPopup(1)
         setKey(key_in as SetStateAction<string>)
     }
 
-    var listofButtons  = [];
+    var listofButtons: Array<any> = [];
 
     listofButtons.push(
         <div  className="flex">

@@ -7,15 +7,6 @@ import FilterPopup from "../../popups/FilterPopup";
 
 function commit(comment: string){
     fetch('http://localhost:8000/commit_req?comment='.concat(comment))
-    return refresh()
-}
-
-function refresh(){
-    window.location.reload();
-    return true
-}
-
-function partition(){
     window.location.reload();
     return true
 }
@@ -49,13 +40,13 @@ const TopBar = (props: { fcn: (arg0: string) => void; props: { dataset: string |
                 </div>
                 <div className="flex">
                     <div className="flex gap-2 mt-6 w-full">
-                        <button onClick={()=>commit('')} className="h-[40px] w-max flex text-white flex-col rounded-md justify-center bg-green-700 text-sm px-2 hover:bg-green-900" > Refresh
+                        <button onClick={()=>commit('')} className="hover:shadow-lg h-[40px] w-max flex text-white flex-col rounded-md justify-center bg-green-700 text-sm px-2 hover:bg-green-900" > Refresh
                         </button>
 
-                        <button onClick={()=>setAddPopup(1-addPopup)} className="h-[40px] flex flex-col rounded-md justify-center text-white bg-gray-500 text-sm px-2 hover:bg-gray-700" > Upload
+                        <button onClick={()=>setAddPopup(1-addPopup)} className="hover:shadow-lg h-[40px] flex flex-col rounded-md justify-center text-white bg-gray-500 text-sm px-2 hover:bg-gray-700" > Upload
                         </button>
 
-                        <button onClick={()=>setFilterPopup(1-filterPopup)} className="h-[40px] flex flex-col rounded-md justify-center text-white bg-gray-200 text-sm px-2 hover:bg-gray-300" > 
+                        <button onClick={()=>setFilterPopup(1-filterPopup)} className="hover:shadow-lg h-[40px] flex flex-col rounded-md justify-center text-white bg-gray-200 text-sm px-2 hover:bg-gray-300" > 
                             {<Image src={'/Icons/filter-search.png'} alt='' width={'40px'} height={'20px'} objectFit={'contain'} />}
                         </button>
                     </div>
@@ -64,11 +55,11 @@ const TopBar = (props: { fcn: (arg0: string) => void; props: { dataset: string |
                             <label className="flex justify-end gap-2"> 
                                 <div className="">
                                     <input onChange={handleChange}
-                                    className= "p-2 shadow-inner border rounded-dm border-gray-200 outline-2 bg-white dark:bg-gray-500" 
+                                    className= "p-2  shadow-inner border rounded-dm border-gray-200 outline-2 bg-white dark:bg-gray-500" 
                                     placeholder="Search" type="text" />   
                                 </div>
                                 <div className="flex flex-col justify-center">
-                                    <input className="bg-black text-white h-[40px]  rounded-md text-sm px-2 hover:bg-gray-400" type="submit"/>
+                                    <input className="bg-black hover:shadow-lg text-white h-[40px]  rounded-md text-sm px-2 hover:bg-gray-400" type="submit"/>
                                 </div>
                             </label> 
                         </form> 

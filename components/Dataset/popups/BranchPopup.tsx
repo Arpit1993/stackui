@@ -10,8 +10,16 @@ const BranchPopup = (props) => {
     }
 
     const handleBranchButton = async () => {
-        const data = JSON.stringify({branch_name: name, branch_type: 'copy'})
-        const rest = await fetch('http://localhost:8000/set_branch/', {
+
+        var data
+
+        if (copy){
+            data = JSON.stringify({branch_name: name, branch_type: 'copy'})
+        } else {
+            data = JSON.stringify({branch_name: name, branch_type: 'move'})
+        }
+        
+        const res = await fetch('http://localhost:8000/set_branch/', {
                 method: 'POST',
                 headers: { 
                     "Content-Type": "application/json" 

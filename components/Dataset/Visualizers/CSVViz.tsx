@@ -3,7 +3,7 @@ import React from 'react';
 
 const CsvViz = (props) => {
     const {readString} = usePapaParse()
-    const array = readString(props.data).data
+    const array: Array<any> = readString(props.data).data
     array.pop()
 
     return (

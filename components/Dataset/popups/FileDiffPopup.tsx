@@ -2,9 +2,9 @@ import React, { useRef } from "react";
 import { useState, useEffect } from "react";
 import DropdownVersion from "./Components/DropdownVersion";
 import ImageViz from "../Visualizers/ImageViz";
-import CsvViz from "../Visualizers/CSVViz";
+import CsvDiffViz from "../Visualizers/CsvDiffViz";
 
-const fetchData = async (keyId, version, setD, lr) => {
+const fetchData = async (keyId, version, setD, version2, setD2) => {
 
     const isImage = ['jpg','png','jpeg','tiff','bmp','eps'].includes(keyId.split('.').pop())
     const isCSV =['csv'].includes(keyId.split('.').pop())
@@ -32,30 +32,14 @@ const fetchData = async (keyId, version, setD, lr) => {
             }
         })).then((stream) => new Response(stream)).then((response) => response.blob())
         .then((blob) => URL.createObjectURL(blob)).then((img) => 
-        [<ImageViz key={'imdpp'} img={img} ww={500} wh={500} keyId={keyId} ox={0} oy={0}/>]).then(setD) 
+        [<ImageViz key={'imdpp'} img={img} ww={500} wh={500} keyId={keyId} ox={0} oy={0} setSubmit={()=>{}} setnewLabels={()=>{}}/>]).then(setD) 
     } 
     else if (isCSV) {
-       fetch(cmd).
-        then((res) => res.body.getReader()).then((reader) =>
-        new ReadableStream({
-            start(controller) {
-                return pump();
-                function pump() {
-                    return reader.read().then(({ done, value }) => {
-                        if (done) {
-                        controller.close();
-                        return;
-                        }
-                        
-                        controller.enqueue(value);
-                        return pump();
-                    });
-                }
-            }
-        })).then((stream) => new Response(stream)).then((response) => response.blob()).then((blob) => blob.text())
+        fetch(`http://localhost:8000/get_csv_diff_metadata?key=${keyId}&v1=${version}&v2=${version2}`)
+        .then((res) => res.text())
         .then((text) => [
-            <CsvViz key={'csv_viz_data'} data={text}/>
-        ]).then(setD)
+            <CsvDiffViz key={'csv_diff_viz_data'} data={text}/>
+        ]).then(setD).then(setD2([]))
     } 
     else if (isText) {
         fetch(cmd).
@@ -117,8 +101,8 @@ const FileDiffPopup = (props) => {
     useEffect( () => {
 
         const fetchStuff = async (keyId, setD1, setD2, v1, v2) => {
-            await fetchData(keyId,v1,setD1,true)
-            await fetchData(keyId,v2,setD2,false)
+            await fetchData(keyId,v1,setD1, v2, setD2)
+            await fetchData(keyId,v2,setD2, v2, setD2)
         }
         if(props.popup == 1){ 
             fetchStuff(props.keyId, setD1, setD2, v1, v2)

@@ -148,9 +148,9 @@ export default function NewDatasets() {
 
     const SelectForm = [
         <div key={'sfff'} className='flex justify-center mt-5'>
-            <button onClick={()=>setStorage('local')} className="hover:bg-blue-900 w-[100px] border-r-2 border-black text-sm rounded-l-md px-5 text-white p-2 bg-blue-700"> Local </button>
-            <button onClick={()=>setStorage('s3')} className="hover:bg-blue-900 w-[100px] text-sm px-5 text-white p-2 bg-blue-700"> S3 </button>
-            <button onClick={()=>setStorage('gs')} className="hover:bg-blue-900 w-[100px]  border-l-2 border-black text-sm px-5 rounded-r-md text-white p-2 bg-blue-700"> GCS </button>
+            <button onClick={()=>setStorage('local')} className="hover:bg-blue-900 hover:shadow-lg w-[100px] border-r-2 border-black text-sm rounded-l-md px-5 text-white p-2 bg-blue-700"> Local </button>
+            <button onClick={()=>setStorage('s3')} className="hover:bg-blue-900 hover:shadow-lg w-[100px] text-sm px-5 text-white p-2 bg-blue-700"> S3 </button>
+            <button onClick={()=>setStorage('gs')} className="hover:bg-blue-900 hover:shadow-lg w-[100px]  border-l-2 border-black text-sm px-5 rounded-r-md text-white p-2 bg-blue-700"> GCS </button>
         </div>
     ]
     
@@ -206,7 +206,7 @@ export default function NewDatasets() {
                         <div className="flex flex-col">
                             <DropdownSchema schema={schema} setSchema={setSchema} />
                             <div className="flex justify-center">
-                                <button onClick={() => handleSubmit()} className="w-[200px] h-[50px] text-center transition p-2 bg-black font-thin text-white hover:bg-gray-300 hover:text-black">
+                                <button onClick={() => handleSubmit()} className="w-[200px] h-[50px] hover:shadow-lg text-center transition p-2 bg-black font-thin text-white hover:bg-gray-300 hover:text-black">
                                     SUBMIT
                                 </button>
                             </div>

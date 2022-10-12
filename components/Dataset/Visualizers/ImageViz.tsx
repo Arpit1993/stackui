@@ -1,4 +1,5 @@
 import Image from "next/image"
+import { arrayBuffer } from "node:stream/consumers";
 import React, { useEffect, useState, useRef } from "react"
 
 const hexToRgb = (hex: String) => {
@@ -25,7 +26,9 @@ const stringToColour = (str: String) => {
     return colour;
 }
 
-const Box = (props) => {
+
+const BoundingBox = (props) => {
+    
     const canvasRef = useRef(null)
 
     var splitString = `${props.class_number}`.split("");
@@ -44,7 +47,6 @@ const Box = (props) => {
     const color = hexToRgb(color_hex)
 
     useEffect(() => {
-
         const canvas = canvasRef.current
         const context = canvas.getContext('2d')
         const client_rect = canvas.getBoundingClientRect()
@@ -112,6 +114,21 @@ const Box = (props) => {
                 context.fillStyle = '#ffff'
                 context.fillText(props.class_number, props.rect.x+2, props.rect.y+12);
 
+                const new_label = {
+                    "0": props.class_number,
+                    "1": (props.rect.x + props.rect.w/2 - (props.ww - props.width )/2)/props.width,
+                    "2": (props.rect.y + props.rect.h/2 - (props.wh - props.height)/2)/props.height,
+                    "3": props.rect.w/props.width,
+                    "4": props.rect.h/props.height
+                }
+
+                var new_labels = props.updated_labels.current
+                new_labels[props.label_idx] = new_label
+                new_labels['keyId'] = props.keyId
+                props.updated_labels.current = new_labels
+
+                props.setSubmit(1)
+                props.setnewLabels(props.updated_labels.current)
             }
         }
     
@@ -130,33 +147,26 @@ const Box = (props) => {
         context.strokeRect(props.rect.x, props.rect.y, props.rect.w, props.rect.h)
 
         context.font = '12px sans-serif';
-        context.fillStyle = '#ffff'
+        context.fillStyle = '#ffff';
         context.fillText(props.class_number, props.rect.x+2, props.rect.y+12);
 
-    }, [props, color, color_hex, props.rect])
+    }, [color, color_hex, props.rect])
 
-    return <canvas ref={canvasRef} {...props} width={800} height={500} />
-}
-
-
-const BoundingBox = (props) => {
-
-    var rect = {x: props.x, y: props.y, h: props.h, w: props.w}
-
-    console.log(rect)
-
-    return (
-        <>
-            <Box className='absolute' class_number={props.class_number} rect={rect}/>
-        </>
+    const box = [<canvas key={`boxx${props.class_number}${props.label_idx}`} ref={canvasRef} {...props} width={800} height={500} />]
+    
+    return(
+        <div className="absolute">
+            {box}
+        </div>
     )
 }
 
 const ImageViz = (props) => {
     
     const [labels, setLabels] = useState([])
-    
-    var boxes = []
+    const updated_labels = useRef(labels)
+
+    var boxes: Array<any> = []
     let im =  document.createElement('img');
     im.src = props.img
     const [width, setWidth] = useState(props.ww)
@@ -176,7 +186,10 @@ const ImageViz = (props) => {
 
     useEffect(() => {
         const f = fetch('http://localhost:8000/get_yolo_labels?filename='.concat(props.keyId,'&version=current'))
-        .then((response) => response.json()).then((res) => setLabels(Object.values(res)));
+        .then((response) => response.json()).then((res) => {
+            setLabels(Object.values(res))
+            updated_labels.current = res
+        });
     }, [props.keyId])
 
     boxes = []
@@ -188,7 +201,15 @@ const ImageViz = (props) => {
         const x = (props.ww - width)/2 + labels[i][1]*width  - w/2
         const y = (props.wh - height)/2 + labels[i][2]*height - h/2
 
-        boxes.push(<BoundingBox class_number={labels[i][0]} x={Math.floor(x)} y={Math.floor(y)} w={Math.floor(w)} h={Math.floor(h)} ox={(props.ww - width)/2} oy={(props.wh - height)/2} />);
+        var rect = {x: Math.floor(x), y: Math.floor(y), h: Math.floor(h), w: Math.floor(w)}
+
+        boxes.push(
+            <BoundingBox class_number={labels[i][0]} 
+            ww={props.ww} wh={props.wh} width={width} height={height} 
+            rect={rect} updated_labels={updated_labels} 
+            label_idx={i} keyId={props.keyId}
+            setSubmit={props.setSubmit} setnewLabels={props.setnewLabels}/>
+        );
     }
 
     return (

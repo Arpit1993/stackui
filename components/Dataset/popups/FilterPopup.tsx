@@ -1,6 +1,85 @@
 import React, { useEffect, useRef, useState } from "react"
 import BranchPopup from "./BranchPopup"
 
+const getClassbuttons = (classes, classesFilter, setClassFilter, nullStr, setnullStr) => {
+    const classes_buttons : Array<any> = []
+
+    for(var i = 0; i < classes.length; i++){
+        const cl = classes.sort()[i]
+        
+        if(classesFilter[cl]){
+            classes_buttons.push(
+                <ul key={`abc ${cl}`} className="w-full flex px-1 mb-1 mt-1">
+                    <button  onClick={async ()=>{
+                        const cf = classesFilter
+                        cf[cl] = !cf[cl]
+                        setClassFilter(cf)
+                        setnullStr(nullStr+'a')
+                    }} className="w-full h-6 bg-gray-200 shadow-lg rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        {cl}
+                    </button>
+                </ul>
+            )
+        } else {
+            classes_buttons.push(
+                <ul key={`abc ${cl}`} className="w-full flex px-1 mb-1 mt-1">
+                    <button  onClick={async ()=>{
+                        const cf = classesFilter
+                        cf[cl] = !cf[cl]
+                        setClassFilter(cf)
+                        setnullStr(nullStr+'a')
+                    }} className="w-full h-6 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        {cl}
+                    </button>
+                </ul>
+            )
+        }
+    }
+
+    return classes_buttons
+}
+
+const getResbuttons = (resolutions, resFilter, setResFilter, nullStr, setnullStr) => {
+    var res_buttons : Array<any> = []
+
+    for(var i = 0; i < resolutions.length; i++){
+        const cl = resolutions.sort()[i]
+        if(resFilter[cl]){
+            res_buttons.push(
+                <ul key={`def ${cl}`} className="w-full flex px-1 mb-1 mt-1">
+                    <button  
+                        onClick={async ()=>{
+                            const rf = resFilter
+                            rf[cl] = !rf[cl]
+                            setResFilter(rf)
+                            setnullStr(nullStr+'b')
+                        }
+                    } className="w-full h-6 bg-gray-200 shadow-lg rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        {cl}
+                    </button>
+                </ul>
+            )
+        } else {
+            res_buttons.push(
+                <ul key={`def ${cl}`} className="w-full flex px-1 mb-1 mt-1">
+                    <button  
+                        onClick={async ()=>{
+                            const rf = resFilter
+                            rf[cl] = !rf[cl]
+                            setResFilter(rf)
+                            setnullStr(nullStr+'b')
+                        }
+                    } className="w-full h-6 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        {cl}
+                    </button>
+                </ul>
+            )
+        }
+    }
+
+    return res_buttons
+}
+
 const FilterPopup = (props) => {
 
     const [branch, setBranch] = useState(false)
@@ -10,7 +89,12 @@ const FilterPopup = (props) => {
     const [classesFilter, setClassFilter] = useState({'01': false,'02': false})
     const [resolutions, setResolutions] = useState(['0x0','1x1'])
     const [resFilter, setResFilter] = useState({'0x0': false, '1x1': false})
-    
+    const [time, setTime] = useState(true)
+
+    // weird hack to make the checkboxes actually change state, otherwise state remains the same
+    // TODO
+    const [nullStr, setnullStr] = useState('')
+
     useEffect( () => {
         const getMetadata = async () => {
             const res =  await fetch('http://localhost:8000/schema_metadata').then((res) => res.json()).then(
@@ -34,18 +118,14 @@ const FilterPopup = (props) => {
                 }
             )
         }
-        getMetadata()
-    }, [])
 
-    console.log('happebs')
+        if (time){
+            getMetadata()
+            setTime(false)
+        } else {
 
-    const handleClassChange = (cl) => {
-        const cf = classesFilter
-        cf[cl] = !cf[cl]
-        setClassFilter(cf)
-        console.log('hey')
-        setOperation(operation)
-    }
+        }
+    }, [resFilter, classesFilter])
 
     const toggleClasses = (toggle) => {
         var cf = classesFilter
@@ -53,12 +133,8 @@ const FilterPopup = (props) => {
             cf[Object.keys(cf)[i]] = toggle
         }
         setClassFilter(cf)
-    }
 
-    const handleResChange = (rs) => {
-        var rf = resFilter
-        rf[rs] = !rf[rs]
-        setResFilter(rf)
+        setnullStr(nullStr+'a')
     }
 
     const toggleRes = (toggle) => {
@@ -67,6 +143,7 @@ const FilterPopup = (props) => {
             rf[Object.keys(rf)[i]] = toggle
         }
         setResFilter(rf)
+        setnullStr(nullStr+'b')
     }
 
     const handleApplyFilter = async () => {
@@ -110,74 +187,31 @@ const FilterPopup = (props) => {
         props.setFiltering(false)
     }
 
-    const handleResetFilter = () => {
-        props.setFiltering(true)
+    const handleResetFilter = async () => {
+        await fetch('http://localhost:8000/reset_filter/')
+        .then(() => props.setFiltering(false)).then(
+            () =>{
+                const rFilter = resFilter
+                for(var i = 0; i < Object.keys(rFilter).length; i++){
+                    rFilter[Object.keys(rFilter)[i]] = true
+                }
 
-        fetch('http://localhost:8000/reset_filter/')
-        .then(() => props.setFiltering(false))
-
-        var rFilter = resFilter
-        for(var i = 0; i < Object.keys(rFilter).length; i++){
-            rFilter[Object.keys(rFilter)[i]] = true
-        }
-
-        var cFilter = classesFilter
-        for(var i = 0; i < Object.keys(cFilter).length; i++){
-            cFilter[Object.keys(cFilter)[i]] = true
-        }
-
-        setResFilter(rFilter)
-        setClassFilter(cFilter)
-
-        props.setFiltering(false)
+                const cFilter = classesFilter
+                for(var i = 0; i < Object.keys(cFilter).length; i++){
+                    cFilter[Object.keys(cFilter)[i]] = true
+                }
+                
+                setResFilter(rFilter)
+                setClassFilter(cFilter)
+                setnullStr('')
+            }
+        )
     }
 
     const branch_popup = branch ? [<BranchPopup key={'brpp'} setPopup={setBranch}/>] : [<></>]
 
-    const classes_buttons : Array<any> = []
-    const res_buttons : Array<any> = []
-
-    for(var i = 0; i < classes.length; i++){
-        const cl = classes.sort()[i]
-        if(classesFilter[cl]){
-            classes_buttons.push(
-                <ul key={`abc ${cl}`} className="w-full flex px-1 mb-1 mt-1">
-                    <button  onClick={()=>handleClassChange(cl)} className="w-full h-6 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                        {cl}
-                    </button>
-                </ul>
-            )
-        } else {
-            classes_buttons.push(
-                <ul key={`abc ${cl}`} className="w-full flex px-1 mb-1 mt-1">
-                    <button  onClick={()=>handleClassChange(cl)} className="w-full h-6 bg-gray-200 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                        {cl}
-                    </button>
-                </ul>
-            )
-        }
-    }
-
-    for(var i = 0; i < resolutions.length; i++){
-        const cl = resolutions.sort()[i]
-        if(resFilter[cl]){
-            res_buttons.push(
-                <ul key={`abc ${cl}`} className="w-full flex px-1 mb-1 mt-1">
-                    <button  onClick={()=>handleResChange(cl)} className="w-full h-6 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                        {cl}
-                    </button>
-                </ul>
-            )
-        } else {
-            res_buttons.push(
-                <ul key={`abc ${cl}`} className="w-full flex px-1 mb-1 mt-1">
-                    <button  onClick={()=>handleResChange(cl)} className="w-full h-6 bg-gray-200 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                        {cl}
-                    </button>
-                </ul>
-            )
-        }
-    }
+    const classes_buttons : Array<any> = getClassbuttons(classes, classesFilter, setClassFilter, nullStr, setnullStr)
+    const res_buttons : Array<any> = getResbuttons(resolutions, resFilter, setResFilter, nullStr, setnullStr)
 
     return (
         <>
@@ -214,7 +248,8 @@ const FilterPopup = (props) => {
                                 } else {
                                     setOperation('OR')
                                 }
-                            }}> {operation} </button>
+                            }}> {operation} 
+                            </button>
                             
                     </div>
 

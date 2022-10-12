@@ -22,6 +22,10 @@ const FilePopup = (props) => {
     const [Nversion, setNVersions] = useState(0)
     const [dataComp, setDataComp] = useState(null)
 
+    const [submit, setSubmit] = useState(0)
+    const [newLabels, setnewLabels] = useState({keyid: props.keyId})
+    
+
     const isImage = ['jpg','png','jpeg','tiff','bmp','eps'].includes(props.keyId.split('.').pop())
     const isCSV =['csv'].includes(props.keyId.split('.').pop())
     const isText = ['txt'].includes(props.keyId.split('.').pop())
@@ -66,7 +70,7 @@ const FilePopup = (props) => {
                         }
                     })).then((stream) => new Response(stream)).then((response) => response.blob())
                     .then((blob) => URL.createObjectURL(blob)).then((img) => 
-                    [<ImageViz key={'imgvz'} img={img} keyId={props.keyId} ww={800} wh={500} ox={0} oy={0}/>])
+                    [<ImageViz key={'imgvz'} img={img} keyId={props.keyId} ww={800} wh={500} ox={0} oy={0} setnewLabels={setnewLabels} setSubmit={setSubmit}/>])
                     .then(setDataComp)
                 } 
                 else if (isCSV) {
@@ -186,6 +190,29 @@ const FilePopup = (props) => {
     const LoadingPopup = loading ? [<LoadingScreen  key={'lscpp'}/>] : [null]
     const fileDisp = props.popup ? (loadingViz ? [null] : dataComp) : [null]
 
+    const submitLabels = async () => {
+        const data = JSON.stringify(newLabels)
+        console.log(newLabels)
+        await fetch('http://localhost:8000/set_labels/', {
+            method: 'POST',
+            headers: { 
+                "Content-Type": "application/json" 
+            }, 
+            body: data}
+        )
+        await fetch('http://localhost:8000/commit_req?comment='.concat(`fixed annotation on ${newLabels['keyId']}`))
+        setSubmit(0)
+    }
+
+    const commit_button = submit ? 
+    [<button key={'cmit_button_1'} onClick={() => submitLabels()} className="z-10 h-max hover:shadow-lg absolute p-2 rounded-lg text-white bg-green-700 hover:bg-green-800 border border-black">
+        Commit changes  
+    </button>] 
+    : 
+    [<button key={'cmit_button_2'} className="z-10 h-max absolute hover:cursor-not-allowed p-2 rounded-lg text-white bg-gray-700 hover:bg-gray-700 border border-black">
+        Commit changes
+    </button>]
+
     if (props.popup == 0) {
         return <div></div>
     } else {
@@ -223,17 +250,20 @@ const FilePopup = (props) => {
                     </div>
                     <div className="flex justify-center mt-10">
                         <div className="flex py-2 h-[20px] justify-center px-2"> 
-                            <button onClick={() => setPopup(1)} className="bg-green-700 ring-2 ring-black rounded-md h-[70px] w-[300px] hover:bg-green-900 text-white font-thin text-lg px-5"> 
+                            <button onClick={() => setPopup(1)} className="bg-green-700 hover:shadow-lg ring-2 ring-black rounded-md h-[70px] w-[300px] hover:bg-green-800 text-white font-thin text-lg px-5"> 
                                 See History 
                             </button>
                         </div>
                         <div className="flex py-2 h-[30px] justify-center px-2"> 
-                            <button onClick={() => setCompare(1)} className="bg-green-700 ring-2 ring-black rounded-md h-[70px] w-[300px] hover:bg-green-900 text-white font-thin text-lg px-5"> 
+                            <button onClick={() => setCompare(1)} className="bg-green-700 hover:shadow-lg ring-2 ring-black rounded-md h-[70px] w-[300px] hover:bg-green-800 text-white font-thin text-lg px-5"> 
                                 Compare versions
                             </button>
                         </div>
                     </div>
                 </ul>
+                <div className="absolute w-full flex justify-end px-10 h-max"> 
+                    {commit_button}
+                </div>
             </div>
             {Versionspopup}
             {Diffpopup}
