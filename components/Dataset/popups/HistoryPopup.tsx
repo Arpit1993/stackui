@@ -69,7 +69,7 @@ const HistoryPopup = (props) => {
     const HistComponent = props.history ? [
         <div key={'hc'}>
             {CloseComponent}
-            <div className="text-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 rounded-lg bg-white dark:bg-gray-400 w-[1100px]  h-[700px]">
+            <div className="text-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 rounded-lg bg-white dark:bg-gray-900 w-[1100px]  h-[700px]">
                 <div className="flex-col justify-between">
                     <div className="w-full justify-between flex">
                         <button onClick={() => props.setHistory(0)} className= 'place-self-center justify-self-start w-[50px] h-[30px] flex-col bg-red-400 hover:bg-red-200 p-2 rounded-br-md'> x </button> 
@@ -80,7 +80,7 @@ const HistoryPopup = (props) => {
                     </div>
                     <ul className="text-xs h-[570px] w-full font-medium rounded-lg border 
                             text-gray-900 bg-white border-gray-200
-                            dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            dark:bg-gray-900 dark:border-gray-600 dark:text-white">
                         {commits.filter((item, index) => index < max_commits*(page+1) && index >= max_commits*(page)).map((cmit, index) => <ItemCommit key={index.toString()} version={cmit.version} changes={cmit.changes} date={cmit.date}/>)}
                     </ul>
                 </div>

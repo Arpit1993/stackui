@@ -3,7 +3,7 @@ import { useState } from "react"
 import LoadingScreen from "../components/LoadingScreen"
 import FormData from "form-data";
 import DropdownSchema from "../components/Dataset/Items/DropdownSchema";
-
+import posthog from 'posthog-js'
 
 export default function NewDatasets() {        
 
@@ -70,6 +70,8 @@ export default function NewDatasets() {
                 }, 
                 body: data}
             )
+
+            posthog.capture('Added a dataset', { property: 'value' })
 
             if (response.json().success) {
                 window.location.href='/dataset/'.concat(encodeURIComponent(name));
@@ -206,7 +208,7 @@ export default function NewDatasets() {
                         <div className="flex flex-col">
                             <DropdownSchema schema={schema} setSchema={setSchema} />
                             <div className="flex justify-center">
-                                <button onClick={() => handleSubmit()} className="w-[200px] h-[50px] hover:shadow-lg text-center transition p-2 bg-black font-thin text-white hover:bg-gray-300 hover:text-black">
+                                <button onClick={() => handleSubmit()} className="w-[200px] h-[50px] hover:shadow-lg text-center transition p-2 bg-black dark:bg-white dark:text-black font-thin text-white hover:bg-gray-300 hover:text-black">
                                     SUBMIT
                                 </button>
                             </div>

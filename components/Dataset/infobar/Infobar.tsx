@@ -13,19 +13,20 @@ const Infobar = (props: { description: string | number | boolean | ReactFragment
         <div className='p-2 w-[250px] grow flew-col rounded-lg bg-white-50'>
             {HistPopup}
             <div className="p-4">
-                <h2 className='text-center text-lg p-4'>
+                {/* <h2 className='text-center text-lg p-4'>
                     Description
                 </h2>
-                <p className='text-xs p-4 '>
-                    {/* {props.description}  */}
-                </p>
+                <p className='text-xs'>
+                    Dataset visualization and exploration. Custom descriptions coming up
+                    {props.description} 
+                </p> */}
             </div>
 
             <div className="p-1">
                 <h2 className='text-center text-lg p-4 text-bold under'>
                     Recent Activity
                 </h2>
-                <ul className="text-xs font-medium rounded-sm border 
+                <ul className="text-xs font-medium rounded-sm
                 text-gray-900 dark:text-gray-400">
                     {props.commits.map((cmit: { source: any; comment: any; date: any; }, index: { toString: () => any; }) => <ItemChange key={index.toString()} author={cmit.source} comment={cmit.comment} date={cmit.date}/>)}
                     <button onClick={() => setPopup(1)} className="w-full">

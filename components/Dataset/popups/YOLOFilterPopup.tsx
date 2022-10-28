@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react"
 import BranchPopup from "./BranchPopup"
+import posthog from 'posthog-js'
 
 const getClassbuttons = (classes, classesFilter, setClassFilter, nullStr, setnullStr) => {
     const classes_buttons : Array<any> = []
@@ -15,7 +16,7 @@ const getClassbuttons = (classes, classesFilter, setClassFilter, nullStr, setnul
                         cf[cl] = !cf[cl]
                         setClassFilter(cf)
                         setnullStr(nullStr+'a')
-                    }} className="w-full h-6 bg-gray-200 shadow-lg rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    }} className="w-full h-6 bg-gray-200 shadow-lg rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-600 dark:border-gray-600">
                         {cl}
                     </button>
                 </ul>
@@ -28,7 +29,7 @@ const getClassbuttons = (classes, classesFilter, setClassFilter, nullStr, setnul
                         cf[cl] = !cf[cl]
                         setClassFilter(cf)
                         setnullStr(nullStr+'a')
-                    }} className="w-full h-6 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    }} className="w-full h-6 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-500 dark:border-gray-600">
                         {cl}
                     </button>
                 </ul>
@@ -54,7 +55,7 @@ const getResbuttons = (resolutions, resFilter, setResFilter, nullStr, setnullStr
                             setResFilter(rf)
                             setnullStr(nullStr+'b')
                         }
-                    } className="w-full h-6 bg-gray-200 shadow-lg rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    } className="w-full h-6 bg-gray-200 shadow-lg rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-600 dark:border-gray-600">
                         {cl}
                     </button>
                 </ul>
@@ -69,7 +70,7 @@ const getResbuttons = (resolutions, resFilter, setResFilter, nullStr, setnullStr
                             setResFilter(rf)
                             setnullStr(nullStr+'b')
                         }
-                    } className="w-full h-6 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    } className="w-full h-6 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-500 dark:border-gray-600">
                         {cl}
                     </button>
                 </ul>
@@ -80,7 +81,7 @@ const getResbuttons = (resolutions, resFilter, setResFilter, nullStr, setnullStr
     return res_buttons
 }
 
-const FilterPopup = (props) => {
+const YOLOFilterPopup = (props) => {
 
     const [branch, setBranch] = useState(false)
 
@@ -103,12 +104,12 @@ const FilterPopup = (props) => {
                     setClasses(res.classes)
                     setResolutions(res.resolutions)
 
-                    var cFilter = {}
+                    var cFilter: any = {}
                     for(var i = 0; i < res.classes.length; i++){
                         cFilter[res.classes[i]] = false
                     }
             
-                    var rFilters = {}
+                    var rFilters: any = {}
                     for(var i = 0; i < res.resolutions.length; i++){
                         rFilters[res.resolutions[i]] = false
                     }
@@ -147,7 +148,7 @@ const FilterPopup = (props) => {
     }
 
     const handleApplyFilter = async () => {
-        props.setFiltering(true)
+        props.setFiltering('y')
 
         var filters = {}
         var idx = 0
@@ -172,6 +173,10 @@ const FilterPopup = (props) => {
             }
         }
 
+        filters[idx] = {
+            'name': props.txt
+        }
+
         filters['operation'] = operation
 
         const data = JSON.stringify(filters)
@@ -183,13 +188,16 @@ const FilterPopup = (props) => {
                 }, 
                 body: data}
         )
+
+        
+        posthog.capture('Applied filter', { property: 'value' })
     
-        props.setFiltering(false)
+        props.setFiltering('z')
     }
 
     const handleResetFilter = async () => {
         await fetch('http://localhost:8000/reset_filter/')
-        .then(() => props.setFiltering(false)).then(
+        .then(() => props.setFiltering('w')).then(
             () =>{
                 const rFilter = resFilter
                 for(var i = 0; i < Object.keys(rFilter).length; i++){
@@ -216,13 +224,13 @@ const FilterPopup = (props) => {
     return (
         <>
             {branch_popup}
-            <div key={"flterpp"} className="bg-white rounded-lg dark:bg-slate-700 w-full h-[200px] border-[0.5px] border-gray-500">
+            <div key={"flterpp"} className="bg-whites rounded-lg dark:bg-slate-900 w-full h-[200px] border-[0.5px] border-gray-500">
                 <div className="w-full justify-between flex h-[30px]">
                     <button onClick={() => props.setPopup(0)} className= 'flex justify-center rounded-tl-lg text-center w-[50px] h-[30px] flex-col bg-red-400 hover:bg-red-200 p-2 rounded-br-md'> x </button> 
                 </div>
                 <div className="flex h-[120px] gap-2 p-2">
                     <div className="h-[120px] w-[200px] border rounded-md shadow-inner border-gray-500">
-                        <div className="px-1 gap-1 flex text-xs w-[198px] h-[20px] text-center rounded-t-md dark:bg-gray-500 bg-gray-200 border border-b-gray-400">
+                        <div className="px-1 gap-1 flex text-xs w-[198px] h-[20px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
                             <div>
                                 Classes
                             </div>
@@ -254,7 +262,7 @@ const FilterPopup = (props) => {
                     </div>
 
                     <div className="h-[120px] w-[200px] border rounded-md shadow-inner border-gray-500">
-                        <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-500 bg-gray-200 border border-b-gray-400">
+                        <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
                             <div>
                                 Resolutions
                             </div>
@@ -293,4 +301,4 @@ const FilterPopup = (props) => {
     )
 }
 
-export default FilterPopup
+export default YOLOFilterPopup

@@ -60,7 +60,20 @@ const DropdownSchema = (props) => {
                       )}
                       onClick={()=>props.setSchema('yolo')}
                     >
-                      yolo
+                      yolo bbox
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      className={classNames(
+                        active ? 'bg-gray-100 text-gray-900  w-full' : 'text-gray-700',
+                        'block px-4 py-2 text-sm w-full'
+                      )}
+                      onClick={()=>props.setSchema('labelbox')}
+                    >
+                      labelbox bbox
                     </button>
                   )}
                 </Menu.Item>

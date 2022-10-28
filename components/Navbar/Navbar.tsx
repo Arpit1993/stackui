@@ -31,7 +31,7 @@ const Navbar = () => {
             </div>
 
             <Link href='/'  passHref> 
-                <button className='justify-self-end px-20 w-[350px] flex gap-2'>
+                <button disabled={true} className='justify-self-end cursor-not-allowed px-20 w-[350px] flex gap-2'>
                     <div className="h-max relative top-3">
                         <Image src={"/Icons/profile.png"} width={'30px'} height={'30px'} objectFit={'contain'} alt=''/>
                     </div>

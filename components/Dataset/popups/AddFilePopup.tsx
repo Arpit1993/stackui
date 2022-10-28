@@ -1,4 +1,5 @@
 import React from "react";
+import posthog from 'posthog-js'
 import { useState } from "react"
 import LoadingScreen from "../../LoadingScreen"
 
@@ -21,13 +22,13 @@ const AddFilePopup = (props: { popup: any; setPopup: (arg0: number) => void }) =
         
         const res1 = await fetch('http://localhost:8000/add_file/',reqOptions)
         const res2 = await fetch('http://localhost:8000/commit_req/')
-
+        posthog.capture('Addded a file', { property: 'value' })
         window.location.reload();
     }
 
     const LoadingComp = loading ? [<LoadingScreen key={'ldsc'}/>] : [<></>]
     const PopUpComp = props.popup ? [
-        <div key={'ppcc'} className="z-10 text-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg border-[0.5px] border-gray-500 bg-white dark:bg-gray-400 w-[600px]  h-[300px]">
+        <div key={'ppcc'} className="z-10 text-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg border-[0.5px] border-gray-500 bg-white dark:bg-gray-900 w-[600px]  h-[300px]">
             <div className="w-full justify-between flex">
                 <button onClick={() => props.setPopup(0)} className= 'place-self-center justify-self-start w-[50px] h-[30px] flex-col bg-red-400 hover:bg-red-200 p-2 rounded-br-md'> x </button> 
                 <div className="place-self-center text-md py-2 font-bold">

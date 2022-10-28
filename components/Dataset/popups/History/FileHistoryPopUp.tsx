@@ -1,12 +1,11 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import ItemChange from "../Items/ItemChange";
-
+import ItemFileVersion from "../../Items/ItemFileVersion";
 
 function generateButtons(page, handleClick){
-    var listofButtons: Array<any> = []
+    var listofButtons: array<any> = []
     listofButtons.push(
-        <div  className="flex">
+        <div key="gs" className="flex">
             <button className=" bg-gray-200 flex flex-col justify-center rounded-full h-[25px] w-[25px] p-2 shadow-sm dark: text-black hover:bg-gray-300" onClick={() => handleClick(page, Math.max(page-1,0))}>
                 {'<'}
             </button>
@@ -14,13 +13,13 @@ function generateButtons(page, handleClick){
     )
 
     listofButtons.push(
-        <div>
+        <div key="bgs">
             Page {page+1}
         </div>
     )
 
     listofButtons.push(
-        <div  className="flex">
+        <div key="bbgs" className="flex">
             <button className=" bg-gray-200 flex flex-col justify-center rounded-full h-[25px] w-[25px] p-2  shadow-sm dark: text-black hover:bg-gray-300" onClick={() => handleClick(page,page+1)}>
                 {'>'}
             </button>
@@ -30,7 +29,7 @@ function generateButtons(page, handleClick){
     return listofButtons
 }
 
-const CommitPopup = (props) => {
+const FileHistoryPopUp = (props) => {
 
     const [changes, setChanges] = useState([])
     const [page, setPage] = useState(0)
@@ -40,7 +39,7 @@ const CommitPopup = (props) => {
     useEffect(() => {
         if (props.popup){
             const getChanges = async (page) =>  {
-                const res = await fetch('http://localhost:8000/commits_version?version='.concat(props.version).concat('&l=7&page=0'))
+                const res = await fetch(('http://localhost:8000/key_versions?key='.concat(props.keyId).concat('&l=7&page=').concat(0)))
                 const data = await res.json();
                 setChanges(Object.values(data.commits))
                 setMaxPages(data.len/max_commits)
@@ -51,7 +50,7 @@ const CommitPopup = (props) => {
 
     const fetchChanges = async (page) => {
         if (props.popup){
-            const res = await fetch('http://localhost:8000/commits_version?version='.concat(props.version).concat('&l=7&page=').concat(page))        
+            const res = await fetch(('http://localhost:8000/key_versions?key='.concat(props.keyId).concat('&l=7&page=').concat(page)))        
             const data = await res.json();
             setMaxPages(data.len/max_commits)
             return data.commits
@@ -75,14 +74,14 @@ const CommitPopup = (props) => {
         <div className="w-full justify-between flex">
             <button onClick={() => props.setPopup(0)} className= 'place-self-center justify-self-start w-[50px] h-[30px] flex-col bg-red-400 hover:bg-red-200 p-2 rounded-br-md'> x </button> 
             <div className="place-self-center py-2 font-bold">
-                Commit {props.version}
+                Versions of file {props.keyId}
             </div>
             <div></div>
         </div>
         <ul className="text-xs h-[570px] font-medium rounded-lg border 
                 text-gray-900 bg-white border-gray-200
                   dark:bg-gray-900 dark:border-gray-600 dark:text-white">
-            {changes.map((cmit,index) => <ItemChange key={index.toString()} author={cmit.source} comment={cmit.comment} date={cmit.date}/>)}
+            {changes.map((data, index) => <ItemFileVersion key={'IFV'.concat(index.toString())} keyId={props.keyId} version={data.version} date={data.date} commit={data.commit}/>)}
         </ul>
         <div className="flex justify-evenly mt-5">
             {buttons}
@@ -90,4 +89,4 @@ const CommitPopup = (props) => {
     </div>)}
 }
 
-export default CommitPopup;
+export default FileHistoryPopUp;

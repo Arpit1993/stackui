@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react"
+import posthog from 'posthog-js'
 
 const BranchPopup = (props) => {
 
@@ -27,11 +28,13 @@ const BranchPopup = (props) => {
                 body: data}
         )
 
+        posthog.capture('Added a branch', { property: 'value' })
+
         window.location.href='/Datasets';
     }
 
     return (
-        <div key={"brnchpp"} className="relative bg-white rounded-lg dark:bg-slate-700 w-full h-[200px] border-[0.5px] border-gray-500">
+        <div key={"brnchpp"} className="relative bg-white rounded-lg dark:bg-slate-900 w-full h-[200px] border-[0.5px] border-gray-500">
             <div className="w-full justify-between flex h-[30px]">
                 <button onClick={() => props.setPopup(false)} className= 'flex justify-center rounded-tl-lg text-center w-[50px] h-[30px] flex-col bg-red-400 hover:bg-red-200 p-2 rounded-br-md'> x </button> 
             </div>

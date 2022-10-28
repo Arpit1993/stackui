@@ -1,12 +1,17 @@
 import React from "react";
+import posthog from 'posthog-js'
 import { useState, useEffect } from "react";
 import LoadingScreen from "../../LoadingScreen";
-import ItemFileVersion from "../Items/ItemFileVersion";
-import FileHistoryPopUp from "./FileHistoryPopUp";
+import FileHistoryPopUp from "./History/FileHistoryPopUp";
+import YOLOHistoryPopUp from "./History/YOLOHistoryPopUp";
 import ImageViz from "../Visualizers/ImageViz";
+import YOLOViz from "../Visualizers/YOLOViz";
 import CsvViz from "../Visualizers/CSVViz";
-import FileDiffPopup from "./FileDiffPopup";
+import FileDiffPopup from "./DiffPopups/FileDiffPopup";
+import YOLODiffPopup from "./DiffPopups/YOLODiffPopup";
 import DropdownFileOptions from "./Components/DropdownFileOptions";
+import FileHistoryList from "./History/FileHistoryList";
+import YOLOHistoryList from "./History/YOLOHistoryList";
 
 const FilePopup = (props) => {
     
@@ -25,7 +30,7 @@ const FilePopup = (props) => {
     const [submit, setSubmit] = useState(0)
     const [newLabels, setnewLabels] = useState({keyid: props.keyId})
     
-
+    const isYOLO = ['jpg','png','jpeg','tiff','bmp','eps'].includes(props.keyId.split('.').pop()) && (props.schema == 'yolo' || props.schema == 'labelbox')
     const isImage = ['jpg','png','jpeg','tiff','bmp','eps'].includes(props.keyId.split('.').pop())
     const isCSV =['csv'].includes(props.keyId.split('.').pop())
     const isText = ['txt'].includes(props.keyId.split('.').pop())
@@ -45,12 +50,33 @@ const FilePopup = (props) => {
         return true
     }
 
-
     useEffect(() => {
-
         const fetchData = async () => {
+            setDataComp(null)
             if (props.popup) {
-                if (isImage){
+                if (isYOLO) {
+                    fetch('http://localhost:8000/pull_file_api?file='.concat(props.keyId)).
+                    then((res) => res.body.getReader()).then((reader) =>
+                    new ReadableStream({
+                        start(controller) {
+                            return pump();
+                            function pump() {
+                                return reader.read().then(({ done, value }) => {
+                                    if (done) {
+                                        controller.close();
+                                        return;
+                                    }
+                                    controller.enqueue(value);
+                                    return pump();
+                                });
+                            }
+                        }
+                    })).then((stream) => new Response(stream)).then((response) => response.blob())
+                    .then((blob) => URL.createObjectURL(blob)).then((img) => 
+                    [<YOLOViz key={'imgvz'} label_version={'current'} img={img} keyId={props.keyId} ww={800} wh={500} ox={0} oy={0} setnewLabels={setnewLabels} setSubmit={setSubmit}/>])
+                    .then(setDataComp)
+                }
+                else if (isImage) {
                     fetch('http://localhost:8000/pull_file_api?file='.concat(props.keyId)).
                     then((res) => res.body.getReader()).then((reader) =>
                     new ReadableStream({
@@ -119,7 +145,7 @@ const FilePopup = (props) => {
                         }
                     })).then((stream) => new Response(stream)).then((response) => response.blob())
                     .then((blob) => blob.text()).then( (data) =>  [
-                        <div key="cmp3" className="flex justify-center font-thin overflow-scroll">
+                        <div key="cmp3" className="flex justify-center font-thin dark:text-white overflow-scroll">
                             {data}
                         </div>]).then(setDataComp)
                 }
@@ -143,8 +169,12 @@ const FilePopup = (props) => {
                         }
                     })).then((stream) => new Response(stream)).then((response) => response.blob())
                     .then((blob) => blob.text()).then( (data) =>  [
-                        <div key="cmp3" className="flex font-thin w-[750px] overflow-scroll">
-                            <pre className="w-[1px] break-all"> <div className="w-[1px]">{data}</div></pre>
+                        <div key="cmp3" className="flex font-thin w-full overflow-scroll">
+                            <pre className="w-[1px] break-all dark:text-white"> 
+                                <div className="w-[1px]">
+                                    {data}
+                                </div>
+                            </pre>
                         </div>]).then(setDataComp)
                 }
             }
@@ -167,7 +197,7 @@ const FilePopup = (props) => {
         if (props.popup) {
             fetchStuff()
         }
-    }, [props, setDataComp, row, col, setRow, setCol])
+    }, [props, setDataComp, row, col, setRow, setCol, submit])
 
     const CloseComponent = [
         <button key={'ccb'} onClick={() => props.setPopup(0)} className="bg-transparent backdrop-blur-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
@@ -176,16 +206,31 @@ const FilePopup = (props) => {
     ]
     
     const Versionspopup = popup ? [
+        isYOLO ? 
         <>
-            <FileHistoryPopUp keyId={props.keyId} setPopup={setPopup} popup={popup}/>
+            <YOLOHistoryPopUp schema={props.schema} keyId={props.keyId} setPopup={setPopup} popup={popup}/>
+        </> 
+        :
+        <>
+            <FileHistoryPopUp schema={props.schema} keyId={props.keyId} setPopup={setPopup} popup={popup}/>
         </>
     ] : [<></>]
 
     const Diffpopup =  compare ? [
+        isYOLO ? 
         <>
-            <FileDiffPopup keyId={props.keyId} setPopup={setCompare} popup={compare} len={Nversion}/>
+            <YOLODiffPopup schema={props.schema} keyId={props.keyId} setPopup={setCompare} popup={compare} len={Nversion}/>
+        </>
+        : 
+        <>
+            <FileDiffPopup schema={props.schema} keyId={props.keyId} setPopup={setCompare} popup={compare} len={Nversion}/>
         </>
     ] : [<></>]
+
+
+    const versions_list = isYOLO ? [<YOLOHistoryList key={'YOLOHiL'} keyId={props.keyId}/>] : [
+        <FileHistoryList key={'FileHiL'} keyId={props.keyId}/>
+    ]
 
     const LoadingPopup = loading ? [<LoadingScreen  key={'lscpp'}/>] : [null]
     const fileDisp = props.popup ? (loadingViz ? [null] : dataComp) : [null]
@@ -200,8 +245,10 @@ const FilePopup = (props) => {
             }, 
             body: data}
         )
+        setSubmit(0)
         await fetch('http://localhost:8000/commit_req?comment='.concat(`fixed annotation on ${newLabels['keyId']}`))
         setSubmit(0)
+        posthog.capture('Submitted a commit', { property: 'value' })
     }
 
     const commit_button = submit ? 
@@ -219,7 +266,7 @@ const FilePopup = (props) => {
     return (
         <>  
             {CloseComponent}
-            <div className="text-sm dark:bg-slate-600 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 rounded-lg bg-white w-[1100px]  h-[700px]">
+            <div className="text-sm dark:bg-slate-900 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 rounded-lg bg-white w-[1100px]  h-[700px]">
                 <div className="w-full justify-between flex h-[30px]">
                     <button onClick={() => props.setPopup(0)} className= 'place-self-center justify-self-start w-[50px] h-[30px] flex-col bg-red-400 hover:bg-red-200 p-2 rounded-br-md'> x </button> 
                     <div className="place-self-center py-2 font-bold">
@@ -229,23 +276,16 @@ const FilePopup = (props) => {
                 </div>
                 <ul className="text-xs font-medium rounded-lg 
                         text-gray-900 bg-white
-                        dark:bg-gray-600 dark:text-white">
+                        dark:bg-gray-900 dark:text-white">
                     <div className="flex h-[500px] ">
-                        <div className="w-[800px] rounded-md dark:text-black text-center border-2 flex flex-col justify-center border-black bg-white">
+                        <div className="w-[800px] rounded-md dark:text-black text-center border-2 flex flex-col justify-center border-black bg-white dark:bg-black">
                             {fileDisp}
                         </div>
                         <div className="w-[300px]">
                             <div className="flex justify-center">
                                 <DropdownFileOptions setHistory={setPopup} handleDelete={handleDelete} handleFullDelete={handleFullDelete}/>
                             </div>
-                            <div className="text-center py-5 font-light text-base flex flex-col">
-                                Datapoint Versions
-                            </div>
-                            <div className="w-[300px]">
-                                {
-                                    version.map((data, index) => <ItemFileVersion  key={index.toString()} keyId={props.keyId} version={data.version} date={data.date} commit={data.commit}/>)
-                                }
-                            </div>
+                            {versions_list}
                         </div>
                     </div>
                     <div className="flex justify-center mt-10">
