@@ -41,12 +41,8 @@ const BoundingBox = (props) => {
     var mouseX
     var mouseY
 
-    
-
     const color_hex = stringToColour(`${joinArray}c${props.class_number}`)
     const color = hexToRgb(color_hex)
-
-    console.log(`${joinArray}c${props.class_number}`,color_hex)
 
     useEffect(() => {
         const canvas = canvasRef.current

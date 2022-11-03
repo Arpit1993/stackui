@@ -237,7 +237,6 @@ const FilePopup = (props) => {
 
     const submitLabels = async () => {
         const data = JSON.stringify(newLabels)
-        console.log(newLabels)
         await fetch('http://localhost:8000/set_labels/', {
             method: 'POST',
             headers: { 

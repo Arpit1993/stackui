@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react"
 import BranchPopup from "./BranchPopup"
 import posthog from 'posthog-js'
 
-const getClassbuttons = (classes, classesFilter, setClassFilter, nullStr, setnullStr) => {
+const getClassbuttons = (classes, classesFilter, setClassFilter, nullStr, setnullStr, n_classes) => {
     const classes_buttons : Array<any> = []
 
     for(var i = 0; i < classes.length; i++){
@@ -17,7 +17,7 @@ const getClassbuttons = (classes, classesFilter, setClassFilter, nullStr, setnul
                         setClassFilter(cf)
                         setnullStr(nullStr+'a')
                     }} className="w-full h-6 bg-gray-200 shadow-lg rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-600 dark:border-gray-600">
-                        {cl}
+                        {`${cl} (${n_classes[cl]})`}
                     </button>
                 </ul>
             )
@@ -30,7 +30,7 @@ const getClassbuttons = (classes, classesFilter, setClassFilter, nullStr, setnul
                         setClassFilter(cf)
                         setnullStr(nullStr+'a')
                     }} className="w-full h-6 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-500 dark:border-gray-600">
-                        {cl}
+                        {`${cl} (${n_classes[cl]})`}
                     </button>
                 </ul>
             )
@@ -40,7 +40,7 @@ const getClassbuttons = (classes, classesFilter, setClassFilter, nullStr, setnul
     return classes_buttons
 }
 
-const getResbuttons = (resolutions, resFilter, setResFilter, nullStr, setnullStr) => {
+const getResbuttons = (resolutions, resFilter, setResFilter, nullStr, setnullStr, n_res) => {
     var res_buttons : Array<any> = []
 
     for(var i = 0; i < resolutions.length; i++){
@@ -56,7 +56,7 @@ const getResbuttons = (resolutions, resFilter, setResFilter, nullStr, setnullStr
                             setnullStr(nullStr+'b')
                         }
                     } className="w-full h-6 bg-gray-200 shadow-lg rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-600 dark:border-gray-600">
-                        {cl}
+                        {`${cl} (${n_res[cl]})`}
                     </button>
                 </ul>
             )
@@ -71,7 +71,7 @@ const getResbuttons = (resolutions, resFilter, setResFilter, nullStr, setnullStr
                             setnullStr(nullStr+'b')
                         }
                     } className="w-full h-6 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-500 dark:border-gray-600">
-                        {cl}
+                        {`${cl} (${n_res[cl]})`}
                     </button>
                 </ul>
             )
@@ -87,8 +87,10 @@ const YOLOFilterPopup = (props) => {
 
     const [operation, setOperation] = useState('OR')
     const [classes, setClasses] = useState(['01','02'])
+    const [n_classes, setNClasses] = useState({})
     const [classesFilter, setClassFilter] = useState({'01': false,'02': false})
     const [resolutions, setResolutions] = useState(['0x0','1x1'])
+    const [n_res, setNResolutions] = useState({})
     const [resFilter, setResFilter] = useState({'0x0': false, '1x1': false})
     const [time, setTime] = useState(true)
 
@@ -102,7 +104,9 @@ const YOLOFilterPopup = (props) => {
                 (res) =>
                 {
                     setClasses(res.classes)
+                    setNClasses(res.n_class)
                     setResolutions(res.resolutions)
+                    setNResolutions(res.n_res)
 
                     var cFilter: any = {}
                     for(var i = 0; i < res.classes.length; i++){
@@ -218,8 +222,8 @@ const YOLOFilterPopup = (props) => {
 
     const branch_popup = branch ? [<BranchPopup key={'brpp'} setPopup={setBranch}/>] : [<></>]
 
-    const classes_buttons : Array<any> = getClassbuttons(classes, classesFilter, setClassFilter, nullStr, setnullStr)
-    const res_buttons : Array<any> = getResbuttons(resolutions, resFilter, setResFilter, nullStr, setnullStr)
+    const classes_buttons : Array<any> = getClassbuttons(classes, classesFilter, setClassFilter, nullStr, setnullStr, n_classes)
+    const res_buttons : Array<any> = getResbuttons(resolutions, resFilter, setResFilter, nullStr, setnullStr, n_res)
 
     return (
         <>

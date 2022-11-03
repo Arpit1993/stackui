@@ -1,6 +1,7 @@
 import FilePopup from "../../popups/FilePopup";
 import Image from "next/image";
 import { SetStateAction, useCallback, useEffect, useState } from "react";
+import ImageThumbnail from "./ImageThumbnail";
 import React from "react";
 
 const FileExplorer = (props: { schema: String; files: any[]; dataset: string | any[]; page: number; setPage: any; view: any; setView: any; len: number; waiting: any; max_view: any; setMaxView: any}) => {
@@ -123,6 +124,7 @@ const FileExplorer = (props: { schema: String; files: any[]; dataset: string | a
                                         objectFit={'contain'}
                                         alt='.'/>
                                 </button>
+                                // <ImageThumbnail key={`thumb-${file.filename}`} filename={file.filename} thumbnail={file.thumbnail} max_view={props.max_view} waiting={props.waiting} />
                             )
                         }
                     </div>
@@ -143,6 +145,7 @@ const FileExplorer = (props: { schema: String; files: any[]; dataset: string | a
                                         objectFit={'contain'}
                                         alt='.'/>
                                 </button>
+                                // <ImageThumbnail key={`thumb-${file.filename}`} filename={file.filename} thumbnail={file.thumbnail} max_view={props.max_view} waiting={props.waiting} />
                             )
                         }
                     </div>
@@ -163,6 +166,7 @@ const FileExplorer = (props: { schema: String; files: any[]; dataset: string | a
                                         objectFit={'contain'}
                                         alt='.'/>
                                 </button>
+                                // <ImageThumbnail key={`thumb-${file.filename}`} filename={file.filename} thumbnail={file.thumbnail} max_view={props.max_view} waiting={props.waiting} />
                             )
                         }
                     </div>
@@ -184,6 +188,7 @@ const FileExplorer = (props: { schema: String; files: any[]; dataset: string | a
                                         objectFit={'contain'}
                                         alt='.'/>
                                 </button>
+                                // <ImageThumbnail key={`thumb-${file.filename}`} filename={file.filename} thumbnail={file.thumbnail} max_view={props.max_view} waiting={props.waiting} />
                             )
                         }
                     </div>
@@ -202,21 +207,48 @@ const FileExplorer = (props: { schema: String; files: any[]; dataset: string | a
 
     const FileComponent = popup ? [<FilePopup schema={props.schema} popup={popup} setPopup={setPopup} keyId={keyVar} key={'fcp'}/>] : [<></>]
 
+    var pressed_s: Array<number> = [0, 0]
+
     const handleKeyPress = useCallback((event) => {
         if (event.key == 'ArrowLeft') {
             props.setPage(Math.max(props.page-1,0))
+            pressed_s[0] = pressed_s[0] + 1
         } else if (event.key == 'ArrowRight'){
             props.setPage(Math.min(max_pages-0.001|0,props.page+1|0))
+            pressed_s[1] = pressed_s[1] + 1
+        } else if (event.key == 'Shift') {
+            pressed_s[0] = pressed_s[0] + 1
+            pressed_s[1] = pressed_s[1] + 1
+        }
+
+        if (pressed_s[0]==2){
+            console.log('gs0')
+        }
+        if (pressed_s[1]==2){
+            console.log('gs1')
+        }
+
+    }, [props.page, props.view])
+
+    const handleKeyRelease = useCallback((event) => {
+        if (event.key == 'ArrowLeft') {
+            pressed_s[0] = pressed_s[0] - 1
+        } else if (event.key == 'ArrowRight'){
+            pressed_s[1] = pressed_s[1] - 1
+        } else if (event.key == 'Shift') {
+            pressed_s[0] = pressed_s[0] - 1
+            pressed_s[1] = pressed_s[1] - 1
         }
     }, [props.page, props.view])
 
     useEffect(() => {
         document.addEventListener('keydown', handleKeyPress);
+        document.addEventListener('keyup', handleKeyRelease);
 
         return () => {
-        document.removeEventListener('keydown', handleKeyPress);
+            document.removeEventListener('keydown', handleKeyPress);
+            document.removeEventListener('keyup', handleKeyRelease);
         }
-        
     },[props.page, props.view])
 
     return (
