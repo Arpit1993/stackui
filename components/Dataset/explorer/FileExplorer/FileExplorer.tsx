@@ -1,7 +1,7 @@
 import FilePopup from "../../popups/FilePopup";
 import Image from "next/image";
 import { SetStateAction, useCallback, useEffect, useState } from "react";
-import ImageThumbnail from "./ImageThumbnail";
+import ImageThumbnail from "./Items/ImageThumbnail";
 import React from "react";
 
 const FileExplorer = (props: { schema: String; files: any[]; dataset: string | any[]; page: number; setPage: any; view: any; setView: any; len: number; waiting: any; max_view: any; setMaxView: any}) => {
@@ -109,92 +109,36 @@ const FileExplorer = (props: { schema: String; files: any[]; dataset: string | a
             </div>
         ]
 
-        if(props.max_view == 36){
-            container_var.push(
-                <div key={'fctnr2'}>
-                    <div className='grid grid-cols-6 w-[800px] grid-rows-6 gap-1'>
-                        {
-                            files.filter((data, idx) => idx < idx_max ).map( (file, index) =>
-                                <button className="h-[75px] w-[130px] bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 hover:dark:bg-black rounded-md border-[0.5px] border-gray-400 text-left text-xs" key={`${index.toString()}defg`} onClick={() => handleObjectClick(file['name'].substring(props.dataset.length))}>
-                                    <Image  
-                                        className="justify-self-center flex"
-                                        src={ props.waiting ? '/Icons/load_icon.png' : file.thumbnail} 
-                                        width={260}
-                                        height={props.waiting ? 40 : 145}
-                                        objectFit={'contain'}
-                                        alt='.'/>
-                                </button>
-                                // <ImageThumbnail key={`thumb-${file.filename}`} filename={file.filename} thumbnail={file.thumbnail} max_view={props.max_view} waiting={props.waiting} />
-                            )
-                        }
-                    </div>
-                </div>
-            );   
-        } else if(props.max_view == 25){
-            container_var.push(
-                <div key={'fctnr2'}>
-                    <div className='grid grid-cols-5 w-[800px] grid-rows-5 gap-1'>
-                        {
-                            files.filter((data, idx) => idx < idx_max ).map( (file, index) =>
-                                <button className="h-[90px] w-[155px] bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 hover:dark:bg-black rounded-md border-[0.5px] border-gray-400 text-left text-xs" key={`${index.toString()}defg`} onClick={() => handleObjectClick(file['name'].substring(props.dataset.length))}>
-                                    <Image  
-                                        className="justify-self-center flex"
-                                        src={ props.waiting ? '/Icons/load_icon.png' : file.thumbnail} 
-                                        width={260}
-                                        height={props.waiting ? 40 : 145}
-                                        objectFit={'contain'}
-                                        alt='.'/>
-                                </button>
-                                // <ImageThumbnail key={`thumb-${file.filename}`} filename={file.filename} thumbnail={file.thumbnail} max_view={props.max_view} waiting={props.waiting} />
-                            )
-                        }
-                    </div>
-                </div>
-            );   
-        } else if(props.max_view == 16){
-            container_var.push(
-                <div key={'fctnr2'}>
-                    <div className='grid grid-cols-4 w-[800px] grid-rows-4 gap-1'>
-                        {
-                            files.filter((data, idx) => idx < idx_max ).map( (file, index) =>
-                                <button className="h-[110px] w-[180px] bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 hover:dark:bg-black rounded-md border-[0.5px] border-gray-400 text-left text-xs" key={`${index.toString()}defg`} onClick={() => handleObjectClick(file['name'].substring(props.dataset.length))}>
-                                    <Image  
-                                        className="justify-self-center flex"
-                                        src={ props.waiting ? '/Icons/load_icon.png' : file.thumbnail} 
-                                        width={260}
-                                        height={props.waiting ? 40 : 145}
-                                        objectFit={'contain'}
-                                        alt='.'/>
-                                </button>
-                                // <ImageThumbnail key={`thumb-${file.filename}`} filename={file.filename} thumbnail={file.thumbnail} max_view={props.max_view} waiting={props.waiting} />
-                            )
-                        }
-                    </div>
-                </div>
-            );   
-        } else {
-            props.setMaxView(9)
-            container_var.push(
-                <div key={'fctnr2'}>
-                    <div className='grid grid-cols-3 w-[800px] grid-rows-3 gap-1'>
-                        {
-                            files.filter((data, idx) => idx < idx_max ).map( (file, index) =>
-                                <button className="h-[150px] w-[260px] bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 hover:dark:bg-black rounded-md border-[0.5px] border-gray-400 text-left text-xs" key={`${index.toString()}defg`} onClick={() => handleObjectClick(file['name'].substring(props.dataset.length))}>
-                                    <Image  
-                                        className="justify-self-center flex"
-                                        src={ props.waiting ? '/Icons/load_icon.png' : file.thumbnail} 
-                                        width={260}
-                                        height={props.waiting ? 40 : 145}
-                                        objectFit={'contain'}
-                                        alt='.'/>
-                                </button>
-                                // <ImageThumbnail key={`thumb-${file.filename}`} filename={file.filename} thumbnail={file.thumbnail} max_view={props.max_view} waiting={props.waiting} />
-                            )
-                        }
-                    </div>
-                </div>
-            );   
+        var class_var = ''
+
+        switch (props.max_view) {
+            case(36):
+                class_var = `grid grid-cols-6 w-full auto-rows-auto gap-1`
+                break
+            case(25):
+                class_var = `grid grid-cols-5 w-full auto-rows-auto gap-1`
+                break
+            case(16):
+                class_var = `grid grid-cols-4 w-full auto-rows-auto gap-1`
+                break
+            default:
+                class_var = `grid grid-cols-3 w-full auto-rows-auto gap-1`
+                idx_max = 9
+                props.setMaxView(9)
+                break
         }
+
+        container_var.push(
+            <div key={'fctnr2'}>
+                <div className={class_var}>
+                    {
+                        files.filter((data, idx) => idx < idx_max ).map( (file, index) =>
+                            <ImageThumbnail key={`thumb-${file.filename}`} dataset={props.dataset} max_view={props.max_view} file={file} index={index} waiting={props.waiting} handleObjectClick={handleObjectClick}/>
+                        )
+                    }
+                </div>
+            </div>
+        );
     }
 
     listofButtons.push(
@@ -207,49 +151,30 @@ const FileExplorer = (props: { schema: String; files: any[]; dataset: string | a
 
     const FileComponent = popup ? [<FilePopup schema={props.schema} popup={popup} setPopup={setPopup} keyId={keyVar} key={'fcp'}/>] : [<></>]
 
-    var pressed_s: Array<number> = [0, 0]
-
     const handleKeyPress = useCallback((event) => {
         if (event.key == 'ArrowLeft') {
             props.setPage(Math.max(props.page-1,0))
-            pressed_s[0] = pressed_s[0] + 1
         } else if (event.key == 'ArrowRight'){
             props.setPage(Math.min(max_pages-0.001|0,props.page+1|0))
-            pressed_s[1] = pressed_s[1] + 1
-        } else if (event.key == 'Shift') {
-            pressed_s[0] = pressed_s[0] + 1
-            pressed_s[1] = pressed_s[1] + 1
         }
 
-        if (pressed_s[0]==2){
-            console.log('gs0')
-        }
-        if (pressed_s[1]==2){
-            console.log('gs1')
+        if (event.shiftKey && event.key == '_'){
+            props.setMaxView(Math.min(Math.pow((Math.sqrt(props.max_view)+1),2),36))
+            props.setPage(0)
+        } else if (event.shiftKey && event.key == '+'){
+            props.setMaxView(Math.max(Math.pow((Math.sqrt(props.max_view)-1),2),9))
+            props.setPage(0)
         }
 
-    }, [props.page, props.view])
-
-    const handleKeyRelease = useCallback((event) => {
-        if (event.key == 'ArrowLeft') {
-            pressed_s[0] = pressed_s[0] - 1
-        } else if (event.key == 'ArrowRight'){
-            pressed_s[1] = pressed_s[1] - 1
-        } else if (event.key == 'Shift') {
-            pressed_s[0] = pressed_s[0] - 1
-            pressed_s[1] = pressed_s[1] - 1
-        }
-    }, [props.page, props.view])
+    }, [props.page, props.view, props.max_view])
 
     useEffect(() => {
         document.addEventListener('keydown', handleKeyPress);
-        document.addEventListener('keyup', handleKeyRelease);
 
         return () => {
             document.removeEventListener('keydown', handleKeyPress);
-            document.removeEventListener('keyup', handleKeyRelease);
         }
-    },[props.page, props.view])
+    },[props.page, props.view, props.max_view])
 
     return (
         <div className="h-full">

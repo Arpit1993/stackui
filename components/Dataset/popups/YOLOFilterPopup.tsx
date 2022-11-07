@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react"
 import BranchPopup from "./BranchPopup"
 import posthog from 'posthog-js'
+import LoadingScreen from "../../LoadingScreen"
 
 const getClassbuttons = (classes, classesFilter, setClassFilter, nullStr, setnullStr, n_classes) => {
     const classes_buttons : Array<any> = []

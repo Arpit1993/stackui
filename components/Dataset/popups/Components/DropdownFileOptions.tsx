@@ -25,13 +25,13 @@ const DropdownFileOptions = (props) => {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Menu.Items className="absolute right-0 z-10 mt-2 w-[200px] origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            <Menu.Items className="absolute right-0 z-10 mt-2 w-[200px] origin-top-right rounded-md border border-black backdrop-blur-md bg-white/50 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
               <div className="py-1 h-[113px] overflow-scroll">
               <Menu.Item>
                   {({ active }) => (
                     <button
                       className={classNames(
-                        active ? 'bg-gray-100 text-gray-900  w-full' : 'text-gray-700',
+                        active ? 'bg-gray-100/50 text-gray-900  w-full' : 'text-gray-700',
                         'block px-4 py-2 text-sm w-full'
                       )}
                       onClick={()=>props.setHistory(1)}
@@ -44,7 +44,7 @@ const DropdownFileOptions = (props) => {
                   {({ active }) => (
                     <button
                       className={classNames(
-                        active ? 'bg-gray-100 text-gray-900  w-full' : 'text-gray-700',
+                        active ? 'bg-gray-100/50 text-gray-900  w-full' : 'text-gray-700',
                         'block px-4 py-2 text-sm w-full'
                       )}
                       onClick={()=>props.handleDelete()}
@@ -57,7 +57,7 @@ const DropdownFileOptions = (props) => {
                   {({ active }) => (
                     <button
                       className={classNames(
-                        active ? 'bg-gray-100 text-red-400  w-full' : 'text-red-400',
+                        active ? 'bg-gray-100/50 text-red-400  w-full' : 'text-red-400',
                         'block px-4 py-2 text-sm w-full'
                       )}
                       onClick={()=>props.handleFullDelete()}

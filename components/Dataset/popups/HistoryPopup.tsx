@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import ItemCommit from "../Items/ItemCommit";
 
 function generateButtons(page, handleClick){
-    var listofButtons = []
+    var listofButtons: Array<any> = []
     listofButtons.push(
         <div  className="flex">
             <button className=" bg-gray-200 flex flex-col justify-center rounded-full h-[25px] w-[25px] p-2 shadow-sm dark: text-black hover:bg-gray-300" onClick={() => handleClick(Math.max(page-1,0))}>

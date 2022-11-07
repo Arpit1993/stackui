@@ -17,8 +17,6 @@ const YOLOHistoryList = (props) => {
             .then((data) => data.json()).then((res) => {
                 setVersionLabel(Object.values(res.commits))
                 setlabelName(res.keyId)
-                console.log(Object.values(res.commits))
-                console.log(res.keyId)
             })
         }
         fetchVersions()

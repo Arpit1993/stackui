@@ -3,7 +3,7 @@ import AddFilePopup from "../../popups/AddFilePopup";
 import React from "react";
 import Image from "next/image";
 import YOLOFilterPopup from "../../popups/YOLOFilterPopup";
-import { Schemas } from "aws-sdk";
+import FileFilterPopup from "../../popups/FileFilterPopup";
 
 function commit(comment: string){
     fetch('http://localhost:8000/commit_req?comment='.concat(comment))
@@ -30,7 +30,7 @@ const TopBar = (props: {schema: string; props: { dataset: string | number | bool
     var FilterComponent = [<></>]
 
     if(props.schema == 'yolo' || props.schema == 'labelbox'){
-        FilterComponent = filterPopup ? [<YOLOFilterPopup schema={props.schema} txt={txt} popup={filterPopup} setFiltering={props.setFiltering} setPopup={setFilterPopup} key={'fffp'}/>] : [<></>]
+        FilterComponent = filterPopup ? [<YOLOFilterPopup schema={props.schema} txt={txt} popup={filterPopup} setFiltering={props.setFiltering} setPopup={setFilterPopup} key={'yffp'}/>] : [<></>]
         SwitchLabels = [
         <button key={'csd'} className="hover:shadow-lg h-[40px] rounded-md w-max justify-center text-white bg-gray-500 text-sm px-2 py-2 hover:bg-gray-700" onClick={() => {
             fetch('http://localhost:8000/set_bounding_boxes')
@@ -38,6 +38,8 @@ const TopBar = (props: {schema: string; props: { dataset: string | number | bool
             props.setFiltering(Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15))
         }}> Boxes on/off
         </button>]
+    } else if (props.schema == 'files'){
+        FilterComponent = filterPopup ? [<FileFilterPopup schema={props.schema} txt={txt} popup={filterPopup} setFiltering={props.setFiltering} setPopup={setFilterPopup} key={'fffp'}/>] : [<></>]
     }
     const PopupComponent = addPopup ? [<AddFilePopup popup={addPopup} setPopup={setAddPopup} key={'afpp'}/>] : [<></>]
 

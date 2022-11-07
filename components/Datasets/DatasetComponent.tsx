@@ -28,9 +28,9 @@ const DatasetComponent = (props) => {
 
     return (
         <div className="w-full flex gap-2" key={'cp'}>
-            <button onClick={() => handleClick()} className='w-4/6'>
-                <ul className=" text-start mt-3 font-normal text-sm">
-                    <li className="py-4 px-4 justify-between flex-col w-full hover:bg-gray-300 rounded-md border border-gray-400 dark:border-gray-600 dark:hover:bg-gray-800">
+            <button onClick={() => handleClick()} className='w-2/3'>
+                <ul className="text-start mt-3 font-normal text-sm">
+                    <li className="py-4 px-4 justify-between flex-col w-full hover:bg-gray-200 rounded-md border border-gray-400 dark:border-gray-600 dark:hover:bg-gray-800">
                         <div className="w-full flex truncate">
                             <div className="w-[100px]"> Dataset: </div>
                             <div className="w-full truncate"> {props.dataset.name} </div>
@@ -42,10 +42,10 @@ const DatasetComponent = (props) => {
                     </li>
                 </ul>
             </button>
-            <button  onClick={() => setPopup(true)} className='w-1/6 mt-3 rounded-md border text-black border-gray-400 bg-gray-200 hover:bg-gray-400 dark:border-gray-600'>
+            <button  onClick={() => setPopup(true)} className='w-1/6 mt-3 rounded-md border text-sm text-black border-gray-400 bg-gray-100 hover:bg-gray-200 dark:border-gray-600'>
                 Options
             </button>
-            <button  onClick={() => handleDisconnect()} className='w-1/6 mt-3 rounded-md border text-red-400 border-gray-400 bg-gray-200 hover:bg-gray-400 dark:border-gray-600'>
+            <button  onClick={() => handleDisconnect()} className='w-1/6 mt-3 rounded-md border text-sm text-red-400 border-gray-400 bg-gray-100 hover:bg-gray-200 dark:border-gray-600'>
                 Disconnect
             </button>
             {datasetOptions}

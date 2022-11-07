@@ -5,13 +5,13 @@ import ChangePopup from "../popups/ChangePopup";
 const ItemChange = (props: { author: string | number | boolean | ReactFragment | ReactPortal | ReactElement<any, string | JSXElementConstructor<any>> | null | undefined; comment: string | number | boolean | ReactFragment | ReactPortal | ReactElement<any, string | JSXElementConstructor<any>> | null | undefined; date: string | number | boolean | ReactFragment | ReactPortal | ReactElement<any, string | JSXElementConstructor<any>> | null | undefined; }) => {
 
     const [popup, setPopup] = useState(0)
-
-    const ComponentPopup = popup ? 
-    [<ChangePopup popup={popup} setPopup={setPopup} author={props.author} comment={props.comment} date={props.date}  key={`chg2${props.date}${props.author}${props.comment}`}/>] : [<></>]
     var date = new Date(props.date.concat(' GMT')).toString();
-
+    
+    const ComponentPopup = popup ?     
+    [<ChangePopup key={`change_popup${date}`} popup={popup} setPopup={setPopup} author={props.author} comment={props.comment} date={props.date}  key={`chg2${props.date}${props.author}${props.comment}`}/>] : [<></>]
+    
     return (
-        <div key={`change_element${props.comment}`}>
+        <div key={`change_element${date}`}>
             {ComponentPopup}
             <button onClick={() => setPopup(1)} className="text-start w-full">
                 <li className=" py-4 px-4 justify-between rounded-lg flex-col w-full hover:bg-gray-100 border-[0.5px] mb-1 dark:hover:bg-gray-600 border-gray-500 dark:border-gray-600">

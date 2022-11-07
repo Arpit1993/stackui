@@ -1,12 +1,11 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import Explorer from "./explorer/Explorer";
-import Infobar from "./infobar/Infobar"
-import { posthog } from "posthog-js";
+import Infobar from "./infobar/Infobar";
 
 const Dataset = () => {
     // states for each json
-    const [files, setFiles] = useState([])
+    const [files, setFiles]: Array<any> = useState([])
     const [URI, setURI] = useState({schema: '', storage: '', dataset: '', storage_dataset: ''});
     const [commits, setCommits] = useState([]);
     const [len, setLen] = useState(0);
@@ -35,7 +34,7 @@ const Dataset = () => {
                 setView(0)
             }
 
-            var files_ = [];
+            var files_: Array<any> = [];
 
             for(var i = 0; i < current.keys.length; i++){
                 const isImage = ['jpg','png','jpeg','tiff','bmp','eps'].includes(current.keys[i].split('.').pop())
@@ -62,31 +61,34 @@ const Dataset = () => {
                     .then((stream) => new Response(stream)).then((response) => response.blob())
                     .then((blob) => URL.createObjectURL(blob))
 
+                    const tags = await fetch(`http://localhost:8000/get_tags?file=${current.keys[i].substring(await uri.storage_dataset.length)}`)
+                    .then((res) => res.json())
+
                     files_.push({
                         name: current.keys[i],
+                        base_name: current.keys[i].substring(await uri.storage_dataset.length),
                         last_modified: current.lm[i],
-                        thumbnail: thumbnail_
+                        thumbnail: thumbnail_,
+                        tags: tags
                     })
 
                     setWaiting(0)
                 } else{
-                    const thumbnail_  = '/Icons/file-icon.jpeg'
-                    if (isImage){
-                        const thumbnail_ = 'icon-image-512.webp'
-                    }
+                    const tags = await fetch(`http://localhost:8000/get_tags?file=${current.keys[i].substring(await uri.storage_dataset.length)}`)
+                    .then((res) => res.json())
+                    
                     files_.push({
                         name: current.keys[i],
+                        base_name: current.keys[i].substring(await uri.storage_dataset.length),
                         last_modified: current.lm[i],
-                        thumbnail: thumbnail_
+                        thumbnail: isImage ? '/Icons/icon-image-512.webp' : '/Icons/file-icon.jpeg',
+                        tags: tags
                     })
                 }
             }
 
             setFiles(await files_)
         }
-
-        const POSTHOG_KEY: string = process.env.NEXT_PUBLIC_POSTHOG_KEY as string;
-        posthog.init(POSTHOG_KEY, { api_host: 'https://app.posthog.com' })
     
         fetchFiles()
 
