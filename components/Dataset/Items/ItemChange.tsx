@@ -2,13 +2,13 @@ import React from "react";
 import { useState, useEffect, JSXElementConstructor, ReactElement, ReactFragment, ReactPortal } from "react";
 import ChangePopup from "../popups/ChangePopup";
 
-const ItemChange = (props: { author: string | number | boolean | ReactFragment | ReactPortal | ReactElement<any, string | JSXElementConstructor<any>> | null | undefined; comment: string | number | boolean | ReactFragment | ReactPortal | ReactElement<any, string | JSXElementConstructor<any>> | null | undefined; date: string | number | boolean | ReactFragment | ReactPortal | ReactElement<any, string | JSXElementConstructor<any>> | null | undefined; }) => {
+const ItemChange = (props: { author: string | number | boolean | ReactFragment | ReactPortal | ReactElement<any, string | JSXElementConstructor<any>> | null | undefined; comment: string | number | boolean | ReactFragment | ReactPortal | ReactElement<any, string | JSXElementConstructor<any>> | null | undefined; date: string; }) => {
 
     const [popup, setPopup] = useState(0)
     var date = new Date(props.date.concat(' GMT')).toString();
     
     const ComponentPopup = popup ?     
-    [<ChangePopup key={`change_popup${date}`} popup={popup} setPopup={setPopup} author={props.author} comment={props.comment} date={props.date}  key={`chg2${props.date}${props.author}${props.comment}`}/>] : [<></>]
+    [<ChangePopup popup={popup} setPopup={setPopup} author={props.author} comment={props.comment} date={props.date}  key={`chg2${props.date}${props.author}${props.comment}`}/>] : [<></>]
     
     return (
         <div key={`change_element${date}`}>

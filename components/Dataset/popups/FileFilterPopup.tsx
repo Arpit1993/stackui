@@ -58,7 +58,7 @@ const FileFilterPopup = (props) => {
         )
     }
 
-    const wait = filtering ? [<LoadingScreen/>] : [<></>]
+    const wait = filtering ? [<LoadingScreen key={'lds_fpp'}/>] : [<></>]
     const branch_popup = branch ? [<BranchPopup key={'brpp'} setPopup={setBranch}/>] : [<></>]
 
     return (

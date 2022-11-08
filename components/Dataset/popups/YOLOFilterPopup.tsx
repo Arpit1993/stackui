@@ -3,153 +3,127 @@ import BranchPopup from "./BranchPopup"
 import posthog from 'posthog-js'
 import LoadingScreen from "../../LoadingScreen"
 
-const getClassbuttons = (classes, classesFilter, setClassFilter, nullStr, setnullStr, n_classes) => {
-    const classes_buttons : Array<any> = []
+const getbuttons = (variable, varFilter, setVarFilter, nullStr, setnullStr, n_var, name) => {
+    const var_buttons : Array<any> = []
 
-    for(var i = 0; i < classes.length; i++){
-        const cl = classes.sort()[i]
+    for(var i = 0; i < variable.length; i++){
+        const cl = variable.sort()[i]
         
-        if(classesFilter[cl]){
-            classes_buttons.push(
-                <ul key={`abc ${cl}`} className="w-full flex px-1 mb-1 mt-1">
+        if(varFilter[cl]){
+            var_buttons.push(
+                <ul key={`abc ${cl} ${name}`} className="w-full flex px-1 mb-1 mt-1">
                     <button  onClick={async ()=>{
-                        const cf = classesFilter
+                        const cf = varFilter
                         cf[cl] = !cf[cl]
-                        setClassFilter(cf)
+                        setVarFilter(cf)
                         setnullStr(nullStr+'a')
                     }} className="w-full h-6 bg-gray-200 shadow-lg rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-600 dark:border-gray-600">
-                        {`${cl} (${n_classes[cl]})`}
+                        {`${cl} (${n_var[cl]})`}
                     </button>
                 </ul>
             )
         } else {
-            classes_buttons.push(
-                <ul key={`abc ${cl}`} className="w-full flex px-1 mb-1 mt-1">
+            var_buttons.push(
+                <ul key={`abc ${cl} ${name}`} className="w-full flex px-1 mb-1 mt-1">
                     <button  onClick={async ()=>{
-                        const cf = classesFilter
+                        const cf = varFilter
                         cf[cl] = !cf[cl]
-                        setClassFilter(cf)
+                        setVarFilter(cf)
                         setnullStr(nullStr+'a')
                     }} className="w-full h-6 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-500 dark:border-gray-600">
-                        {`${cl} (${n_classes[cl]})`}
+                        {`${cl} (${n_var[cl]})`}
                     </button>
                 </ul>
             )
         }
     }
 
-    return classes_buttons
-}
-
-const getResbuttons = (resolutions, resFilter, setResFilter, nullStr, setnullStr, n_res) => {
-    var res_buttons : Array<any> = []
-
-    for(var i = 0; i < resolutions.length; i++){
-        const cl = resolutions.sort()[i]
-        if(resFilter[cl]){
-            res_buttons.push(
-                <ul key={`def ${cl}`} className="w-full flex px-1 mb-1 mt-1">
-                    <button  
-                        onClick={async ()=>{
-                            const rf = resFilter
-                            rf[cl] = !rf[cl]
-                            setResFilter(rf)
-                            setnullStr(nullStr+'b')
-                        }
-                    } className="w-full h-6 bg-gray-200 shadow-lg rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-600 dark:border-gray-600">
-                        {`${cl} (${n_res[cl]})`}
-                    </button>
-                </ul>
-            )
-        } else {
-            res_buttons.push(
-                <ul key={`def ${cl}`} className="w-full flex px-1 mb-1 mt-1">
-                    <button  
-                        onClick={async ()=>{
-                            const rf = resFilter
-                            rf[cl] = !rf[cl]
-                            setResFilter(rf)
-                            setnullStr(nullStr+'b')
-                        }
-                    } className="w-full h-6 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-500 dark:border-gray-600">
-                        {`${cl} (${n_res[cl]})`}
-                    </button>
-                </ul>
-            )
-        }
-    }
-
-    return res_buttons
+    return var_buttons
 }
 
 const YOLOFilterPopup = (props) => {
 
     const [branch, setBranch] = useState(false)
 
-    const [operation, setOperation] = useState('OR')
     const [classes, setClasses] = useState(['01','02'])
     const [n_classes, setNClasses] = useState({})
     const [classesFilter, setClassFilter] = useState({'01': false,'02': false})
-    const [resolutions, setResolutions] = useState(['0x0','1x1'])
+    
     const [n_res, setNResolutions] = useState({})
+    const [resolutions, setResolutions] = useState(['0x0','1x1'])
     const [resFilter, setResFilter] = useState({'0x0': false, '1x1': false})
-    const [time, setTime] = useState(true)
 
-    // weird hack to make the checkboxes actually change state, otherwise state remains the same
+    const [n_tags, setNTags] = useState({})
+    const [tags, setTags] = useState(['a','b'])
+    const [tagFilter, setTagFilter] = useState({'a': false, 'b': false})
+    
+    const [time, setTime] = useState(true)
+    var repeated = false
+
+    // weird hack to make the checkboxes bg-color change when setState, otherwise state remains the same
     // TODO
     const [nullStr, setnullStr] = useState('')
 
     useEffect( () => {
         const getMetadata = async () => {
-            const res =  await fetch('http://localhost:8000/schema_metadata').then((res) => res.json()).then(
+            await fetch('http://localhost:8000/schema_metadata').then((res) => res.json()).then(
                 (res) =>
                 {
                     setClasses(res.classes)
                     setNClasses(res.n_class)
-                    setResolutions(res.resolutions)
-                    setNResolutions(res.n_res)
-
+                    
                     var cFilter: any = {}
                     for(var i = 0; i < res.classes.length; i++){
-                        cFilter[res.classes[i]] = false
-                    }
-            
-                    var rFilters: any = {}
-                    for(var i = 0; i < res.resolutions.length; i++){
-                        rFilters[res.resolutions[i]] = false
+                        if(classesFilter[res.classes[i]]){
+                            cFilter[res.classes[i]] = true
+                        } else {
+                            cFilter[res.classes[i]] = false
+                        }
                     }
 
                     setClassFilter(cFilter)
+
+                    setResolutions(res.resolutions)
+                    setNResolutions(res.n_res)
+            
+                    var rFilters: any = {}
+                    for(var i = 0; i < res.resolutions.length; i++){
+                        if(resFilter[res.resolutions[i]]){
+                            rFilters[res.resolutions[i]] = true
+                        } else {
+                            rFilters[res.resolutions[i]] = false
+                        }
+                    }
+
                     setResFilter(rFilters)
+
+                    setTags(res.tags)
+                    setNTags(res.n_tags)
+
+                    var tFilters: any = {}
+                    for(var i = 0; i < res.tags.length; i++){
+                        if(tagFilter[res.tags[i]]){
+                            tFilters[res.tags[i]] = true
+                        } else {
+                            tFilters[res.tags[i]] = false
+                        }
+                    }
+                    setTagFilter(tFilters)
                 }
             )
         }
 
-        if (time){
-            getMetadata()
-            setTime(false)
-        } else {
+        getMetadata()
+    }, [time])
 
-        }
-    }, [resFilter, classesFilter])
-
-    const toggleClasses = (toggle) => {
-        var cf = classesFilter
+    const toggleVariable = (toggle, filter, setFilter) => {
+        var cf = filter
         for(var i = 0; i < Object.keys(cf).length; i++){
             cf[Object.keys(cf)[i]] = toggle
         }
-        setClassFilter(cf)
+        setFilter(cf)
 
-        setnullStr(nullStr+'a')
-    }
-
-    const toggleRes = (toggle) => {
-        var rf = resFilter
-        for(var i = 0; i < Object.keys(rf).length; i++){
-            rf[Object.keys(rf)[i]] = toggle
-        }
-        setResFilter(rf)
-        setnullStr(nullStr+'b')
+        setnullStr(nullStr+'x')
     }
 
     const handleApplyFilter = async () => {
@@ -178,11 +152,21 @@ const YOLOFilterPopup = (props) => {
             }
         }
 
-        filters[idx] = {
-            'name': props.txt
+        for(var i = 0; i < Object.keys(tagFilter).length; i++){
+            if (Object.values(tagFilter)[i]){
+                filters[idx] =
+                    {
+                        'tag': Object.keys(tagFilter)[i]
+                    }
+                idx+=1
+            }
         }
 
-        filters['operation'] = operation
+        if(props.txt.length > 0){
+            filters[idx] = {
+                'name': props.txt
+            }
+        }
 
         const data = JSON.stringify(filters)
 
@@ -198,6 +182,7 @@ const YOLOFilterPopup = (props) => {
         posthog.capture('Applied filter', { property: 'value' })
     
         props.setFiltering('z')
+        setTime(!time)
     }
 
     const handleResetFilter = async () => {
@@ -206,25 +191,35 @@ const YOLOFilterPopup = (props) => {
             () =>{
                 const rFilter = resFilter
                 for(var i = 0; i < Object.keys(rFilter).length; i++){
-                    rFilter[Object.keys(rFilter)[i]] = true
+                    rFilter[Object.keys(rFilter)[i]] = false
                 }
 
                 const cFilter = classesFilter
                 for(var i = 0; i < Object.keys(cFilter).length; i++){
-                    cFilter[Object.keys(cFilter)[i]] = true
+                    cFilter[Object.keys(cFilter)[i]] = false
+                }
+
+                const tFilter = tagFilter
+                for(var i = 0; i < Object.keys(tFilter).length; i++){
+                    tFilter[Object.keys(tFilter)[i]] = false
                 }
                 
                 setResFilter(rFilter)
                 setClassFilter(cFilter)
+                setTagFilter(tFilter)
                 setnullStr('')
             }
         )
+
+        props.setFiltering('z')
+        setTime(!time)
     }
 
     const branch_popup = branch ? [<BranchPopup key={'brpp'} setPopup={setBranch}/>] : [<></>]
 
-    const classes_buttons : Array<any> = getClassbuttons(classes, classesFilter, setClassFilter, nullStr, setnullStr, n_classes)
-    const res_buttons : Array<any> = getResbuttons(resolutions, resFilter, setResFilter, nullStr, setnullStr, n_res)
+    const classes_buttons : Array<any> = getbuttons(classes, classesFilter, setClassFilter, nullStr, setnullStr, n_classes,'class')
+    const res_buttons : Array<any> = getbuttons(resolutions, resFilter, setResFilter, nullStr, setnullStr, n_res,'res')
+    const tag_buttons : Array<any> = getbuttons(tags, tagFilter, setTagFilter, nullStr, setnullStr, n_tags,'tag')
 
     return (
         <>
@@ -240,11 +235,11 @@ const YOLOFilterPopup = (props) => {
                                 Classes
                             </div>
 
-                            <button className="underline text-blue-500" onClick={() => toggleClasses(true)}>
+                            <button className="underline text-blue-500" onClick={() => toggleVariable(true,classesFilter,setClassFilter)}>
                                 Select All
                             </button>
 
-                            <button className="underline text-blue-500" onClick={() => toggleClasses(false)}>
+                            <button className="underline text-blue-500" onClick={() => toggleVariable(false,classesFilter,setClassFilter)}>
                                 Clear All
                             </button>
                         </div>
@@ -253,35 +248,41 @@ const YOLOFilterPopup = (props) => {
                         </div>
                     </div>
 
-
-                    <div className="flex flex-col justify-center">
-                            <button className="p-1 border w-[50px] border-gray-400 rounded-md font-thin hover:bg-slate-100" onClick={() => {
-                                if(operation == 'OR'){
-                                    setOperation('AND')
-                                } else {
-                                    setOperation('OR')
-                                }
-                            }}> {operation} 
-                            </button>
-                            
-                    </div>
-
                     <div className="h-[120px] w-[200px] border rounded-md shadow-inner border-gray-500">
                         <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
                             <div>
                                 Resolutions
                             </div>
 
-                            <button className="underline text-blue-500" onClick={() => toggleRes(true)}>
+                            <button className="underline text-blue-500" onClick={() => toggleVariable(true, resFilter, setResFilter)}>
                                 Select All
                             </button>
 
-                            <button className="underline text-blue-500" onClick={() => toggleRes(false)}>
+                            <button className="underline text-blue-500" onClick={() => toggleVariable(false, resFilter, setResFilter)}>
                                 Clear All
                             </button>
                         </div>
                         <div className="overflow-scroll h-[100px]">
                             {res_buttons}
+                        </div>
+                    </div>
+
+                    <div className="h-[120px] w-[200px] border rounded-md shadow-inner border-gray-500">
+                        <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
+                            <div>
+                                Tags
+                            </div>
+
+                            <button className="underline text-blue-500" onClick={() => toggleVariable(true, tagFilter, setTagFilter)}>
+                                Select All
+                            </button>
+
+                            <button className="underline text-blue-500" onClick={() => toggleVariable(false, tagFilter, setTagFilter)}>
+                                Clear All
+                            </button>
+                        </div>
+                        <div className="overflow-scroll h-[100px]">
+                            {tag_buttons}
                         </div>
                     </div>
                 </div>

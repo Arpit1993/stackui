@@ -31,20 +31,7 @@ const DropdownFile = (props) => {
             leaveTo="transform opacity-0 scale-95"
           >
             <Menu.Items className="absolute border border-black text-xs z-10 mt-2 w-[150px] right-0 origin-top-right rounded-md dark:bg-gray-600/80 bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-              <div className="py-1 h-[90px] overflow-scroll">
-                <Menu.Item>
-                  {({ active }) => (
-                    <button
-                      className={classNames(
-                        active ? 'bg-gray-200 dark:bg-slate-700 text-gray-500  w-full' : 'text-gray-500',
-                        'block px-4 py-2 text-xs w-full'
-                      )}
-                      onClick={()=>{}}
-                    >
-                      View file
-                    </button>
-                  )}
-                </Menu.Item>
+              <div className="py-1 h-[70px] overflow-scroll">
                 <Menu.Item>
                   {({ active }) => (
                     <button

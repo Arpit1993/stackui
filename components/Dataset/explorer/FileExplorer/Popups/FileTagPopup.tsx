@@ -46,12 +46,11 @@ const FileTagPopup = (props) => {
                         </div>
                     </div>
                     <div className="w-full">
-                        {/* list of tags */}
                         <div className="border border-black overflow-scroll h-[40px] p-2 flex gap-2">
                             {
                                 (tags.length > 0) ?
                                 tags.map( (tag, idx) => 
-                                    <div className="flex flex-col w-max h-[20px] justify-center">
+                                    <div key={'tag'.concat(tag)} className="flex flex-col w-max h-[20px] justify-center">
                                         <button className="flex justify-between bg-gray-300 rounded-full" onClick={() => handleDelete(tag)}>  
                                             <div className="py-2 px-1 flex flex-col justify-center">
                                                 <div className="rounded-full w-[10px] h-[10px] bg-red-500"> 
