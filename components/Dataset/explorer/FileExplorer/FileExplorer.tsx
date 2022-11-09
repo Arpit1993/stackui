@@ -23,30 +23,38 @@ const FileExplorer = (props: { schema: String; files: any[]; dataset: string | a
         setKey(key_in as SetStateAction<string>)
     }
 
-    var listofButtons: Array<any> = [];
-
-    listofButtons.push(
-        <div  className="flex">
-            <button className=" bg-gray-200 rounded-full w-[25px] h-[25px] shadow-sm dark: text-black hover:bg-gray-300" onClick={() => props.setPage(Math.max(props.page-1,0))}>
-                {'<'}
-            </button>
-        </div>
-    )
 
     const max_files: number = 10;
     const max_images: number = props.max_view;
     const max_pages =  props.view ? props.len / max_files : props.len / max_images;
+    var listofButtons: Array<any> = [];
+
+    listofButtons.push(
+        <div  className="flex">
+            <button className="py-2 px-3 ml-0 leading-tight text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" onClick={() => props.setPage(Math.max(props.page-1,0))}>
+                {'Previous'}
+            </button>
+        </div>
+    )
 
     for (var i = props.page - 5; i < props.page + 5; i++){
         if(i > 0 && i < max_pages+1-0.0001){
             const x = i
             listofButtons.push(
-                <button className=" bg-gray-200 rounded-full w-[25px] h-[25px] shadow-sm dark: text-black hover:bg-gray-300" onClick={() => props.setPage(x-1)}>
+                <button className="py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" onClick={() => props.setPage(x-1)}>
                     {x | 0}
                 </button>
             )
         }
     }
+
+    listofButtons.push(
+        <div  className="flex">
+            <button className="py-2 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" onClick={() => props.setPage(Math.min(max_pages-0.001|0,props.page+1|0))}>
+                {'Next'}
+            </button>
+        </div>
+    )
 
     if (props.view) {
         idx_min = 0;
@@ -95,13 +103,13 @@ const FileExplorer = (props: { schema: String; files: any[]; dataset: string | a
         idx_max = max_images;
 
         max_min_div = [
-            <div key={'mmindiv'} className="w-[100px] flex gap-2">
-                <button className="px-2 py-2 w-[40px] hover:bg-gray-300 rounded-sm bg-gray-200 dark:text-black" onClick={() => {
+            <div key={'mmindiv'} className="w-[100px] h-min flex">
+                <button className="py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-l-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white" onClick={() => {
                     props.setMaxView(Math.min(Math.pow((Math.sqrt(props.max_view)+1),2),36))
                     props.setPage(0)}}> 
                     - 
                 </button>
-                <button className="px-2 py-2 w-[40px] hover:bg-gray-300 rounded-sm bg-gray-200 dark:text-black" onClick={() => {
+                <button className="py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-r-md border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white" onClick={() => {
                     props.setMaxView(Math.max(Math.pow((Math.sqrt(props.max_view)-1),2),9))
                     props.setPage(0)}}> 
                     +
@@ -141,14 +149,6 @@ const FileExplorer = (props: { schema: String; files: any[]; dataset: string | a
         );
     }
 
-    listofButtons.push(
-        <div  className="flex">
-            <button className=" bg-gray-200 rounded-full w-[25px] h-[25px] shadow-sm dark: text-black hover:bg-gray-300" onClick={() => props.setPage(Math.min(max_pages-0.001|0,props.page+1|0))}>
-                {'>'}
-            </button>
-        </div>
-    )
-
     const FileComponent = popup ? [<FilePopup schema={props.schema} popup={popup} setPopup={setPopup} keyId={keyVar} key={'fcp'}/>] : [<></>]
 
     const handleKeyPress = useCallback((event) => {
@@ -178,14 +178,14 @@ const FileExplorer = (props: { schema: String; files: any[]; dataset: string | a
 
     return (
         <div className="h-full">
-            <div className="flex text-xs justify-between py-3">
+            <div className="flex text-xs justify-between">
                 <div> 
                     Page {props.page+1 | 0} of {max_pages-0.001+1 | 0}
                 </div>
                 
                 {max_min_div}
                 
-                <button className="px-2 py-2 w-[80px] hover:bg-gray-300 rounded-sm bg-gray-200 dark:text-black" onClick={() => {
+                <button className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700" onClick={() => {
                     if(props.view == 1) {
                         props.setMaxView(36)
                     } else {
@@ -200,7 +200,7 @@ const FileExplorer = (props: { schema: String; files: any[]; dataset: string | a
                 {container_var}
             </div>
             <div className="">
-                <div className="flex justify-left pt-2 pb-2 gap-2 rounded-sm">
+                <div className="flex justify-left text-xs mt-2 mb-2 rounded-sm">
                     {listofButtons}
                 </div>
             </div>

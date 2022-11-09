@@ -5,10 +5,10 @@ import React from "react"
 const Sidebar = () => {
 
     return (
-        <div className='p-2 h-screen flex justify-center w-[260px] bg-gray-100 dark:bg-gray-900'>
+        <div className='p-2 px-5 h-screen flex justify-center w-max bg-gray-100 dark:bg-gray-900'>
                 <div className='flex flex-col justify-top'>
                     <h1 className='py-5 w-full flex justify-start text-2xl font-bold text-center'>
-                        <Image className="dark:invert" src="/stack-logo.png" width={'200'} height={'50'} objectFit={'contain'} alt=''></Image>
+                        <Image className="dark:invert" src="/stack-logo.png" width={'200'} height={'40'} objectFit={'contain'} alt=''></Image>
                     </h1>
                     <div className="flex justify-start mt-10">
                         <div className='mt-5 w-full flex flex-col list-none font-thin'>

@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react"
 import BranchPopup from "./BranchPopup"
 import posthog from 'posthog-js'
 import LoadingScreen from "../../LoadingScreen"
+import Slider from '@mui/material/Slider';
+import Box from '@mui/material/Box';
 
 const getbuttons = (variable, varFilter, setVarFilter, nullStr, setnullStr, n_var, name) => {
     const var_buttons : Array<any> = []
@@ -44,6 +46,9 @@ const getbuttons = (variable, varFilter, setVarFilter, nullStr, setnullStr, n_va
 const YOLOFilterPopup = (props) => {
 
     const [branch, setBranch] = useState(false)
+    
+    const [sliderBox, setSliderBox] = useState([0,100])
+    const [sliderDate, setSliderDate] = useState([0,100])
 
     const [classes, setClasses] = useState(['01','02'])
     const [n_classes, setNClasses] = useState({})
@@ -58,7 +63,6 @@ const YOLOFilterPopup = (props) => {
     const [tagFilter, setTagFilter] = useState({'a': false, 'b': false})
     
     const [time, setTime] = useState(true)
-    var repeated = false
 
     // weird hack to make the checkboxes bg-color change when setState, otherwise state remains the same
     // TODO
@@ -112,17 +116,17 @@ const YOLOFilterPopup = (props) => {
                 }
             )
         }
-
         getMetadata()
     }, [time])
 
     const toggleVariable = (toggle, filter, setFilter) => {
         var cf = filter
+        
         for(var i = 0; i < Object.keys(cf).length; i++){
             cf[Object.keys(cf)[i]] = toggle
         }
-        setFilter(cf)
 
+        setFilter(cf)
         setnullStr(nullStr+'x')
     }
 
@@ -166,6 +170,14 @@ const YOLOFilterPopup = (props) => {
             filters[idx] = {
                 'name': props.txt
             }
+            idx+=1
+        }
+
+        if(sliderBox[0] > 0 || sliderBox[1] < 100){
+            filters[idx] = {
+                'box_area': sliderBox
+            }
+            idx+=1
         }
 
         const data = JSON.stringify(filters)
@@ -177,7 +189,6 @@ const YOLOFilterPopup = (props) => {
                 }, 
                 body: data}
         )
-
         
         posthog.capture('Applied filter', { property: 'value' })
     
@@ -207,6 +218,8 @@ const YOLOFilterPopup = (props) => {
                 setResFilter(rFilter)
                 setClassFilter(cFilter)
                 setTagFilter(tFilter)
+                setSliderBox([0,100])
+                setSliderDate([0,100])
                 setnullStr('')
             }
         )
@@ -224,9 +237,9 @@ const YOLOFilterPopup = (props) => {
     return (
         <>
             {branch_popup}
-            <div key={"flterpp"} className="bg-whites rounded-lg dark:bg-slate-900 w-full h-[200px] border-[0.5px] border-gray-500">
-                <div className="w-full justify-between flex h-[30px]">
-                    <button onClick={() => props.setPopup(0)} className= 'flex justify-center rounded-tl-lg text-center w-[50px] h-[30px] flex-col bg-red-400 hover:bg-red-200 p-2 rounded-br-md'> x </button> 
+            <div key={"flterpp"} className="bg-whites rounded-lg dark:bg-slate-900 w-full h-[215px] border-[0.5px] border-gray-500">
+                <div className="p-2 w-full justify-between flex h-[30px]">
+                    <button onClick={() => props.setPopup(0)} className='text-xs px-1 w-[15px] h-[15px] flex-col bg-red-400 hover:bg-red-200 rounded-full'></button>
                 </div>
                 <div className="flex h-[120px] gap-2 p-2">
                     <div className="h-[120px] w-[200px] border rounded-md shadow-inner border-gray-500">
@@ -285,19 +298,62 @@ const YOLOFilterPopup = (props) => {
                             {tag_buttons}
                         </div>
                     </div>
-                </div>
 
+                    <div className="w-[200px]  h-[120px]">
+                        <div className="w-[200px] h-[50px] border rounded-md shadow-inner border-gray-500">
+                            <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
+                                <div>
+                                    Bounding box area
+                                </div>
+                            </div>
+                            <div className="w-full px-5">
+                                <Slider
+                                    getAriaLabel={() => 'Bounding box area'}
+                                    value={sliderBox}
+                                    onChange={(event: Event, newValue: number | number[]) => {
+                                        setSliderBox(newValue as number[]);
+                                    }}
+                                    valueLabelFormat={(x)=>{
+                                        return `${x}%`
+                                    }}
+                                    valueLabelDisplay="auto"
+                                    getAriaValueText={()=>{return ''}}
+                                    />
+                            </div>
+                        </div>
+
+                        <div className="mt-[20px] w-[200px] h-[50px] border rounded-md shadow-inner border-gray-500">
+                            <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
+                                <div>
+                                    Date of change
+                                </div>
+                            </div>
+                            <div className="w-full px-5">
+                                <Slider
+                                    getAriaLabel={() => 'Bounding box area'}
+                                    value={sliderDate}
+                                    onChange={(event: Event, newValue: number | number[]) => {
+                                        setSliderDate(newValue as number[]);
+                                    }}
+                                    valueLabelDisplay="auto"
+                                    getAriaValueText={()=>{return ''}}
+                                    />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <div className="flex justify-around">
                     <div className="px-5 py-4 justify-start">
-                        <button onClick={() => setBranch(true)} className=" bg-green-700 hover:bg-green-900 rounded-md shadow-inner p-1 px-5 text-sm text-white">
+                        <button onClick={() => setBranch(true)} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
                             Branch
                         </button>
                     </div>
                     <div className="px-5 py-4 flex justify-end gap-2">
-                        <button onClick={() => handleResetFilter()} className="bg-gray-300 hover:bg-gray-500 rounded-md shadow-inner p-1 px-5 text-sm text-black">
+                        <button onClick={() => handleResetFilter()} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
                             Reset
                         </button>
-                        <button onClick={() => handleApplyFilter()} className="bg-black hover:bg-gray-500 rounded-md shadow-inner p-1  px-5 text-sm text-white">
+                        <button onClick={() => handleApplyFilter()} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
                             Apply
                         </button>
                     </div>

@@ -7,7 +7,7 @@ const Explorer = (props: { props: { dataprops: any; files: any; dataset: any}; p
 
 
     return (
-        <div className="p-2 mt-2 mr-2 h-full bg-gray-50 dark:bg-gray-900 rounded-xl ">
+        <div className="p-2 mt-2 mr-2 h-full bg-gray-50 dark:bg-gray-900 rounded-xl">
             <div>
                 <TopBar props={props.props.dataprops} setFiltering={props.setFiltering} schema={props.schema} />
             </div>

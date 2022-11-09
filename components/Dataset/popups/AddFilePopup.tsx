@@ -3,7 +3,7 @@ import posthog from 'posthog-js'
 import { useState } from "react"
 import LoadingScreen from "../../LoadingScreen"
 
-const AddFilePopup = (props: { popup: any; setPopup: (arg0: number) => void }) => {
+const AddFilePopup = (props: { popup: any; setPopup: any }) => {
     const [loading, setLoading]= useState(0)
 
     const handleChange = async (e: { target: { files: { name: string | undefined; }[]; }; }) => {
@@ -30,7 +30,9 @@ const AddFilePopup = (props: { popup: any; setPopup: (arg0: number) => void }) =
     const PopUpComp = props.popup ? [
         <div key={'ppcc'} className="z-10 text-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg border-[0.5px] border-gray-500 bg-white dark:bg-gray-900 w-[600px]  h-[300px]">
             <div className="w-full justify-between flex">
-                <button onClick={() => props.setPopup(0)} className= 'place-self-center justify-self-start w-[50px] h-[30px] flex-col bg-red-400 hover:bg-red-200 p-2 rounded-br-md'> x </button> 
+            <div className="py-1 px-2">
+                        <button onClick={() => props.setPopup(0)} className='text-xs px-1 w-[15px] h-[15px] flex-col bg-red-400 hover:bg-red-200 rounded-full'></button>
+                    </div> 
                 <div className="place-self-center text-md py-2 font-bold">
                     Add File
                 </div>

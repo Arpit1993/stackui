@@ -104,7 +104,7 @@ const Dataset = () => {
     let props = {files: files, dataprops: dataprops, dataset: URI.storage_dataset};
 
     return (
-        <div className='flex justify-between h-full'>
+        <div className='flex justify-between h-full w-full'>
             <div className='w-full h-full'> 
                 <Explorer props={props} page={page} setPage={setPage} max_view={max_view} setMaxView={setMaxView} view={view} setView={setView} len={len} waiting={waiting} setFiltering={setFiltering} schema={schema}/>
             </div>

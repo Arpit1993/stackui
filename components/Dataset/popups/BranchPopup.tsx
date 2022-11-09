@@ -36,7 +36,9 @@ const BranchPopup = (props) => {
     return (
         <div key={"brnchpp"} className="relative bg-white rounded-lg dark:bg-slate-900 w-full h-[200px] border-[0.5px] border-gray-500">
             <div className="w-full justify-between flex h-[30px]">
-                <button onClick={() => props.setPopup(false)} className= 'flex justify-center rounded-tl-lg text-center w-[50px] h-[30px] flex-col bg-red-400 hover:bg-red-200 p-2 rounded-br-md'> x </button> 
+                <div className="px-2">
+                    <button onClick={() => props.setPopup(0)} className='text-xs px-1 w-[15px] h-[15px] flex-col bg-red-400 hover:bg-red-200 rounded-full'></button>
+                </div>
             </div>
             <div className="flex justify-center h-[120px] gap-2">
                 <div className="flex flex-col justify-center">

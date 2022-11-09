@@ -18,7 +18,7 @@ const ImageThumbnail = (props) => {
         <>
             {tags_popup}
             <div className={`h-[${height}px] w-[${width}px] flex relative`}>
-                <button className={`h-full w-full bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 hover:dark:bg-black rounded-md border-[0.5px] border-gray-400 text-left text-xs`} key={`${props.index.toString()}defg`} onClick={() => props.handleObjectClick(props.file['name'].substring(props.dataset.length))}>
+                <button className={`h-full w-full bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 hover:dark:bg-black border-[0.5px] border-gray-400 text-left text-xs`} key={`${props.index.toString()}defg`} onClick={() => props.handleObjectClick(props.file['name'].substring(props.dataset.length))}>
                     {
                         props.waiting ? 
                         <div className='relative flex justify-center'>
@@ -42,7 +42,7 @@ const ImageThumbnail = (props) => {
                             className="justify-self-center flex"
                             src={props.file.thumbnail} 
                             width={width}
-                            height={height * 0.95}
+                            height={height}
                             objectFit={'contain'}
                             alt='.'
                         />
@@ -50,7 +50,7 @@ const ImageThumbnail = (props) => {
                 </button>
                 {
                     (props.file['tags'].length > 0) ? 
-                    [<button key={`tags${props.file['name']}`} className="absolute ml-1 mt-1 w-[15px] h-[15px] bg-red-500 rounded-full hover:bg-red-700" onClick={() => setPopup(true)}>
+                    [<button key={`tags${props.file['name']}`} className="absolute border border-white ml-1 mt-1 w-[15px] h-[15px] bg-red-500 rounded-full hover:bg-red-700" onClick={() => setPopup(true)}>
                     </button>] 
                     
                     : [<></>]

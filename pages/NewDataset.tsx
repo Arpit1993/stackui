@@ -88,31 +88,31 @@ export default function NewDatasets() {
 
     const awsKeys = (storage == 's3') ? [
         <div key={'awk'}>
-            <form className="bg-white shadow-md rounded w-[320px]">
+            <form className="shadow-md rounded w-[320px]">
                 <label className="block text-gray-700 text-base mt-2"> 
                     <div className="">
                         <input onChange={handleKey1Change} onInput={handleKey1Change}
-                        className= "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        className= "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                         placeholder="AWS Access Key Id" type="password" />   
                     </div>
                 </label>
             </form>
 
-            <form className="bg-white shadow-md rounded w-[320px] mt-2">
+            <form className="shadow-md rounded w-[320px] mt-2">
                 <label className="block text-gray-700 text-base"> 
                     <div className="">
                         <input onChange={handleKey2Change}  onInput={handleKey2Change}
-                        className= "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        className= "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                         placeholder="AWS Secret Access Key" type="password" />   
                     </div>
                 </label>
             </form>
 
-            <form className="bg-white shadow-md rounded w-[320px] mt-2">
+            <form className="shadow-md rounded w-[320px] mt-2">
                 <label className="block text-gray-700 text-base"> 
                     <div className="">
                         <input onChange={handleKey3Change} onInput={handleKey3Change}
-                        className= "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                        className= "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                         placeholder="AWS Region (default us-east-1)" type="password" />   
                     </div>
                 </label>
@@ -150,9 +150,9 @@ export default function NewDatasets() {
 
     const SelectForm = [
         <div key={'sfff'} className='flex justify-center mt-5'>
-            <button onClick={()=>setStorage('local')} className="hover:bg-blue-900 hover:shadow-lg w-[100px] border-r-2 border-black text-sm rounded-l-md px-5 text-white p-2 bg-blue-700"> Local </button>
-            <button onClick={()=>setStorage('s3')} className="hover:bg-blue-900 hover:shadow-lg w-[100px] text-sm px-5 text-white p-2 bg-blue-700"> S3 </button>
-            <button onClick={()=>setStorage('gs')} className="hover:bg-blue-900 hover:shadow-lg w-[100px]  border-l-2 border-black text-sm px-5 rounded-r-md text-white p-2 bg-blue-700"> GCS </button>
+            <button onClick={()=>setStorage('local')} className="py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-l-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white"> Local </button>
+            <button onClick={()=>setStorage('s3')} className="py-2 px-4 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white"> S3 </button>
+            <button onClick={()=>setStorage('gs')} className="py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-r-md border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white"> GCS </button>
         </div>
     ]
     
@@ -160,33 +160,31 @@ export default function NewDatasets() {
             <div className="flex justify-center "  key={'ip'}>
                 <div className="p-5 mt-5 mb-5 w-[1000px] h-[600px] justify-start flex flex-col">    
                     
-                    <div className="text-lg flex justify-center w-full">
-                        Dataset name: 
-                    </div>
                     
                     <div className="mb-2 flex justify-center w-full">
-                        <form className="bg-white flex justify-center shadow-md rounded w-[500px]">
-                            <label className="block text-gray-700 text-sm w-[500px]"> 
-                                <div className="w-[500px]">
+                        <form className="flex justify-center w-[560px]">
+                            <div className="block mb-2 w-[160px] text-sm p-3 font-medium text-gray-900 dark:text-gray-300">
+                                Dataset name:
+                            </div>
+                            <label className="block text-gray-700 text-sm w-[400px]"> 
+                                <div className="">
                                     <input onChange={handleNameChange} onInput={handleNameChange}
-                                    className= "shadow appearance-none text-lg border rounded w-[500px] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                    className= "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                                     placeholder="e.g. My Dataset" type="text" />   
                                 </div>
                             </label>
                         </form>
                     </div>
 
-                    <div className="text-lg mt-5 flex justify-center w-full">
-                        Dataset path or URI: 
-                    </div>
-
                     <div className="mb-5 flex justify-center">
-                        
-                        <form className="bg-white flex justify-self-center shadow-md rounded w-[500px]">
-                            <label className="block text-gray-700 text-sm"> 
+                        <form className="flex justify-self-center w-[560px]">
+                            <div className="block mb-2 w-[160px] text-sm p-3 font-medium text-gray-900 dark:text-gray-300">
+                                Dataset path or URI: 
+                            </div>
+                            <label className="block text-gray-700 text-sm w-[400px]"> 
                                 <div className="">
                                     <input onChange={handleURIChange} onInput={handleURIChange}
-                                    className= "shadow appearance-none text-lg  border rounded w-[500px] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                    className= "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                                     placeholder={placehoder} type="text" />   
                                 </div>
                             </label>
@@ -208,7 +206,7 @@ export default function NewDatasets() {
                         <div className="flex flex-col">
                             <DropdownSchema schema={schema} setSchema={setSchema} />
                             <div className="flex justify-center">
-                                <button onClick={() => handleSubmit()} className="w-[200px] h-[50px] hover:shadow-lg text-center transition p-2 bg-black dark:bg-white dark:text-black font-thin text-white hover:bg-gray-300 hover:text-black">
+                                <button onClick={() => handleSubmit()} className="w-[200px] h-[50px] text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
                                     SUBMIT
                                 </button>
                             </div>

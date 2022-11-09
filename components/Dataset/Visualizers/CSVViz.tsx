@@ -7,7 +7,7 @@ const CsvViz = (props) => {
     array.pop()
 
     return (
-        <div className="overflow-scroll h-[1000px] dark:text-white">
+        <div className="h-[500px] overflow-scroll dark:text-white">
             <div className="p-1 flex border border-gray-500 gap-2">
                 <button className="p-1 w-7 h-7 rounded-full bg-gray-300" onClick={() => props.setRow(Math.max(0,props.row-1))}> {' U '} </button>
                 <div className="p-1"> row {props.row+1}-{Math.round(props.csv_metadata.rows)+1} </div>
@@ -20,11 +20,11 @@ const CsvViz = (props) => {
             <div className="overflow-scroll">
                 {
                     array.map( (row) =>
-                        <tr key={`rw-${row}`}> 
+                        <tr key={`rw-${row}`} className='bg-white border-b dark:bg-gray-800 dark:border-gray-700'> 
                             {
                                 row.map(
                                     (val) =>
-                                    <td key={`rw-${row}-cl-${val}`} className='hover:cursor-text border-[0.5px] h-[35px] w-[68.5px] px-[5px] py-[5px] border-gray-500 shadow-inner'>
+                                    <td key={`rw-${row}-cl-${val}`} className='py-4 px-6'>
                                         <div className='overflow-scroll h-[35px] w-[68.5px]'>
                                             {val}
                                         </div>   

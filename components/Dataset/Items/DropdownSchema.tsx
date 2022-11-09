@@ -11,18 +11,19 @@ const DropdownSchema = (props) => {
     
     return (
         <Menu as="div" className="frelative inline-block text-left mb-2">
-          <div className="flex">
-            <Menu.Button className="inline-flex w-[200px] h-[40px] justify-center rounded-sm border border-gray-500 bg-gray-100 px-4 text-lg font-thin text-black shadow-sm hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-black-500 focus:ring-offset-2 focus:ring-offset-black">
+          <div className="flex gap-2">
+            <Menu.Button className="justify-center w-[200px] h-[40px] text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
               <div className="flex justify-between text-sm">
                 <div className="py-2">
                   Dataset Format
-                </div> 
-                <div className="ml-2 flex gap-1 py-2">
-                  <Image className="ml-5" src={'/Icons/dropdown_icon.webp'} width={20} height={10} alt={''}/>
                 </div>
+                <div className="flex flex-col justify-center">
+                  <svg className="ml-2 w-4 h-4" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+                
               </div>
             </Menu.Button>
-            <div className="py-2 px-5 w-[100px] text-center h-[40px] border border-gray-500">
+            <div className="py-2 px-5 text-sm w-[100px] rounded-md text-center h-[40px] border border-gray-500">
               {props.schema}
             </div>
           </div>

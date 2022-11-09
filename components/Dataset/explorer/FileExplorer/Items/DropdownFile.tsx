@@ -12,10 +12,10 @@ const DropdownFile = (props) => {
     return (
         <Menu as="div" className="frelative inline-block text-left">
           <div className="flex">
-            <Menu.Button className="inline-flex mt-1 w-[40px] h-[20px] rounded-lg justify-center border border-gray-500 bg-white text-black shadow-sm hover:bg-gray-200/50 focus:outline-none focus:ring-2 focus:ring-black-500 focus:ring-offset-2 focus:ring-offset-black">
+            <Menu.Button className="w-max mt-1">
               <div className="flex justify-between text-sm">                
-                <div className="flex">
-                  <Image className="" src={'/Icons/options_icon.webp'} width={20} height={20} alt={''}/>
+                <div className=" border border-gray-800 inline-flex items-center p-2 text-sm font-medium text-center text-gray-900 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none dark:text-white focus:ring-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+                    <svg className="w-3 h-3" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path></svg>
                 </div>
               </div>
             </Menu.Button>
@@ -30,13 +30,13 @@ const DropdownFile = (props) => {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Menu.Items className="absolute border border-black text-xs z-10 mt-2 w-[150px] right-0 origin-top-right rounded-md dark:bg-gray-600/80 bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            <Menu.Items className="absolute border border-black text-xs z-10 mt-2 w-[150px] right-0 origin-top-right rounded-md dark:bg-gray-600 bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
               <div className="py-1 h-[70px] overflow-scroll">
                 <Menu.Item>
                   {({ active }) => (
                     <button
                       className={classNames(
-                        active ? 'bg-gray-200 dark:bg-slate-700 text-gray-500  w-full' : 'text-gray-500',
+                        active ? 'bg-gray-200 dark:bg-slate-700 text-gray-500 dark:text-white  w-full' : 'text-gray-500 dark:text-white',
                         'block px-4 py-2 text-xs w-full'
                       )}
                       onClick={()=>{props.setPopup(true)}}

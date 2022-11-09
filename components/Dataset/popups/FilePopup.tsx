@@ -251,11 +251,11 @@ const FilePopup = (props) => {
     }
 
     const commit_button = submit ? 
-    [<button key={'cmit_button_1'} onClick={() => submitLabels()} className="z-10 h-max hover:shadow-lg absolute p-2 rounded-lg text-white bg-green-700 hover:bg-green-800 border border-black">
+    [<button key={'cmit_button_1'} onClick={() => submitLabels()} className="z-10 h-max focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
         Commit changes  
     </button>] 
     : 
-    [<button key={'cmit_button_2'} className="z-10 h-max absolute hover:cursor-not-allowed p-2 rounded-lg text-white bg-gray-700 hover:bg-gray-700 border border-black">
+    [<button key={'cmit_button_2'} className="z-10 h-max text-white bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:border-gray-700 hover:cursor-not-allowed" disabled={true}>
         Commit changes
     </button>]
 
@@ -267,7 +267,10 @@ const FilePopup = (props) => {
             {CloseComponent}
             <div className="text-sm dark:bg-slate-900 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 rounded-lg bg-white w-[1100px]  h-[700px]">
                 <div className="w-full justify-between flex h-[30px]">
-                    <button onClick={() => props.setPopup(0)} className= 'place-self-center justify-self-start w-[50px] h-[30px] flex-col bg-red-400 hover:bg-red-200 p-2 rounded-br-md'> x </button> 
+                    <div className="py-1 px-2">
+                        <button onClick={() => props.setPopup(0)} className='text-xs px-1 w-[15px] h-[15px] flex-col bg-red-400 hover:bg-red-200 rounded-full'></button>
+                    </div>
+                     
                     <div className="place-self-center py-2 font-bold">
                         File: {props.keyId}
                     </div>
@@ -287,22 +290,18 @@ const FilePopup = (props) => {
                             {versions_list}
                         </div>
                     </div>
-                    <div className="flex justify-center mt-10">
-                        <div className="flex py-2 h-[20px] justify-center px-2"> 
-                            <button onClick={() => setPopup(1)} className="bg-green-700 hover:shadow-lg ring-2 ring-black rounded-md h-[70px] w-[300px] hover:bg-green-800 text-white font-thin text-lg px-5"> 
-                                See History 
-                            </button>
-                        </div>
-                        <div className="flex py-2 h-[30px] justify-center px-2"> 
-                            <button onClick={() => setCompare(1)} className="bg-green-700 hover:shadow-lg ring-2 ring-black rounded-md h-[70px] w-[300px] hover:bg-green-800 text-white font-thin text-lg px-5"> 
-                                Compare versions
-                            </button>
-                        </div>
+                    <div className="flex justify-center mt-10 w-[800px]">
+                        <button onClick={() => setPopup(1)} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 h-[70px] w-[300px]"> 
+                            See History 
+                        </button>
+                        <button onClick={() => setCompare(1)} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 h-[70px] w-[300px]"> 
+                            Compare versions
+                        </button>
+                    </div>
+                    <div className="absolute w-full bottom-16 flex justify-end px-10 h-max"> 
+                        {commit_button}
                     </div>
                 </ul>
-                <div className="absolute w-full flex justify-end px-10 h-max"> 
-                    {commit_button}
-                </div>
             </div>
             {Versionspopup}
             {Diffpopup}
