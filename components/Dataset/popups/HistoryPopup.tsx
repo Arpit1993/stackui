@@ -69,7 +69,7 @@ const HistoryPopup = (props) => {
     const HistComponent = props.history ? [
         <div key={'hc'}>
             {CloseComponent}
-            <div className="text-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 rounded-lg bg-white dark:bg-gray-900 w-[1100px]  h-[700px]">
+            <div className="text-sm z-40 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 rounded-lg bg-white dark:bg-gray-900 w-[1100px]  h-[700px]">
                 <div className="flex-col justify-between">
                     <div className="w-full justify-between flex">
                         <div className="py-1 px-2">

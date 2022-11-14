@@ -194,8 +194,6 @@ const YOLOViz = (props) => {
         }
     }, [props.keyId])
 
-    boxes = []
-
     for(var i = 0; i < labels.length; i++){
         const w = labels[i][3]*width
         const h = labels[i][4]*height

@@ -5,9 +5,9 @@ import React from "react";
 const Layout = ({children}) => {
     
     return (
-        <div className="font-body font-alef flex gap-3 h-max bg-white dark:bg-black text-black dark:text-white">
+        <div className="font-body font-alef flex gap-3 h-screen bg-white dark:bg-black text-black dark:text-white">
             <Sidebar/>
-            <div className='p-2 flex-auto h-screen center'>
+            <div className='p-2 flex-auto h-screen center overflow-scroll'>
                 <Navbar/>
                 <div>
                     {children}

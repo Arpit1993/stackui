@@ -28,7 +28,7 @@ const AddFilePopup = (props: { popup: any; setPopup: any }) => {
 
     const LoadingComp = loading ? [<LoadingScreen key={'ldsc'}/>] : [<></>]
     const PopUpComp = props.popup ? [
-        <div key={'ppcc'} className="z-10 text-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg border-[0.5px] border-gray-500 bg-white dark:bg-gray-900 w-[600px]  h-[300px]">
+        <div key={'ppcc'} className="z-40 text-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg border-[0.5px] border-gray-500 bg-white dark:bg-gray-900 w-[600px]  h-[300px]">
             <div className="w-full justify-between flex">
             <div className="py-1 px-2">
                         <button onClick={() => props.setPopup(0)} className='text-xs px-1 w-[15px] h-[15px] flex-col bg-red-400 hover:bg-red-200 rounded-full'></button>

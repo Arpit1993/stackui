@@ -24,7 +24,7 @@ const DropdownSchema = (props) => {
               </div>
             </Menu.Button>
             <div className="py-2 px-5 text-sm w-[100px] rounded-md text-center h-[40px] border border-gray-500">
-              {props.schema}
+              {props.schema.charAt(0).toUpperCase() + props.schema.slice(1)}
             </div>
           </div>
     

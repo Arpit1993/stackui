@@ -4,12 +4,13 @@ import LoadingScreen from "../components/LoadingScreen"
 import FormData from "form-data";
 import DropdownSchema from "../components/Dataset/Items/DropdownSchema";
 import posthog from 'posthog-js'
+import { Tooltip } from "@mui/material";
 
 export default function NewDatasets() {        
 
     const [loading , setLoading ] = useState(0)
-    const [uri , setURI ] = useState('')
-    const [storage , setStorage ] = useState('')
+    const [uri , setURI ] = useState('local')
+    const [storage , setStorage ] = useState('local')
     const [name, setName] = useState('My Dataset')
 
     const [file, setFile] = useState(null)
@@ -136,28 +137,37 @@ export default function NewDatasets() {
 
     var placehoder = "e.g. s3://bucket/dataset or path/relative/to/home"
     var instructions = 'If using local storage, please use directories relative to your home path'
+    var tooltip_msg = ""
+    var instruction_link = "https://stackai.gitbook.io/stack-beta-release/connect-to-local-storage"
+
     if (storage == 's3'){
         placehoder = "e.g. s3://bucket/dataset"
         instructions = 'Please create an IAM user with AmazonS3FullAccess and add your keys'
+        tooltip_msg = ""
+        instruction_link = "https://stackai.gitbook.io/stack-beta-release/connect-to-cloud/aws-s3-bucket"
     } else if (storage == 'gs'){
         placehoder = "e.g. gs://bucket/dataset"
         instructions = 'Please create an Service Account with Storage Admin and add your keys'
+        tooltip_msg = ""
+        instruction_link = "https://stackai.gitbook.io/stack-beta-release/connect-to-cloud/google-cloud-storage"
     } else {
         placehoder = "e.g. path/relative/to/home"
+        tooltip_msg = "this is a directory path relative to your home path\nExample: /Home/[your user]/[PATH TO YOUR DATASET]"
         instructions = 'Please use directories relative to your home path'
+        instruction_link = "https://stackai.gitbook.io/stack-beta-release/connect-to-local-storage"
     }
     
 
     const SelectForm = [
         <div key={'sfff'} className='flex justify-center mt-5'>
-            <button onClick={()=>setStorage('local')} className="py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-l-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white"> Local </button>
-            <button onClick={()=>setStorage('s3')} className="py-2 px-4 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white"> S3 </button>
-            <button onClick={()=>setStorage('gs')} className="py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-r-md border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white"> GCS </button>
+            <button onClick={()=>setStorage('local')} className={storage=='local' ? "py-2 px-4 text-sm font-medium text-gray-900 bg-gray-100 rounded-l-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-600 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white" : "py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-l-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white"}> Local </button>
+            <button onClick={()=>setStorage('s3')} className={storage=='s3' ? "py-2 px-4 text-sm font-medium text-gray-900 bg-gray-100 border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-600 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white" : "py-2 px-4 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white"}> S3 </button>
+            <button onClick={()=>setStorage('gs')} className={storage=='gs' ? "py-2 px-4 text-sm font-medium text-gray-900 bg-gray-100 rounded-r-md border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-600 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white" : "py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-r-md border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white"}> GCS </button>
         </div>
     ]
     
     const InputForm = [
-            <div className="flex justify-center "  key={'ip'}>
+            <div className="flex justify-center"  key={'ip'}>
                 <div className="p-5 mt-5 mb-5 w-[1000px] h-[600px] justify-start flex flex-col">    
                     
                     
@@ -183,9 +193,11 @@ export default function NewDatasets() {
                             </div>
                             <label className="block text-gray-700 text-sm w-[400px]"> 
                                 <div className="">
-                                    <input onChange={handleURIChange} onInput={handleURIChange}
+                                <Tooltip title={tooltip_msg} placement="bottom">
+                                    <input  onChange={handleURIChange} onInput={handleURIChange}
                                     className= "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                                     placeholder={placehoder} type="text" />   
+                                </Tooltip>
                                 </div>
                             </label>
                         </form>
@@ -193,7 +205,7 @@ export default function NewDatasets() {
 
                     <a className="text-base flex justify-center dark:text-white underline mt-2 
                     text-blue-500 hover:underline hover:text-gray-500" 
-                    href="https://docs.google.com/document/d/1ibEXIG_aD0RgRUkz-LbgBrfhdSj1Pf_0nWppmOcsNcQ/">
+                    href={instruction_link}>
                         {instructions}
                     </a>
 
@@ -205,9 +217,9 @@ export default function NewDatasets() {
                     <div className="flex justify-center gap-5 mt-5">
                         <div className="flex flex-col">
                             <DropdownSchema schema={schema} setSchema={setSchema} />
-                            <div className="flex justify-center">
+                            <div className="mt-5 flex justify-center">
                                 <button onClick={() => handleSubmit()} className="w-[200px] h-[50px] text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-                                    SUBMIT
+                                    Submit
                                 </button>
                             </div>
                         </div>

@@ -83,42 +83,42 @@ const DatasetOptionsPopup = (props) => {
     }
 
     const CloseComponent = [
-        <button key={'ccdo'} onClick={() => props.setPopup(0)} className="bg-transparent backdrop-blur-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
+        <button key={'ccdo'} onClick={() => props.setPopup(0)} className="bg-black/50 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
         click to close
         </button>
     ]
 
     const awsKeys = (props.dataset.storage.includes('s3://')) ? [
         <div key={'awk'}>
-            <form className="bg-white shadow-md rounded w-[320px]">
+            <form className="shadow-md rounded w-[320px]">
                 <label className="block text-gray-700 text-base mt-2"> 
                     <div className="">
-                        AWS Access Key Id:
+                        AWS Access Key Id
                         <input onChange={handleKey1Change} onInput={handleKey1Change}
-                        className= "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        placeholder="***********" type="password" />   
+                        className= "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                        placeholder="***************" type="password" />   
                     </div>
                 </label>
             </form>
 
-            <form className="bg-white shadow-md rounded w-[320px] mt-2">
+            <form className="shadow-md rounded w-[320px] mt-2">
                 <label className="block text-gray-700 text-base"> 
                     <div className="">
-                        AWS Secret Access Key:
+                        AWS Secret Access Key
                         <input onChange={handleKey2Change}  onInput={handleKey2Change}
-                        className= "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        placeholder="***********" type="password" />   
+                        className= "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                        placeholder="***************" type="password" />   
                     </div>
                 </label>
             </form>
 
-            <form className="bg-white shadow-md rounded w-[320px] mt-2">
+            <form className="shadow-md rounded w-[320px] mt-2">
                 <label className="block text-gray-700 text-base"> 
                     <div className="">
                         AWS Region
                         <input onChange={handleKey3Change} onInput={handleKey3Change}
-                        className= "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        placeholder="**********" type="password" />   
+                        className= "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                        placeholder="***************" type="password" />   
                     </div>
                 </label>
             </form>
@@ -155,34 +155,31 @@ const DatasetOptionsPopup = (props) => {
                 
                 <div className="flex justify-center "  key={'ip'}>
                     <div className="p-5 mt-5 mb-5 w-[1000px] h-[600px] justify-start flex flex-col">    
-                        
-                        <div className="text-lg flex justify-center w-full">
-                            Dataset name: 
-                        </div>
-                        
+
                         <div className="mb-2 flex justify-center w-full">
-                            <form className="bg-white flex justify-center shadow-md rounded w-[500px]">
-                                <label className="block text-gray-700 text-sm w-[500px]"> 
-                                    <div className="w-[500px]">
+                            <form className="flex justify-center w-[560px]">
+                                <div className="block mb-2 w-[160px] text-sm p-3 font-medium text-gray-900 dark:text-gray-300">
+                                    Dataset name:
+                                </div>
+                                <label className="block text-gray-700 text-sm w-[400px]"> 
+                                    <div className="">
                                         <input onChange={handleNameChange} onInput={handleNameChange}
-                                        className= "shadow appearance-none text-lg border rounded w-[500px] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                        className= "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                                         placeholder={props.dataset.name} type="text" />   
                                     </div>
                                 </label>
                             </form>
                         </div>
 
-                        <div className="text-lg mt-5 flex justify-center w-full">
-                            Dataset path or URI: 
-                        </div>
-
                         <div className="mb-5 flex justify-center">
-                            
-                            <form className="bg-white flex justify-self-center shadow-md rounded w-[500px]">
-                                <label className="block text-gray-700 text-sm"> 
+                            <form className="flex justify-self-center w-[560px]">
+                                <div className="block mb-2 w-[160px] text-sm p-3 font-medium text-gray-900 dark:text-gray-300">
+                                    Dataset path or URI: 
+                                </div>
+                                <label className="block text-gray-700 text-sm w-[400px]"> 
                                     <div className="">
                                         <input onChange={handleURIChange} onInput={handleURIChange}
-                                        className= "shadow appearance-none text-lg  border rounded w-[500px] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                        className= "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                                         placeholder={props.dataset.storage} type="text" />   
                                     </div>
                                 </label>
@@ -200,11 +197,11 @@ const DatasetOptionsPopup = (props) => {
                                     <DropdownSchema schema={schema} setSchema={setSchema} />
                                 </div>
                                 
-                                <div className="flex justify-center gap-2">
-                                    <button onClick={() => props.setPopup(false)} className="w-[200px] h-[50px] hover:shadow-lg text-center transition p-2 bg-gray-400 font-thin text-white hover:bg-gray-500 hover:text-black">
+                                <div className="flex justify-center gap-2 mt-5">
+                                    <button onClick={() => props.setPopup(false)} className="w-[200px] h-[50px] py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
                                         Cancel
                                     </button>
-                                    <button onClick={() => handleSubmit()} className="w-[200px] h-[50px] hover:shadow-lg text-center transition p-2 bg-green-700 font-thin text-white hover:bg-green-800 hover:text-black">
+                                    <button onClick={() => handleSubmit()} className="w-[200px] h-[50px] text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
                                         Update
                                     </button>
                                 </div>

@@ -92,7 +92,7 @@ const Dataset = () => {
     
         fetchFiles()
 
-        const newLocal: number = 5;
+        const newLocal: number = 4;
         fetch(`http://localhost:8000/last_n_commits/?n=`.concat(newLocal.toString()))
             .then((response) => response.json()).then((data) => Object.values(data)).then((res) => setCommits(res as []));
 

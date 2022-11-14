@@ -3,14 +3,18 @@ import React from "react"
 
 export default function Main () {    
     return (
-        <div className="h-full">
+        <div className="h-full flex flex-col justify-center">
             <div className='p-10 text-5xl flex flex-col justify-center items-center font-bold h-max text-center'>
-                <h1 className="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
-                    Welcome to stack!
+                <h1 className="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">Welcome to Stack!</h1>
+                <h1 className="mb-4 text-3xl font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-6xl">
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">
+                        {'Supercharge '} 
+                    </span> 
+                    your datasets
                 </h1>
             </div>
-            <p className="mb-6 text-lg flex justify-center font-normal text-gray-500 lg:text-xl sm:px-16 xl:px-48 dark:text-gray-400">
-                Supercharge your ML datasets: version control, exploration, and collaboration.
+            <p className="text-lg font-normal text-center text-gray-500 lg:text-xl dark:text-gray-400 mb-6">
+                Explore, Curate, Version control, and Collaborate.
             </p>
     
             <div className="p-10 flex justify-center gap-2">
@@ -30,25 +34,11 @@ export default function Main () {
                 </div>
             </div>
 
-            <div className='px-20 flex h-max justify-between gap-2'> 
+            <div className='px-20 flex h-max justify-center gap-2'> 
                 <Link href='https://stackai.gitbook.io/stack-beta-release/' passHref>
                     <button className="h-max block p-6 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                         <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Documentation</h5>
                         <p className="font-normal text-gray-700 dark:text-gray-400">Learn more about how to set up and use Stack.</p>
-                    </button>
-                </Link>
-                
-                <Link href ='/' passHref>
-                    <button className="h-max block p-6 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-                        <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">See your pull requests</h5>
-                        <p className="font-normal text-gray-700 dark:text-gray-400">Area under construction... Coming soon!</p>
-                    </button>
-                </Link>
-                
-                <Link href ='https://www.getstack.ai/' passHref>
-                    <button className="h-max block p-6 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-                        <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">See your pull requests</h5>
-                        <p className="font-normal text-gray-700 dark:text-gray-400">Area under construction... Coming soon!</p>
                     </button>
                 </Link>
             </div>

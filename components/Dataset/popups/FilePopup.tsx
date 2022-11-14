@@ -197,10 +197,10 @@ const FilePopup = (props) => {
         if (props.popup) {
             fetchStuff()
         }
-    }, [props, setDataComp, row, col, setRow, setCol, submit])
+    }, [props, row, col, submit])
 
     const CloseComponent = [
-        <button key={'ccb'} onClick={() => props.setPopup(0)} className="bg-transparent backdrop-blur-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
+        <button key={'ccb'} onClick={() => props.setPopup(0)} className=" bg-black/50 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
         click to close
         </button>
     ]
@@ -251,11 +251,11 @@ const FilePopup = (props) => {
     }
 
     const commit_button = submit ? 
-    [<button key={'cmit_button_1'} onClick={() => submitLabels()} className="z-10 h-max focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+    [<button key={'cmit_button_1'} onClick={() => submitLabels()} className="z-10 h-[40px] focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
         Commit changes  
     </button>] 
     : 
-    [<button key={'cmit_button_2'} className="z-10 h-max text-white bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:border-gray-700 hover:cursor-not-allowed" disabled={true}>
+    [<button key={'cmit_button_2'} className="z-10 h-[40px] text-white bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:border-gray-700 hover:cursor-not-allowed" disabled={true}>
         Commit changes
     </button>]
 
@@ -265,7 +265,7 @@ const FilePopup = (props) => {
     return (
         <>  
             {CloseComponent}
-            <div className="text-sm dark:bg-slate-900 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 rounded-lg bg-white w-[1100px]  h-[700px]">
+            <div className="text-sm z-40 dark:bg-slate-900 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 rounded-lg bg-white w-[1100px]  h-[700px]">
                 <div className="w-full justify-between flex h-[30px]">
                     <div className="py-1 px-2">
                         <button onClick={() => props.setPopup(0)} className='text-xs px-1 w-[15px] h-[15px] flex-col bg-red-400 hover:bg-red-200 rounded-full'></button>
@@ -278,9 +278,9 @@ const FilePopup = (props) => {
                 </div>
                 <ul className="text-xs font-medium rounded-lg 
                         text-gray-900 bg-white
-                        dark:bg-gray-900 dark:text-white">
+                        dark:bg-gray-900 dark:text-white px-1">
                     <div className="flex h-[500px] ">
-                        <div className="w-[800px] rounded-md dark:text-black text-center border-2 flex flex-col justify-center border-black bg-white dark:bg-black">
+                        <div className="w-[800px] rounded-md dark:text-black text-center border border-gray-300 dark:border-gray-800 flex flex-col justify-center  bg-white dark:bg-black">
                             {fileDisp}
                         </div>
                         <div className="w-[300px]">
@@ -290,16 +290,18 @@ const FilePopup = (props) => {
                             {versions_list}
                         </div>
                     </div>
-                    <div className="flex justify-center mt-10 w-[800px]">
-                        <button onClick={() => setPopup(1)} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 h-[70px] w-[300px]"> 
-                            See History 
-                        </button>
-                        <button onClick={() => setCompare(1)} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 h-[70px] w-[300px]"> 
-                            Compare versions
-                        </button>
-                    </div>
-                    <div className="absolute w-full bottom-16 flex justify-end px-10 h-max"> 
-                        {commit_button}
+                    <div className="flex w-full">
+                        <div className="flex justify-center mt-10 w-[800px]">
+                            <button onClick={() => setPopup(1)} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 h-[70px] w-[300px]"> 
+                                See History 
+                            </button>
+                            <button onClick={() => setCompare(1)} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 h-[70px] w-[300px]"> 
+                                Compare versions
+                            </button>
+                        </div>
+                        <div className="w-[300px] flex justify-center mt-14"> 
+                            {commit_button}
+                        </div>
                     </div>
                 </ul>
             </div>
