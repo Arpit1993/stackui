@@ -80,7 +80,7 @@ const FileHistoryPopUp = (props) => {
             </div>
             <div></div>
         </div>
-        <ul className="text-xs h-[570px] font-medium rounded-lg border 
+        <ul className="text-xs h-[570px] font-body rounded-lg border 
                 text-gray-900 bg-white border-gray-200
                   dark:bg-gray-900 dark:border-gray-600 dark:text-white">
             {changes.map((data, index) => <ItemFileVersion key={'IFV'.concat(index.toString())} keyId={props.keyId} version={data.version} date={data.date} commit={data.commit}/>)}

@@ -22,15 +22,11 @@ const DatasetComponent = (props) => {
         window.location.reload(true);
     }
 
-    const datasetOptions = popup ? [
-        <DatasetOptionsPopup key={'dataset_options'} dataset={props.dataset} setPopup={setPopup} />
-    ] : [<></>]
-
     return (
         <div className="w-full flex gap-2" key={'cp'}>
             <button onClick={() => handleClick()} className='w-2/3'>
-                <ul className="text-start font-normal text-sm">
-                    <li className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                <ul className="text-start font-body text-sm">
+                    <li className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
                         <div className="w-full flex truncate">
                             <div className="w-[100px]"> Dataset: </div>
                             <div className="w-full truncate"> {props.dataset.name} </div>
@@ -42,13 +38,19 @@ const DatasetComponent = (props) => {
                     </li>
                 </ul>
             </button>
-            <button  onClick={() => setPopup(true)} className='w-1/6 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700'>
+            <button  onClick={() => setPopup(true)} className='w-1/6 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700'>
                 Options
             </button>
-            <button  onClick={() => handleDisconnect()} className='w-1/6 text-red-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-red-500 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700'>
+            <button  onClick={() => handleDisconnect()} className='w-1/6 text-red-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-red-500 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700'>
                 Disconnect
             </button>
-            {datasetOptions}
+            {
+                popup 
+                    ? 
+                        <DatasetOptionsPopup key={'dataset_options'} dataset={props.dataset} setPopup={setPopup} />
+                    : 
+                        <></>
+            }
         </div>
     )
 }

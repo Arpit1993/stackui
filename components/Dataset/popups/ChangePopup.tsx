@@ -17,7 +17,7 @@ const ChangePopup = (props) => {
             </div>
             <div></div>
         </div>
-        <ul className="text-xs font-medium rounded-lg border 
+        <ul className="text-xs font-body rounded-lg border 
                 text-gray-900 bg-white border-gray-200
                   dark:bg-gray-700 dark:border-gray-600 dark:text-white">
             <li className="dark:hover:text-black py-4 px-4 justify-between flex-col w-full border-b border-gray-200 dark:border-gray-600">

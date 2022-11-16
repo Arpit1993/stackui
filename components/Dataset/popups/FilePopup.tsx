@@ -20,8 +20,8 @@ const FilePopup = (props) => {
     const [row, setRow] = useState(0)
     const [col, setCol] = useState(0)
 
-    const [compare, setCompare] = useState(0)
-    const [loading, setLoading] = useState(0)
+    const [compare, setCompare] = useState(false)
+    const [loading, setLoading] = useState(false)
     const [loadingViz, setLoadingViz] = useState(0)
     const [version, setVersions] = useState([{version: 'loading...', date: 'loading...',commit: 'loading...'}])
     const [Nversion, setNVersions] = useState(0)
@@ -198,12 +198,6 @@ const FilePopup = (props) => {
             fetchStuff()
         }
     }, [props, row, col, submit])
-
-    const CloseComponent = [
-        <button key={'ccb'} onClick={() => props.setPopup(0)} className=" bg-black/50 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
-        click to close
-        </button>
-    ]
     
     const Versionspopup = popup ? [
         isYOLO ? 
@@ -228,14 +222,8 @@ const FilePopup = (props) => {
     ] : [<></>]
 
 
-    const versions_list = isYOLO ? [<YOLOHistoryList key={'YOLOHiL'} keyId={props.keyId}/>] : [
-        <FileHistoryList key={'FileHiL'} keyId={props.keyId}/>
-    ]
-
-    const LoadingPopup = loading ? [<LoadingScreen  key={'lscpp'}/>] : [null]
-    const fileDisp = props.popup ? (loadingViz ? [null] : dataComp) : [null]
-
     const submitLabels = async () => {
+        setLoading(true)
         const data = JSON.stringify(newLabels)
         await fetch('http://localhost:8000/set_labels/', {
             method: 'POST',
@@ -248,23 +236,15 @@ const FilePopup = (props) => {
         await fetch('http://localhost:8000/commit_req?comment='.concat(`fixed annotation on ${newLabels['keyId']}`))
         setSubmit(0)
         posthog.capture('Submitted a commit', { property: 'value' })
+        setLoading(false)
     }
-
-    const commit_button = submit ? 
-    [<button key={'cmit_button_1'} onClick={() => submitLabels()} className="z-10 h-[40px] focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-        Commit changes  
-    </button>] 
-    : 
-    [<button key={'cmit_button_2'} className="z-10 h-[40px] text-white bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:border-gray-700 hover:cursor-not-allowed" disabled={true}>
-        Commit changes
-    </button>]
-
-    if (props.popup == 0) {
-        return <div></div>
-    } else {
     return (
         <>  
-            {CloseComponent}
+            {
+                <button key={'ccb'} onClick={() => props.setPopup(0)} className=" bg-black/50 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
+                    click to close
+                </button>
+            }
             <div className="text-sm z-40 dark:bg-slate-900 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 rounded-lg bg-white w-[1100px]  h-[700px]">
                 <div className="w-full justify-between flex h-[30px]">
                     <div className="py-1 px-2">
@@ -276,39 +256,56 @@ const FilePopup = (props) => {
                     </div>
                     <div></div>
                 </div>
-                <ul className="text-xs font-medium rounded-lg 
+                <ul className="text-xs font-body rounded-lg 
                         text-gray-900 bg-white
                         dark:bg-gray-900 dark:text-white px-1">
                     <div className="flex h-[500px] ">
                         <div className="w-[800px] rounded-md dark:text-black text-center border border-gray-300 dark:border-gray-800 flex flex-col justify-center  bg-white dark:bg-black">
-                            {fileDisp}
+                            {
+                                props.popup ? (loadingViz ? null : dataComp) : null
+                            }
                         </div>
                         <div className="w-[300px]">
                             <div className="flex justify-center">
                                 <DropdownFileOptions setHistory={setPopup} handleDelete={handleDelete} handleFullDelete={handleFullDelete}/>
                             </div>
-                            {versions_list}
+                            {
+                                isYOLO ? <YOLOHistoryList key={'YOLOHiL'} keyId={props.keyId}/> : 
+                                    <FileHistoryList key={'FileHiL'} keyId={props.keyId}/>
+                                
+                            }
                         </div>
                     </div>
                     <div className="flex w-full">
                         <div className="flex justify-center mt-10 w-[800px]">
-                            <button onClick={() => setPopup(1)} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 h-[70px] w-[300px]"> 
+                            <button onClick={() => setPopup(1)} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 h-[70px] w-[300px]"> 
                                 See History 
                             </button>
-                            <button onClick={() => setCompare(1)} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 h-[70px] w-[300px]"> 
+                            <button onClick={() => setCompare(1)} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 h-[70px] w-[300px]"> 
                                 Compare versions
                             </button>
                         </div>
                         <div className="w-[300px] flex justify-center mt-14"> 
-                            {commit_button}
+                            {
+                                submit ? 
+                                <button key={'cmit_button_1'} onClick={() => submitLabels()} className="z-10 h-[40px] focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                                    Commit changes  
+                                </button>
+                                : 
+                                <button key={'cmit_button_2'} className="z-10 h-[40px] text-white bg-gray-800 focus:ring-4 focus:ring-gray-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:border-gray-700 hover:cursor-not-allowed" disabled={true}>
+                                    Commit changes
+                                </button>
+                            }
                         </div>
                     </div>
                 </ul>
             </div>
             {Versionspopup}
             {Diffpopup}
-            {LoadingPopup}
-        </>)}
+            {
+                loading ? <LoadingScreen  key={'lscpp'}/> : null
+            }
+        </>)
 }
 
 export default FilePopup;

@@ -6,20 +6,26 @@ import SquareIcon from '@mui/icons-material/Square';
 
 const ImageThumbnail = (props) => {
 
-    const [popup, setPopup] = useState(false)
-    const [nullStr, setNullStr] = useState('')
+    const [popup, setPopup] = useState<Boolean>(false)
+    const [nullStr, setNullStr] = useState<string>('')
 
-    const width = Math.ceil(750/Math.sqrt(props.max_view))
-    const height = Math.ceil(450/Math.sqrt(props.max_view)) 
-
-    const tags_popup = popup ? [
-        <FileTagPopup key={`tfpp ${props.file['name']}`} setPopup={setPopup} file={props.file}/>
-    ] : [<></>]
+    const width: number = Math.ceil(750/Math.sqrt(props.max_view))
+    const height: number = Math.ceil(450/Math.sqrt(props.max_view)) 
 
     return (
         <>
-            {tags_popup}
+            {
+                popup ? 
+                    <FileTagPopup key={`tfpp ${props.file['name']}`} setPopup={setPopup} file={props.file}/>
+                 : <></>
+            }
             <div className={`h-[${height}px] w-[${width}px] flex relative z-10`}>
+                {
+                    (props.file['tags'].length > 0) ? 
+                    <button key={`tags-${props.file['name']}`} className="absolute border z-30 ml-1 mt-1 w-[15px] h-[15px] bg-red-500 rounded-full hover:bg-red-700" onClick={() => setPopup(true)}>
+                    </button>
+                    : <></>
+                }
                 <button className={`justify-center flex flex-col z-10 rounded-lg h-full w-full bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 hover:dark:bg-black border-[0.5px] border-gray-400 text-left text-xs`} key={`${props.index.toString()}defg`} onClick={() => props.handleObjectClick(props.file['name'].substring(props.dataset.length))}>
                     {
                         props.waiting ? 
@@ -32,7 +38,7 @@ const ImageThumbnail = (props) => {
                             </div>
                             <Image  
                                 className="invisible z-20"
-                                src={''} 
+                                src={'/Icons/icon-image-512.webp'} 
                                 width={width}
                                 height={height * 0.99}
                                 objectFit={'contain'}
@@ -49,18 +55,11 @@ const ImageThumbnail = (props) => {
                             alt='.'
                         />
                     }
-                    {
-                        <button className={props.selected[props.index] ? `absolute z-20 justify-center flex flex-col rounded-lg h-full w-full bg-blue-500/30 hover:bg-blue-500/50` : `absolute z-20 justify-center flex flex-col rounded-lg h-full w-full hover:bg-white/20`} key={`${props.index.toString()}defg`} onClick={() => props.handleObjectClick(props.file['name'].substring(props.dataset.length))}>
-                        </button>
-                    }
                 </button>
                 {
-                    (props.file['tags'].length > 0) ? 
-                    <button key={`tags-${props.file['name']}`} className="absolute border z-30 ml-1 mt-1 w-[15px] h-[15px] bg-red-500 rounded-full hover:bg-red-700" onClick={() => setPopup(true)}>
+                    <button className={props.selected[props.index] ? `absolute z-20 justify-center flex flex-col rounded-lg h-full w-full bg-blue-500/30 hover:bg-blue-500/50` : `absolute z-20 justify-center flex flex-col rounded-lg h-full w-full hover:bg-white/20`} key={`${props.index.toString()}defg2`} onClick={() => props.handleObjectClick(props.file['name'].substring(props.dataset.length))}>
                     </button>
-                    : [<></>]
                 }
-
                 {
                     (props.selected[props.index]) ? 
                     <button key={`selected-${props.file['name']}`} className="absolute z-30 right-0 bottom-0 mr-2 mb-1 w-[20px] h-[20px] bg-white/50 border-black border hover:bg-white/30 flex flex-col justify-center" onClick={() => {

@@ -148,6 +148,12 @@ const BoundingBox = (props) => {
         context.fillStyle = '#ffff';
         context.fillText(props.class_number, props.rect.x+2, props.rect.y+12);
 
+        return () => {
+            window.removeEventListener('mousedown', mouseDown);
+            window.removeEventListener('mouseup', mouseUp);
+            window.removeEventListener('mousemove', mouseMove);
+        }
+
     }, [color, color_hex, props.rect])
 
     const box = [<canvas key={`boxx${props.class_number}${props.label_idx}`} ref={canvasRef} {...props} width={800} height={500} />]

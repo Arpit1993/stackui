@@ -48,18 +48,20 @@ const YOLOFilterPopup = (props) => {
     
     const [sliderBox, setSliderBox] = useState([0,100])
     const [sliderDate, setSliderDate] = useState([0,100])
+    const [sliderClasses, setSliderClasses] = useState([0,100])
 
-    const [classes, setClasses] = useState(['01','02'])
+    const [classes, setClasses] = useState([])
     const [n_classes, setNClasses] = useState({})
-    const [classesFilter, setClassFilter] = useState({'01': false,'02': false})
+    const [classesFilter, setClassFilter] = useState({})
     
     const [n_res, setNResolutions] = useState({})
-    const [resolutions, setResolutions] = useState(['0x0','1x1'])
-    const [resFilter, setResFilter] = useState({'0x0': false, '1x1': false})
+    const [resolutions, setResolutions] = useState([])
+    const [resFilter, setResFilter] = useState({})
 
     const [n_tags, setNTags] = useState({})
-    const [tags, setTags] = useState(['a','b'])
-    const [tagFilter, setTagFilter] = useState({'a': false, 'b': false})
+    const [tags, setTags] = useState([])
+    const [numClasses, setNumClasses] = useState(0)
+    const [tagFilter, setTagFilter] = useState({})
     
     const [time, setTime] = useState(true)
 
@@ -71,9 +73,8 @@ const YOLOFilterPopup = (props) => {
         const getMetadata = async () => {
             await fetch('http://localhost:8000/schema_metadata').then((res) => res.json()).then(
                 (res) =>
-                {
-                    console.log(res)
-                    
+                { 
+                    setNumClasses(Math.max(...res.classes_per_image))
                     setClasses(res.classes)
                     setNClasses(res.n_class)
                     
@@ -186,6 +187,13 @@ const YOLOFilterPopup = (props) => {
             idx+=1
         }
 
+        if(sliderClasses[0] > 0 || sliderClasses[1] < 100){
+            filters[idx] = {
+                'num_classes': [Math.floor(numClasses * sliderClasses[0]/100),Math.floor(numClasses * sliderClasses[1]/100)]
+            }
+            idx+=1
+        }
+
         const data = JSON.stringify(filters)
 
         await fetch('http://localhost:8000/set_filter/', {
@@ -199,6 +207,7 @@ const YOLOFilterPopup = (props) => {
         posthog.capture('Applied filter', { property: 'value' })
     
         props.setFiltering('z')
+        props.setPage(0)
         setTime(!time)
     }
 
@@ -226,6 +235,7 @@ const YOLOFilterPopup = (props) => {
                 setTagFilter(tFilter)
                 setSliderBox([0,100])
                 setSliderDate([0,100])
+                setSliderClasses([0,100])
                 setnullStr('')
             }
         )
@@ -234,24 +244,24 @@ const YOLOFilterPopup = (props) => {
         setTime(!time)
     }
 
-    const branch_popup = branch ? [<BranchPopup key={'brpp'} setPopup={setBranch}/>] : [<></>]
-
     const classes_buttons : Array<any> = getbuttons(classes, classesFilter, setClassFilter, nullStr, setnullStr, n_classes,'class')
     const res_buttons : Array<any> = getbuttons(resolutions, resFilter, setResFilter, nullStr, setnullStr, n_res,'res')
     const tag_buttons : Array<any> = getbuttons(tags, tagFilter, setTagFilter, nullStr, setnullStr, n_tags,'tag')
 
     return (
         <>
-            {branch_popup}
-            <div key={"flterpp"} className="bg-white  overflow-scroll absolute z-40 top-20 rounded-lg dark:bg-slate-900 w-full h-[250px] border-[0.5px] border-gray-500">
+            {
+                branch ? <BranchPopup key={'brpp'} setPopup={setBranch}/> : <></>
+            }
+            <div key={"flterpp"} className="bg-white absolute z-40 top-20 rounded-lg dark:bg-slate-900 w-full h-[250px] border-[0.5px] border-gray-500">
                 <div className="w-full justify-between flex h-[30px]">
                     <div className="px-2">
                         <button onClick={() => props.setPopup(0)} className='text-xs px-1 w-[15px] h-[15px] flex-col bg-red-400 hover:bg-red-200 rounded-full'></button>
                     </div>
                 </div>
-                <div className="flex h-[120px] justify-center gap-2 p-2">
+                <div className="flex w-full h-[150px] overflow-scroll justify-start gap-2 p-2">
                     <div className="h-[120px] w-[200px] border rounded-md shadow-inner border-gray-500">
-                        <div className="px-1 gap-1 flex text-xs w-[198px] h-[20px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
+                        <div className="px-1 gap-1 flex text-xs w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
                             <div>
                                 Classes
                             </div>
@@ -349,19 +359,43 @@ const YOLOFilterPopup = (props) => {
                             </div>
                         </div>
                     </div>
+
+                    <div className="w-[200px] h-[120px]">
+                        <div className="w-[200px] h-[50px] border rounded-md shadow-inner border-gray-500">
+                            <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
+                                <div>
+                                    Objects per image
+                                </div>
+                            </div>
+                            <div className="w-full px-5">
+                                <Slider
+                                    getAriaLabel={() => 'Objects per image'}
+                                    value={sliderClasses}
+                                    onChange={(event: Event, newValue: number | number[]) => {
+                                        setSliderClasses(newValue as number[]);
+                                    }}
+                                    valueLabelFormat={(x)=>{
+                                        return `${Math.floor(numClasses * x/100)} objects`
+                                    }}
+                                    valueLabelDisplay="auto"
+                                    getAriaValueText={()=>{return ''}}
+                                    />
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
-                <div className="flex justify-around mt-4">
+                <div className="flex justify-around">
                     <div className="px-5 py-4 justify-start">
-                        <button onClick={() => setBranch(true)} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                        <button onClick={() => setBranch(true)} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
                             Branch
                         </button>
                     </div>
                     <div className="px-5 py-4 flex justify-end gap-2">
-                        <button onClick={() => handleResetFilter()} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                        <button onClick={() => handleResetFilter()} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
                             Reset
                         </button>
-                        <button onClick={() => handleApplyFilter()} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                        <button onClick={() => handleApplyFilter()} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
                             Apply
                         </button>
                     </div>

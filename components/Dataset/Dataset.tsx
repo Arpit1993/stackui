@@ -5,41 +5,52 @@ import Infobar from "./infobar/Infobar";
 
 const Dataset = () => {
     // states for each json
-    const [files, setFiles]: Array<any> = useState([])
+    const [files, setFiles] = useState<Array<any>>([])
     const [URI, setURI] = useState({schema: '', storage: '', dataset: '', storage_dataset: ''});
     const [commits, setCommits] = useState([]);
-    const [len, setLen] = useState(0);
-    const [page, setPage] = useState(0);
-    const [waiting, setWaiting] = useState(0);
-    const [view, setView] = useState(1);
-    const [filtering, setFiltering] = useState('x');
-    const [max_view, setMaxView] = useState(36)
-
-    const [schema, setSchema] = useState('files')
+    const [len, setLen] = useState<number>(0);
+    const [page, setPage] = useState<number>(0);
+    const [waiting, setWaiting] = useState<Boolean>(true);
+    const [schema, setSchema] = useState('files');
+    const [view, setView] = useState<Boolean>((schema == 'yolo' || schema == 'labelbox') ? false : true);
+    const [filtering, setFiltering] = useState<string>('x');
+    const [max_view, setMaxView] = useState<number>(view ? 10 : 36)
+    const [description, setDescription] = useState<string>('')
+    const [first, setFirst] = useState<Boolean>(true)
 
     // reads the API endpoints
     useEffect(() => {
         
         const fetchFiles = async () => {
-            const current = await fetch(`http://localhost:8000/current/?page=${page}&max_pp=${max_view}`)
+
+            var view_ex = view
+            var max_view_var = max_view
+
+            if (first){
+                const schema_res = await fetch(`http://localhost:8000/schema`).then((response) => response.json())
+                setSchema(await schema_res.value);
+                if(schema_res.value == 'yolo' || schema_res.value == 'labelbox'){
+                    view_ex = false
+                    max_view_var = 36
+                    setView(false)
+                    setMaxView(36)
+                    setFirst(false)
+                }
+            }
+
+            const current = await fetch(`http://localhost:8000/current?page=${page}&max_pp=${max_view_var}`)
             .then((response) => response.json());
             setLen(await current.len)
 
-            const uri = await fetch(`http://localhost:8000/uri/`).then((response) => response.json())
+            const uri = await fetch(`http://localhost:8000/uri`).then((response) => response.json())
             setURI(await uri);
-
-            const schema_res = await fetch(`http://localhost:8000/schema/`).then((response) => response.json())
-            setSchema(await schema_res.value);
-            if(schema_res.value == 'yolo' || schema_res.value == 'labelbox'){
-                setView(0)
-            }
 
             var files_: Array<any> = [];
 
             for(var i = 0; i < current.keys.length; i++){
                 const isImage = ['jpg','png','jpeg','tiff','bmp','eps'].includes(current.keys[i].split('.').pop())
-                if (isImage && (view == 0)){
-                    setWaiting(1)
+                if (isImage && !view_ex){
+                    setWaiting(true)
                     const thumbnail_  = 
                     await fetch(`http://localhost:8000/get_thumbnail?file=${current.keys[i].substring(await uri.storage_dataset.length)}`)
                     .then((res) => res.body.getReader()).then((reader) =>
@@ -68,11 +79,11 @@ const Dataset = () => {
                         name: current.keys[i],
                         base_name: current.keys[i].substring(await uri.storage_dataset.length),
                         last_modified: current.lm[i],
-                        thumbnail: thumbnail_,
-                        tags: tags
+                        thumbnail: await thumbnail_,
+                        tags: await tags
                     })
 
-                    setWaiting(0)
+                    setWaiting(false)
                 } else{
                     const tags = await fetch(`http://localhost:8000/get_tags?file=${current.keys[i].substring(await uri.storage_dataset.length)}`)
                     .then((res) => res.json())
@@ -82,7 +93,7 @@ const Dataset = () => {
                         base_name: current.keys[i].substring(await uri.storage_dataset.length),
                         last_modified: current.lm[i],
                         thumbnail: isImage ? '/Icons/icon-image-512.webp' : '/Icons/file-icon.jpeg',
-                        tags: tags
+                        tags: await tags
                     })
                 }
             }
@@ -96,9 +107,27 @@ const Dataset = () => {
         fetch(`http://localhost:8000/last_n_commits/?n=`.concat(newLocal.toString()))
             .then((response) => response.json()).then((data) => Object.values(data)).then((res) => setCommits(res as []));
 
-    }, [setFiles, page, view, filtering, setCommits, max_view])
+        fetch(`http://localhost:8000/get_description/`).then((res) => res.body.getReader()).then((reader) =>
+        new ReadableStream({
+            start(controller) {
+                return pump();
+                function pump() {
+                    return reader.read().then(({ done, value }) => {
+                        if (done) {
+                        controller.close();
+                        return;
+                        }
+                        
+                        controller.enqueue(value);
+                        return pump();
+                    });
+                }
+            }
+        })).then((stream) => new Response(stream)).then((response) => response.blob())
+        .then((blob) => blob.text()).then((res) => setDescription(res))
 
-    const description = "placeholder text";
+    }, [page, view, filtering, max_view])
+
     const dataprops = {dataset: URI.dataset, URI: URI.storage, storage_dataset: URI.storage_dataset};
 
     let props = {files: files, dataprops: dataprops, dataset: URI.storage_dataset};

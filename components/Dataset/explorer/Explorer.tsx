@@ -1,13 +1,12 @@
 import TopBar from "./topbar/topbar";
 import FileExplorer from "./FileExplorer/FileExplorer";
-import { SetStateAction, useCallback, useState } from "react";
 import React from "react";
 
 const Explorer = (props) => {
     return (
         <div className="p-2 mt-2 mr-2 h-full bg-gray-50 dark:bg-gray-900 rounded-xl">
             <div>
-                <TopBar props={props.props.dataprops} setFiltering={props.setFiltering} schema={props.schema} />
+                <TopBar props={props.props.dataprops} setFiltering={props.setFiltering} schema={props.schema} setPage={props.setPage} />
             </div>
 
             <div className="px-5 h-full">

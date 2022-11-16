@@ -31,15 +31,6 @@ const TopBar = (props) => {
         setCallFilter(true)
     }
     
-    var FilterComponent = [<></>]
-
-    if(props.schema == 'yolo' || props.schema == 'labelbox'){
-        FilterComponent = filterPopup ? [<YOLOFilterPopup callFilter={callFilter} setCallFilter={setCallFilter} schema={props.schema} txt={txt} popup={filterPopup} setFiltering={props.setFiltering} setPopup={setFilterPopup} key={'yffp'}/>] : [<></>]
-    } else if (props.schema == 'files'){
-        FilterComponent = filterPopup ? [<FileFilterPopup callFilter={callFilter} setCallFilter={setCallFilter} schema={props.schema} txt={txt} popup={filterPopup} setFiltering={props.setFiltering} setPopup={setFilterPopup} key={'fffp'}/>] : [<></>]
-    }
-    const PopupComponent = addPopup ? [<AddFilePopup popup={addPopup} setPopup={setAddPopup} key={'afpp'}/>] : [<></>]
-
     return (    
         <>
             <div className="flex w-full justify-between relative">
@@ -51,7 +42,7 @@ const TopBar = (props) => {
                 </div>
                 <div className="flex w-max justify-end">
                     <div className="flex gap-2 mt-6 w-full">
-                        <button onClick={()=>commit('')} className="h-min py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"> 
+                        <button onClick={()=>commit('')} className="h-min py-2.5 px-5 mr-2 mb-2 text-sm font-body text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"> 
                             <div className="flex flex-col justify-center">
                                 <div className="flex gap-2">
                                     <RefreshIcon className="h-5 w-5"/>
@@ -60,14 +51,14 @@ const TopBar = (props) => {
                             </div>
                         </button>
 
-                        <button onClick={()=>setAddPopup(!addPopup)} className="h-min text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700" > 
+                        <button onClick={()=>setAddPopup(!addPopup)} className="h-min text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700" > 
                             <div className="flex gap-2">
                                     <CloudUploadIcon className="h-5 w-5"/>
                                     {'Upload'}
                                 </div>
                         </button>
 
-                        <button onClick={()=>setFilterPopup(!filterPopup)} className="w-[60px] h-[40px] flex flex-col justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" > 
+                        <button onClick={()=>setFilterPopup(!filterPopup)} className="w-[60px] h-[40px] flex flex-col justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" > 
                             {<Image className="invert" src={'/Icons/filter-search.png'} alt='' width={'40px'} height={'40px'} objectFit={'contain'} />}
                         </button>
                         
@@ -80,8 +71,8 @@ const TopBar = (props) => {
                                 </div>
                                 <Tooltip title={'Applies a search filter to the dataset'} placement="bottom">
                                     <div className="flex flex-col justify-center">
-                                        <button className="p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="submit">
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                        <button className="p-2.5 ml-2 text-sm font-body text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="submit">
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                                         </button>
                                     </div>
                                 </Tooltip>
@@ -90,9 +81,26 @@ const TopBar = (props) => {
                         
                     </div>
                 </div>
-                {FilterComponent}
+                {
+                    (props.schema == 'yolo' || props.schema == 'labelbox') 
+                    ? 
+                        (filterPopup) 
+                        ? 
+                            <YOLOFilterPopup setPage={props.setPage} callFilter={callFilter} setCallFilter={setCallFilter} schema={props.schema} txt={txt} popup={filterPopup} setFiltering={props.setFiltering} setPopup={setFilterPopup} key={'yffp'}/> 
+                        : 
+                            <></>
+                    :
+                        (filterPopup) 
+                        ? 
+                            <FileFilterPopup setPage={props.setPage} callFilter={callFilter} setCallFilter={setCallFilter} schema={props.schema} txt={txt} popup={filterPopup} setFiltering={props.setFiltering} setPopup={setFilterPopup} key={'fffp'}/> 
+                        : 
+                            <></>
+
+                }
             </div>
-            {PopupComponent}
+            { 
+                addPopup ? <AddFilePopup popup={addPopup} setPopup={setAddPopup} key={'afpp'}/> : <></>
+            }
         </>
     )
 }

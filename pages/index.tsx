@@ -4,7 +4,7 @@ import Main from './Home'
 
 export default function Home() {    
     Head({
-        title: 'Stack: superchard your datasets',
+        title: 'Stack: supercharge your datasets',
         meta: [
             { name: 'description', content: 'Gitlab for datasets' },
             { property: 'og:title', content: 'Home' },

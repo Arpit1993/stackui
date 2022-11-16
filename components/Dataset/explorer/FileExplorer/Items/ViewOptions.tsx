@@ -13,7 +13,7 @@ const ViewOptions = (props) => {
     return (
         <Popover className="relative z-20 ">
             <Popover.Button className='w-[50px] h-[50px]'>
-                <div className="w-[50px] h-[50px] p-1 flex justify-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                <div className="w-[50px] h-[50px] p-1 flex justify-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
                     <TuneIcon className="fill-black dark:fill-white"></TuneIcon>
                 </div>
             </Popover.Button>
@@ -21,7 +21,7 @@ const ViewOptions = (props) => {
             <Popover.Panel className="absolute z-auto">
                 <div className="flex flex-col z-auto w-44 border border-gray-300 dark:border-gray-800  bg-white rounded divide-y divide-gray-300 shadow dark:bg-gray-900">
                     <div className="flex justify-center p-2">
-                        <button className="text-gray-900 w-max bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700" onClick={() => {
+                        <button className="text-gray-900 w-max bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-body rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700" onClick={() => {
                             if (props.view == 1) {
                                 props.setMaxView(36)
                             } else {
@@ -49,12 +49,12 @@ const ViewOptions = (props) => {
                         {
                             !props.view ?
                             <div key={'mmindiv'} className="h-min w-min flex">
-                                <button className="py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-l-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white" onClick={() => {
+                                <button className="py-2 px-4 text-sm font-body text-gray-900 bg-white rounded-l-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white" onClick={() => {
                                     props.setMaxView(Math.min(Math.pow((Math.sqrt(props.max_view)+1),2),36))
                                     props.setPage(0)}}> 
                                     <ZoomOutIcon/>
                                 </button>
-                                <button className="py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-r-md border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white" onClick={() => {
+                                <button className="py-2 px-4 text-sm font-body text-gray-900 bg-white rounded-r-md border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white" onClick={() => {
                                     props.setMaxView(Math.max(Math.pow((Math.sqrt(props.max_view)-1),2),9))
                                     props.setPage(0)}}> 
                                     <ZoomInIcon/>

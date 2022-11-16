@@ -18,10 +18,10 @@ const FileExplorer = (props) => {
     const handleKeyPress = useCallback((event) => {
         if (event.shiftKey){
             if (event.key == '_'){
-                props.setMaxView(Math.min(Math.pow((Math.sqrt(props.max_view)+1),2),36))
+                props.setMaxView(Math.floor(Math.min(Math.pow((Math.sqrt(props.max_view)+1),2),36)))
                 props.setPage(0)
             } else if (event.key == '+'){
-                props.setMaxView(Math.max(Math.pow((Math.sqrt(props.max_view)-1),2),9))
+                props.setMaxView(Math.floor(Math.max(Math.pow((Math.sqrt(props.max_view)-1),2),9)))
                 props.setPage(0)
             }
 
@@ -95,9 +95,9 @@ const FileExplorer = (props) => {
                 }
             } 
         } else {
-            if (event.key == 'ArrowLeft') {
+            if (event.key == 'ArrowLeft' && !props.waiting) {
                 props.setPage(Math.max(props.page-1,0))
-            } else if (event.key == 'ArrowRight'){
+            } else if (event.key == 'ArrowRight' && !props.waiting){
                 props.setPage(Math.min(max_pages-0.001|0,props.page+1|0))
             }
         }
@@ -113,12 +113,9 @@ const FileExplorer = (props) => {
             }
         }
 
-    }, [props, pointer, selected])
+    }, [props.files, props.page, props.view, props.max_view, pointer, selected])
 
     useEffect(() => {
-        if(selected.length == 0){
-            setSelected(Array(props.files.length).fill(false))
-        }
         document.addEventListener('keydown', handleKeyPress);
         return () => {
             document.removeEventListener('keydown', handleKeyPress);
@@ -145,8 +142,8 @@ const FileExplorer = (props) => {
     var listofButtons: Array<any> = [];
 
     listofButtons.push(
-        <div  className="flex">
-            <button className="py-2 px-3 ml-0 leading-tight text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" onClick={() => props.setPage(Math.max(props.page-1,0))}>
+        <div key={`btn4${0}start`} className="flex">
+            <button key={`subbtn4${0}start`} className="py-2 px-3 ml-0 leading-tight text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" onClick={() => props.setPage(Math.max(props.page-1,0))}>
                 {'Previous'}
             </button>
         </div>
@@ -156,7 +153,7 @@ const FileExplorer = (props) => {
         if(i > 0 && i < max_pages+1-0.0001){
             const x = i
             listofButtons.push(
-                <button className="py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" onClick={() => props.setPage(x-1)}>
+                <button key={`btn4${x}`} className="py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" onClick={() => props.setPage(x-1)}>
                     {x | 0}
                 </button>
             )
@@ -164,8 +161,8 @@ const FileExplorer = (props) => {
     }
 
     listofButtons.push(
-        <div  className="flex">
-            <button className="py-2 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" onClick={() => props.setPage(Math.min(max_pages-0.001|0,props.page+1|0))}>
+        <div key={`btn4${0}end`} className="flex">
+            <button key={`subbtn4${0}end`} className="py-2 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" onClick={() => props.setPage(Math.min(max_pages-0.001|0,props.page+1|0))}>
                 {'Next'}
             </button>
         </div>
@@ -247,8 +244,6 @@ const FileExplorer = (props) => {
         );
     }
 
-    const FileComponent = popup ? [<FilePopup schema={props.schema} popup={popup} setPopup={setPopup} keyId={keyVar} key={'fcp'}/>] : [<></>]
-
     return (
         <>
             {
@@ -279,7 +274,9 @@ const FileExplorer = (props) => {
                         {listofButtons}
                     </div>
                 </div>
-                {FileComponent}
+                {
+                    popup ? <FilePopup schema={props.schema} popup={popup} setPopup={setPopup} keyId={keyVar} key={'fcp'}/> : <></>
+                }
             </div>
         </>
     )
