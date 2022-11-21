@@ -7,19 +7,13 @@ const ReadmePopup = (props) => {
 
     const [edit, setEdit] = useState(false);
 
-    useEffect(()=>{
-
-    },[])
-    
-    const CloseComponent = [
-        <button key={'ccrm'} onClick={() => props.setPopup(0)} className=" bg-black/50 z-0 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
-        click to close
-        </button>
-    ]
-
     return (
     <>
-        {CloseComponent}
+        {
+            <button key={'ccrm'} onClick={() => props.setPopup(false)} className=" bg-black/50 z-0 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
+                click to close
+            </button>
+        }
         <div className="text-sm absolute z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 rounded-lg bg-white dark:bg-gray-900 w-[1100px]  h-[700px]">
             <div className="w-full justify-between flex">
                 <div className="py-1 px-2">
@@ -31,7 +25,11 @@ const ReadmePopup = (props) => {
                 <div></div>
             </div>
             <div className="w-full h-full p-2 overflow-y-scroll">
-                <ReactMarkdown children={props.readme} remarkPlugins={[remarkGfm]}/>
+                <article className="prose dark:text-white">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {props.readme}
+                    </ReactMarkdown>                  
+                </article>
             </div>
         </div>
     </>)

@@ -22,12 +22,12 @@ const FilePopup = (props) => {
 
     const [compare, setCompare] = useState(false)
     const [loading, setLoading] = useState(false)
-    const [loadingViz, setLoadingViz] = useState(0)
+    const [loadingViz, setLoadingViz] = useState(false)
     const [version, setVersions] = useState([{version: 'loading...', date: 'loading...',commit: 'loading...'}])
     const [Nversion, setNVersions] = useState(0)
     const [dataComp, setDataComp] = useState(null)
 
-    const [submit, setSubmit] = useState(0)
+    const [submit, setSubmit] = useState(false)
     const [newLabels, setnewLabels] = useState({keyid: props.keyId})
     
     const isYOLO = ['jpg','png','jpeg','tiff','bmp','eps'].includes(props.keyId.split('.').pop()) && (props.schema == 'yolo' || props.schema == 'labelbox')
@@ -37,16 +37,16 @@ const FilePopup = (props) => {
     const isJSON = ['json'].includes(props.keyId.split('.').pop())
 
     const handleDelete = async () => {
-        setLoading(1)
+        setLoading(true)
         await fetch('http://localhost:8000/remove_key?key='.concat(props.keyId))
-        window.location.reload(true);
+        window.location.reload();
         return true
     }
 
     const handleFullDelete = async () => {
-        setLoading(1)
+        setLoading(true)
         await fetch('http://localhost:8000/full_remove_key?key='.concat(props.keyId))
-        window.location.reload(true);
+        window.location.reload();
         return true
     }
 
@@ -197,7 +197,7 @@ const FilePopup = (props) => {
         if (props.popup) {
             fetchStuff()
         }
-    }, [props, row, col, submit])
+    }, [props, row, col, isYOLO, isImage, isCSV, isText, isJSON])
     
     const Versionspopup = popup ? [
         isYOLO ? 
@@ -221,7 +221,6 @@ const FilePopup = (props) => {
         </>
     ] : [<></>]
 
-
     const submitLabels = async () => {
         setLoading(true)
         const data = JSON.stringify(newLabels)
@@ -232,23 +231,30 @@ const FilePopup = (props) => {
             }, 
             body: data}
         )
-        setSubmit(0)
+        setSubmit(false)
         await fetch('http://localhost:8000/commit_req?comment='.concat(`fixed annotation on ${newLabels['keyId']}`))
-        setSubmit(0)
+        setSubmit(false)
         posthog.capture('Submitted a commit', { property: 'value' })
         setLoading(false)
     }
+
     return (
         <>  
             {
-                <button key={'ccb'} onClick={() => props.setPopup(0)} className=" bg-black/50 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
+                <button key={'ccb'} onClick={() => {
+                    props.setShortcuts(true)
+                    props.setPopup(false)
+                    }} className=" bg-black/50 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
                     click to close
                 </button>
             }
             <div className="text-sm z-40 dark:bg-slate-900 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 rounded-lg bg-white w-[1100px]  h-[700px]">
                 <div className="w-full justify-between flex h-[30px]">
                     <div className="py-1 px-2">
-                        <button onClick={() => props.setPopup(0)} className='text-xs px-1 w-[15px] h-[15px] flex-col bg-red-400 hover:bg-red-200 rounded-full'></button>
+                        <button onClick={() => {
+                            props.setShortcuts(true)
+                            props.setPopup(false)
+                            }} className='text-xs px-1 w-[15px] h-[15px] flex-col bg-red-400 hover:bg-red-200 rounded-full'></button>
                     </div>
                      
                     <div className="place-self-center py-2 font-bold">
@@ -260,7 +266,7 @@ const FilePopup = (props) => {
                         text-gray-900 bg-white
                         dark:bg-gray-900 dark:text-white px-1">
                     <div className="flex h-[500px] ">
-                        <div className="w-[800px] rounded-md dark:text-black text-center border border-gray-300 dark:border-gray-800 flex flex-col justify-center  bg-white dark:bg-black">
+                        <div className="w-[800px] relative rounded-md dark:text-black text-center border border-gray-300 dark:border-gray-800 flex flex-col justify-center bg-white dark:bg-black">
                             {
                                 props.popup ? (loadingViz ? null : dataComp) : null
                             }
@@ -270,8 +276,8 @@ const FilePopup = (props) => {
                                 <DropdownFileOptions setHistory={setPopup} handleDelete={handleDelete} handleFullDelete={handleFullDelete}/>
                             </div>
                             {
-                                isYOLO ? <YOLOHistoryList key={'YOLOHiL'} keyId={props.keyId}/> : 
-                                    <FileHistoryList key={'FileHiL'} keyId={props.keyId}/>
+                                isYOLO ? <YOLOHistoryList key={'YOLOHist'} keyId={props.keyId}/> : 
+                                    <FileHistoryList key={'FileHist'} keyId={props.keyId}/>
                                 
                             }
                         </div>

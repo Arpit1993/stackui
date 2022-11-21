@@ -3,8 +3,8 @@ import posthog from 'posthog-js'
 import { useState } from "react"
 import LoadingScreen from "../../LoadingScreen"
 
-const AddFilePopup = (props: { popup: any; setPopup: any }) => {
-    const [loading, setLoading]= useState(0)
+const AddFilePopup = (props) => {
+    const [loading, setLoading]= useState<Boolean>(false)
 
     const handleChange = async (e) => {
         const formData = new FormData();
@@ -18,11 +18,12 @@ const AddFilePopup = (props: { popup: any; setPopup: any }) => {
             body: formData
         }
 
-        setLoading(1)
+        setLoading(true)
         
         const res1 = await fetch('http://localhost:8000/add_file/',reqOptions)
         const res2 = await fetch('http://localhost:8000/commit_req/')
         posthog.capture('Addded a file', { property: 'value' })
+        props.setShortcuts(true)
         window.location.reload();
     }
 
@@ -31,7 +32,10 @@ const AddFilePopup = (props: { popup: any; setPopup: any }) => {
             <div key={'ppcc_ADFCPPP'} className="z-40 text-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg border-[0.5px] border-gray-500 bg-white dark:bg-gray-900 w-[600px]  h-[300px]">
                 <div className="w-full justify-between flex">
                     <div className="py-1 px-2">
-                        <button onClick={() => props.setPopup(0)} className='text-xs px-1 w-[15px] h-[15px] flex-col bg-red-400 hover:bg-red-200 rounded-full'></button>
+                        <button onClick={() => {
+                            props.setPopup(false)
+                            props.setShortcuts(true)
+                            }} className='text-xs px-1 w-[15px] h-[15px] flex-col bg-red-400 hover:bg-red-200 rounded-full'></button>
                     </div> 
                     <div className="place-self-center text-md py-2 font-bold">
                         Add File

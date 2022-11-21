@@ -7,7 +7,7 @@ const Layout = ({children}) => {
     return (
         <div className="flex font-body gap-3 h-screen bg-white dark:bg-black text-black dark:text-white">
             <Sidebar/>
-            <div className='p-2 flex-auto h-screen center overflow-scroll'>
+            <div className='p-2 flex-auto h-screen center overflow-y-scroll'>
                 <Navbar/>
                 <div>
                     {children}

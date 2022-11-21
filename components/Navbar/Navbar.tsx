@@ -5,9 +5,6 @@ import React from "react";
 const Navbar = () => {
     return (
         <div className='flex w-full justify-between'>
-            <div className="w-1/4">
-            </div>
-
             <div className="w-1/2 relative">
                 <form>   
                     <label className="mb-2 text-sm font-body text-gray-900 sr-only dark:text-gray-300">Search</label>
@@ -19,6 +16,9 @@ const Navbar = () => {
                         <button type="submit" className="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-body rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
                     </div>
                 </form>
+            </div>
+
+            <div className="w-1/4">
             </div>
 
             <Link href='/' passHref> 

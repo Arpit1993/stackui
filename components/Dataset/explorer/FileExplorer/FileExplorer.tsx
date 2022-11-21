@@ -7,138 +7,153 @@ import SelectionTagPopup from "./Popups/SelectionTagPopup";
 import { Tooltip } from "@mui/material";
 
 const FileExplorer = (props) => {
-    const [keyVar, setKey] = useState('');
-    const [popup, setPopup] = useState(0)
-    const [switch_, setSwitch] = useState(true)
-    const [thumbnailView, setThumbnailView] = useState(true)
-    const [selected, setSelected] = useState(Array(props.files.length).fill(false))
-    const [pointer, setPointer] = useState(-1)
-    const [tagsPopup, setTagsPopup] = useState(false)
-
-    const handleKeyPress = useCallback((event) => {
-        if (event.shiftKey){
-            if (event.key == '_'){
-                props.setMaxView(Math.floor(Math.min(Math.pow((Math.sqrt(props.max_view)+1),2),36)))
-                props.setPage(0)
-            } else if (event.key == '+'){
-                props.setMaxView(Math.floor(Math.max(Math.pow((Math.sqrt(props.max_view)-1),2),9)))
-                props.setPage(0)
-            }
-
-            if (event.key == 'ArrowLeft') {
-                var surr = selected
-                const sol = selected.findIndex(element => element)
-                if(sol == -1){
-                    surr.splice(props.files.length-1,1,true)
-                    setSelected(surr)
-                    setPointer(props.files.length-1)
-                } else {
-                    if(pointer >= 1){
-                        surr.splice(Math.max(pointer-1,0),1,!surr[Math.max(pointer-1,0)])
-                        setSelected(surr)
-                    }
-                    setPointer(Math.max(pointer-1,-1))
-                }
-            } else if (event.key == 'ArrowRight'){
-                var surr = selected
-                const sol = selected.findIndex(element => element)
-                if(sol == -1){
-                    surr.splice(0,1,true)
-                    setSelected(surr)
-                    setPointer(0)
-                } else {
-                    if (pointer < props.files.length-1){
-                        surr.splice(Math.min(pointer+1,props.files.length-1),1,!surr[Math.min(pointer+1,props.files.length-1)])
-                        setSelected(surr)   
-                    }
-                    setPointer(Math.min(pointer+1,props.files.length))
-                }
-            } else if (event.key == 'ArrowDown'){
-                var surr = selected
-                const sol = selected.findIndex(element => element)
-                if(sol == -1){
-                    for(var i = 0; i < 6; i++){
-                        surr.splice(i,1,true)
-                    }
-                    setSelected(surr)
-                    setPointer(5)
-                } else {
-                    if (pointer < props.files.length-1){
-                        for(var i = 0; i < 6; i++){
-                            surr.splice(Math.min(pointer+1+i,props.files.length-1),1,!surr[Math.min(pointer+1+i,props.files.length-1)])
-                        }
-                        setSelected(surr)   
-                    }
-                    setPointer(Math.min(pointer+6,props.files.length))
-                }
-            } else if (event.key == 'ArrowUp'){
-                var surr = selected
-                const sol = selected.findIndex(element => element)
-                if(sol == -1){
-                    for(var i = 0; i < 6; i++){
-                        if (props.files.length-1-i >= 0){
-                            surr.splice(props.files.length-1-i,1,true)
-                        }
-                    }
-                    setSelected(surr)
-                    setPointer(Math.max(props.files.length-6,-1))
-                } else {
-                    if(pointer >= 6){
-                        for(var i = 0; i < 6; i++){
-                            if (pointer-1-i >= 0){
-                                surr.splice(pointer-1-i,1,!surr[Math.max(pointer-1-i,0)])
-                            }
-                        }
-                        setSelected(surr)
-                    }
-                    setPointer(Math.max(pointer-6,-1))
-                }
-            } 
-        } else {
-            if (event.key == 'ArrowLeft' && !props.waiting) {
-                props.setPage(Math.max(props.page-1,0))
-            } else if (event.key == 'ArrowRight' && !props.waiting){
-                props.setPage(Math.min(max_pages-0.001|0,props.page+1|0))
-            }
-        }
-
-        if (event.ctrlKey){
-            if (event.key == 'a'){
-                setSelected(Array(props.files.length).fill(selected.includes(false)))
-                setPointer(selected.includes(false) ? props.files.length : -1)
-            }
-
-            if (event.key == 't' && selected.includes(true)){
-                setTagsPopup(true)
-            }
-        }
-
-    }, [props.files, props.page, props.view, props.max_view, pointer, selected])
-
-    useEffect(() => {
-        document.addEventListener('keydown', handleKeyPress);
-        return () => {
-            document.removeEventListener('keydown', handleKeyPress);
-        }
-    },[props.files, props.page, props.view, props.max_view, pointer, selected])
+    const [keyVar, setKey] = useState<String>('');
+    const [popup, setPopup] = useState<Boolean>(false)
+    const [switch_, setSwitch] = useState<Boolean>(true)
+    const [thumbnailView, setThumbnailView] = useState<Boolean>(true)
+    const [selected, setSelected] = useState<Array<Boolean>>([])
+    const [pointer, setPointer] = useState<number>(-1)
+    const [tagsPopup, setTagsPopup] = useState<Boolean>(false)
 
     const files = props.files;
 
     var idx_min: number = 0;
     var idx_max: number = 0;
-    
+
     const view_label = props.view ? 'Grid View' : 'List view';
     
     var container_var: Array<any> = []
     
     const handleObjectClick = (key_in: String) => {
-        setPopup(1)
-        setKey(key_in as SetStateAction<string>)
+        props.setShortcuts(false)
+        setPopup(true)
+        setKey(key_in)
     }
 
     const max_files: number = 10;
     const max_images: number = props.max_view;
     const max_pages =  props.view ? props.len / max_files : props.len / max_images;
+    
+    const handleKeyPress = useCallback((event) => {
+        if (props.shortcuts){
+            if (event.shiftKey){
+                if (event.key == '_'){
+                    props.setMaxView(Math.floor(Math.min(Math.pow((Math.sqrt(props.max_view)+1),2),36)))
+                    props.setPage(0)
+                } else if (event.key == '+'){
+                    props.setMaxView(Math.floor(Math.max(Math.pow((Math.sqrt(props.max_view)-1),2),1)))
+                    props.setPage(0)
+                }
+
+                if (event.key == 'ArrowLeft') {
+                    var surr = selected
+                    const sol = selected.findIndex(element => element)
+                    if(sol == -1){
+                        surr.splice(props.files.length-1,1,true)
+                        setSelected(surr)
+                        setPointer(props.files.length-1)
+                    } else {
+                        if(pointer >= 1){
+                            surr.splice(Math.max(pointer-1,0),1,!surr[Math.max(pointer-1,0)])
+                            setSelected(surr)
+                        }
+                        setPointer(Math.max(pointer-1,-1))
+                    }
+                } else if (event.key == 'ArrowRight'){
+                    var surr = selected
+                    const sol = selected.findIndex(element => element)
+                    if(sol == -1){
+                        surr.splice(0,1,true)
+                        setSelected(surr)
+                        setPointer(0)
+                    } else {
+                        if (pointer < props.files.length-1){
+                            surr.splice(Math.min(pointer+1,props.files.length-1),1,!surr[Math.min(pointer+1,props.files.length-1)])
+                            setSelected(surr)   
+                        }
+                        setPointer(Math.min(pointer+1,props.files.length))
+                    }
+                } else if (event.key == 'ArrowDown'){
+                    var surr = selected
+                    const sol = selected.findIndex(element => element)
+                    if(sol == -1){
+                        for(var i = 0; i < 6; i++){
+                            surr.splice(i,1,true)
+                        }
+                        setSelected(surr)
+                        setPointer(5)
+                    } else {
+                        if (pointer < props.files.length-1){
+                            for(var i = 0; i < 6; i++){
+                                surr.splice(Math.min(pointer+1+i,props.files.length-1),1,!surr[Math.min(pointer+1+i,props.files.length-1)])
+                            }
+                            setSelected(surr)   
+                        }
+                        setPointer(Math.min(pointer+7,props.files.length))
+                    }
+                } else if (event.key == 'ArrowUp'){
+                    var surr = selected
+                    const sol = selected.findIndex(element => element)
+                    if(sol == -1){
+                        for(var i = 0; i < 6; i++){
+                            if (props.files.length-1-i >= 0){
+                                surr.splice(props.files.length-1-i,1,true)
+                            }
+                        }
+                        setSelected(surr)
+                        setPointer(Math.max(props.files.length-7,-1))
+                    } else {
+                        if(pointer >= 6){
+                            for(var i = 0; i < 6; i++){
+                                if (pointer-1-i >= 0){
+                                    surr.splice(pointer-1-i,1,!surr[Math.max(pointer-1-i,0)])
+                                }
+                            }
+                            setSelected(surr)
+                        }
+                        setPointer(Math.max(pointer-7,-1))
+                    }
+                } 
+            } else {
+                if (event.key == 'ArrowLeft' && !props.waiting) {
+                    props.setPage(Math.max(props.page-1,0))
+                } else if (event.key == 'ArrowRight' && !props.waiting){
+                    props.setPage(Math.min(max_pages-0.001|0,props.page+1|0))
+                }
+            }
+
+            if (event.ctrlKey){
+                if (event.key == 'a'){
+                    setSelected(Array(props.files.length).fill(selected.includes(false)))
+                    setPointer(selected.includes(false) ? props.files.length : -1)
+                }
+
+                if (event.key == 't' && selected.includes(true)){
+                    props.setShortcuts(false)
+                    setTagsPopup(true)
+                }
+            }
+        }
+            
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [props, selected, pointer, max_pages])
+
+    useEffect(() => {
+        props.setShortcuts(true)
+        const checkSelected = async () => {
+            if(selected.length < await props.files.length){
+                setSelected(Array(await props.files.length).fill(false))
+            }   
+        }
+        checkSelected()
+        document.addEventListener('keydown', handleKeyPress);
+        return () => {
+            document.removeEventListener('keydown', handleKeyPress);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[props.files, props.page, props.view, props.max_view, pointer, selected, handleKeyPress])
+    
     var listofButtons: Array<any> = [];
 
     listofButtons.push(
@@ -224,6 +239,15 @@ const FileExplorer = (props) => {
             case(16):
                 class_var = `grid grid-cols-4 w-full auto-rows-auto gap-1`
                 break
+            case(9):
+                class_var = `grid grid-cols-3 w-full auto-rows-auto gap-1`
+                break
+            case(4):
+                class_var = `grid grid-cols-2 w-full auto-rows-auto gap-1`
+                break
+            case(1):
+                class_var = `grid grid-cols-1 w-full auto-rows-auto gap-1`
+                break
             default:
                 class_var = `grid grid-cols-3 w-full auto-rows-auto gap-1`
                 idx_max = 9
@@ -236,7 +260,7 @@ const FileExplorer = (props) => {
                 <div className={class_var}>
                     {
                         files.filter((data, idx) => idx < idx_max ).map( (file, index) =>
-                            <ImageThumbnail key={`thumb-${file['name']}`} selected={selected} setPointer={setPointer} setSelected={setSelected} dataset={props.dataset} thumbnailView={thumbnailView} max_view={props.max_view} file={file} index={index} waiting={props.waiting} handleObjectClick={handleObjectClick}/>
+                            <ImageThumbnail setShortcuts={props.setShortcuts} key={`thumb-${file['name']}`} setTagsPopup={setTagsPopup} selected={selected} setPointer={setPointer} setSelected={setSelected} dataset={props.dataset} thumbnailView={thumbnailView} max_view={props.max_view} file={file} index={index} waiting={props.waiting} handleObjectClick={handleObjectClick}/>
                         )
                     }
                 </div>
@@ -248,34 +272,34 @@ const FileExplorer = (props) => {
         <>
             {
                 tagsPopup  ? 
-                <SelectionTagPopup setMaxView={props.setMaxView} max_view={props.max_view} files={files} selected={selected} setSelected={setSelected} setPopup={setTagsPopup}/>
+                <SelectionTagPopup setShortcuts={props.setShortcuts} setMaxView={props.setMaxView} max_view={props.max_view} files={files} selected={selected} setSelected={setSelected} setPopup={setTagsPopup}/>
                 : 
                 <></>
             }
             <div className="h-full">
-                <div className="flex text-xs w-full justify-between px-5">
-                    <div className="w-1/6 flex flex-col justify-center h-max py-2"> 
+                <div className="z-10 flex text-xs w-full justify-between px-5">
+                    <div className="z-10 w-1/6 flex flex-col justify-center h-max py-2"> 
                         Page {props.page+1 | 0} of {max_pages-0.001+1 | 0}
                     </div>
                     <Tooltip title={'Explorer options'} placement="bottom">
                         <div className="w-min">
                                 <ViewOptions setMaxView={props.setMaxView} setView={props.setView} 
                                         setPage={props.setPage} max_view={props.max_view} view_label={view_label} view={props.view} 
-                                        switch_={switch_} setSwitch={setSwitch} setFiltering={props.setFiltering}
+                                        switch_={switch_} setPointer={setPointer} setSwitch={setSwitch} setFiltering={props.setFiltering}
                                         schema={props.schema} setThumbnailView={setThumbnailView} thumbnailView={thumbnailView}/>
                         </div>
                     </Tooltip>
                 </div>
-                <div className="h-[480px] w-full flex justify-center p-1">
+                <div className="z-0 h-[480px] w-full flex justify-center p-1">
                     {container_var}
                 </div>
-                <div className="">
+                <div className="z-10">
                     <div className="flex justify-left text-xs mt-2 mb-2 rounded-sm">
                         {listofButtons}
                     </div>
                 </div>
                 {
-                    popup ? <FilePopup schema={props.schema} popup={popup} setPopup={setPopup} keyId={keyVar} key={'fcp'}/> : <></>
+                    popup ? <FilePopup setShortcuts={props.setShortcuts} schema={props.schema} popup={popup} setPopup={setPopup} keyId={keyVar} key={'fcp'}/> : <></>
                 }
             </div>
         </>

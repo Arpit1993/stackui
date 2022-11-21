@@ -6,7 +6,11 @@ module.exports = {
   ],
   theme: {
     extend: {},
-    fontFamily: {}
+    fontFamily: {
+      'poppins': ['Poppins', 'sans-serif'] 
+    }
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/typography')
+  ],
 }

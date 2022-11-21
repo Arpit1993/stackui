@@ -10,16 +10,14 @@ const DatasetComponent = (props) => {
         props.setLoading(1)
         const POSTHOG_KEY: string = process.env.NEXT_PUBLIC_POSTHOG_KEY as string;
         posthog.init(POSTHOG_KEY, { api_host: 'https://app.posthog.com' })
-        const response = await fetch('http://localhost:8000/connect/?uri='.concat(encodeURIComponent(props.dataset.storage)))
-        
         posthog.capture('Opened a dataset', { property: 'value' })
-        window.location.href='/dataset/'.concat(encodeURIComponent(props.dataset.name));
+        window.location.href='/dataset/'.concat(encodeURIComponent(props.dataset.storage));
     }
 
     const handleDisconnect = async () => {
         const response = await fetch('http://localhost:8000/disconnect?uri='.concat(encodeURIComponent(props.dataset.storage)))
         posthog.capture('Disconneced a dataset', { property: 'value' })
-        window.location.reload(true);
+        window.location.reload();
     }
 
     return (

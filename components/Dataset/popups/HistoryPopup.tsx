@@ -30,7 +30,7 @@ function generateButtons(page, handleClick){
 }
 
 const HistoryPopup = (props) => {
-    var commits = []
+    var commits: Array<any> = []
     const [history, setHistory] = useState([])
     const [page, setPage] = useState(0)
     const max_commits = 7

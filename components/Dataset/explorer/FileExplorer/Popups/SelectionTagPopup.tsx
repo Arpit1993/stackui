@@ -1,20 +1,17 @@
 import React, { useEffect, useState } from "react";
+import LoadingScreen from "../../../../LoadingScreen";
 
 const SelectionTagPopup = (props) => {
 
     const [newtag, setNewtag] = useState('')
-
-    const CloseComponent = [
-        <button onClick={() => props.setPopup(false)} key={'ctp1'} className="z-40 bg-white/20 backdrop-blur-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
-            click to close
-        </button>
-    ]
+    const [loading, setLoading] = useState(false)
 
     const handleChange = (e) => {
         setNewtag(e.target.value)
     }
 
     const handleAdd = async (event) => {
+        setLoading(true)
         event.preventDefault();
         var arr: Array<string> = []
         
@@ -39,14 +36,15 @@ const SelectionTagPopup = (props) => {
                 props.files[i]['tags'] = await fetch(`http://localhost:8000/get_tags?file=${props.files[i]['name']}`).then((res) => res.json())
             }
         }
-
+        setLoading(false)
         props.setSelected(Array(props.files.length).fill(false))
+        props.setShortcuts(true)
         props.setPopup(false)
     }
 
     const handleRemove = async () => {
         var arr: Array<string> = []
-        
+        setLoading(true)
         for(var i = 0; i < props.selected.length; i++){
             if (props.selected[i]){
                 arr.push(props.files[i]['name'])
@@ -66,18 +64,30 @@ const SelectionTagPopup = (props) => {
                 props.files[i]['tags'] = await fetch(`http://localhost:8000/get_tags?file=${props.files[i]['name']}`).then((res) => res.json())
             }
         }
+        setLoading(false)
 
         props.setSelected(Array(props.files.length).fill(false))
+        props.setShortcuts(true)
         props.setPopup(false)
     }
 
     return (
         <>
-            {CloseComponent}
+            {
+                <button onClick={() => {
+                    props.setShortcuts(true)
+                    props.setPopup(false)}
+                    } key={'ctp1'} className="z-40 bg-white/20 backdrop-blur-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
+                    click to close
+                </button>
+            }
             <div className="z-50 p-2 text-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 bg-white dark:bg-gray-900 w-1/4 h-1/4">
                 <div className="flex-col justify-between">
                     <div className="w-full justify-between flex">
-                        <button onClick={() => props.setPopup(false)} className='text-xs px-1 w-[15px] h-[15px] flex-col bg-red-400 hover:bg-red-200 rounded-full'> 
+                        <button onClick={() => {
+                            props.setShortcuts(true)
+                            props.setPopup(false)
+                        }} className='text-xs px-1 w-[15px] h-[15px] flex-col bg-red-400 hover:bg-red-200 rounded-full'> 
                         </button> 
                         <div className="place-self-center text-md py-2 font-bold">
                             Selection tags
@@ -110,6 +120,9 @@ const SelectionTagPopup = (props) => {
                         </div> 
                     </div>
             </div>
+            {
+                loading ? <LoadingScreen key={'sltpp_ADFFFPP'}/> : <></>
+            }
         </>
     )
 

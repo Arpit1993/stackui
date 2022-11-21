@@ -11,7 +11,7 @@ import ViewListIcon from '@mui/icons-material/ViewList';
 
 const ViewOptions = (props) => {
     return (
-        <Popover className="relative z-20 ">
+        <Popover className="relative z-[30]">
             <Popover.Button className='w-[50px] h-[50px]'>
                 <div className="w-[50px] h-[50px] p-1 flex justify-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
                     <TuneIcon className="fill-black dark:fill-white"></TuneIcon>
@@ -55,7 +55,7 @@ const ViewOptions = (props) => {
                                     <ZoomOutIcon/>
                                 </button>
                                 <button className="py-2 px-4 text-sm font-body text-gray-900 bg-white rounded-r-md border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white" onClick={() => {
-                                    props.setMaxView(Math.max(Math.pow((Math.sqrt(props.max_view)-1),2),9))
+                                    props.setMaxView(Math.max(Math.pow((Math.sqrt(props.max_view)-1),2),1))
                                     props.setPage(0)}}> 
                                     <ZoomInIcon/>
                                 </button>

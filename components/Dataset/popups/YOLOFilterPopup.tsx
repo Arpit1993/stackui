@@ -1,13 +1,19 @@
 import React, { useEffect, useRef, useState } from "react"
 import BranchPopup from "./BranchPopup"
+import Editor from 'react-simple-code-editor';
 import posthog from 'posthog-js'
 import LoadingScreen from "../../LoadingScreen"
 import Slider from '@mui/material/Slider';
+import { highlight, languages } from 'prismjs/components/prism-core';
+import 'prismjs/components/prism-clike';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-python';
 
-const getbuttons = (variable, varFilter, setVarFilter, nullStr, setnullStr, n_var, name) => {
+
+const getbuttons = (variable, varFilter, setVarFilter, nullStr, setnullStr, n_var, name, n_buttons) => {
     const var_buttons : Array<any> = []
 
-    for(var i = 0; i < variable.length; i++){
+    for(var i = 0; i < n_buttons; i++){
         const cl = variable.sort()[i]
         
         if(varFilter[cl]){
@@ -44,6 +50,10 @@ const getbuttons = (variable, varFilter, setVarFilter, nullStr, setnullStr, n_va
 
 const YOLOFilterPopup = (props) => {
 
+    const [code, setCode] = useState( `def filter(datapoint):\n\t# python condition applied to each datapoint \n\treturn True\n`)
+    const [schema, setSchema] = useState( `datapoint: dict\n\tkey: string\n\tnum_classes: string<int>\n\tclasses: list<string>\n\tresolution: string\n\ttags: list<string>\n\tlabels: list<dict>:\n\t\t'0': class\n\t\t'1': x\n\t\t'2': y\n\t\t'3': w\n\t\t'4': h`)
+    const [query, setQuery] = useState(false)
+
     const [branch, setBranch] = useState(false)
     
     const [sliderBox, setSliderBox] = useState([0,100])
@@ -65,66 +75,12 @@ const YOLOFilterPopup = (props) => {
     
     const [time, setTime] = useState(true)
 
+
+    const [loading, setLoading] = useState(false)
+
     // weird hack to make the checkboxes bg-color change when setState, otherwise state remains the same
     // TODO
     const [nullStr, setnullStr] = useState('')
-
-    useEffect( () => {
-        const getMetadata = async () => {
-            await fetch('http://localhost:8000/schema_metadata').then((res) => res.json()).then(
-                (res) =>
-                { 
-                    setNumClasses(Math.max(...res.classes_per_image))
-                    setClasses(res.classes)
-                    setNClasses(res.n_class)
-                    
-                    var cFilter: any = {}
-                    for(var i = 0; i < res.classes.length; i++){
-                        if(classesFilter[res.classes[i]]){
-                            cFilter[res.classes[i]] = true
-                        } else {
-                            cFilter[res.classes[i]] = false
-                        }
-                    }
-
-                    setClassFilter(cFilter)
-
-                    setResolutions(res.resolutions)
-                    setNResolutions(res.n_res)
-            
-                    var rFilters: any = {}
-                    for(var i = 0; i < res.resolutions.length; i++){
-                        if(resFilter[res.resolutions[i]]){
-                            rFilters[res.resolutions[i]] = true
-                        } else {
-                            rFilters[res.resolutions[i]] = false
-                        }
-                    }
-
-                    setResFilter(rFilters)
-
-                    setTags(res.tags)
-                    setNTags(res.n_tags)
-
-                    var tFilters: any = {}
-                    for(var i = 0; i < res.tags.length; i++){
-                        if(tagFilter[res.tags[i]]){
-                            tFilters[res.tags[i]] = true
-                        } else {
-                            tFilters[res.tags[i]] = false
-                        }
-                    }
-                    setTagFilter(tFilters)
-                }
-            )
-
-            if(props.callFilter) {
-                await handleApplyFilter()
-                props.setCallFilter(false)
-            }
-        }
-        getMetadata()
-    }, [time])
 
     const toggleVariable = (toggle, filter, setFilter) => {
         var cf = filter
@@ -138,6 +94,7 @@ const YOLOFilterPopup = (props) => {
     }
 
     const handleApplyFilter = async () => {
+        setLoading(true)
         props.setFiltering('y')
 
         var filters = {}
@@ -209,9 +166,13 @@ const YOLOFilterPopup = (props) => {
         props.setFiltering('z')
         props.setPage(0)
         setTime(!time)
+        setLoading(false)
     }
 
     const handleResetFilter = async () => {
+        setLoading(true)
+        props.setFiltering('y')
+
         await fetch('http://localhost:8000/reset_filter/')
         .then(() => props.setFiltering('w')).then(
             () =>{
@@ -240,150 +201,250 @@ const YOLOFilterPopup = (props) => {
             }
         )
 
+        handleApplyFilter()
         props.setFiltering('z')
         setTime(!time)
+        setLoading(false)
     }
 
-    const classes_buttons : Array<any> = getbuttons(classes, classesFilter, setClassFilter, nullStr, setnullStr, n_classes,'class')
-    const res_buttons : Array<any> = getbuttons(resolutions, resFilter, setResFilter, nullStr, setnullStr, n_res,'res')
-    const tag_buttons : Array<any> = getbuttons(tags, tagFilter, setTagFilter, nullStr, setnullStr, n_tags,'tag')
+    useEffect( () => {
+        const getMetadata = async () => {
+            await fetch('http://localhost:8000/schema_metadata').then((res) => res.json()).then(
+                (res) =>
+                { 
+                    setNumClasses(Math.max(...res.classes_per_image))
+                    setClasses(res.classes)
+                    setNClasses(res.n_class)
+                    
+                    var cFilter: any = {}
+                    for(var i = 0; i < res.classes.length; i++){
+                        if(classesFilter[res.classes[i]]){
+                            cFilter[res.classes[i]] = true
+                        } else {
+                            cFilter[res.classes[i]] = false
+                        }
+                    }
+
+                    setClassFilter(cFilter)
+
+                    setResolutions(res.resolutions)
+                    setNResolutions(res.n_res)
+            
+                    var rFilters: any = {}
+                    for(var i = 0; i < res.resolutions.length; i++){
+                        if(resFilter[res.resolutions[i]]){
+                            rFilters[res.resolutions[i]] = true
+                        } else {
+                            rFilters[res.resolutions[i]] = false
+                        }
+                    }
+
+                    setResFilter(rFilters)
+
+                    setTags(res.tags)
+                    setNTags(res.n_tags)
+
+                    var tFilters: any = {}
+                    for(var i = 0; i < res.tags.length; i++){
+                        if(tagFilter[res.tags[i]]){
+                            tFilters[res.tags[i]] = true
+                        } else {
+                            tFilters[res.tags[i]] = false
+                        }
+                    }
+                    setTagFilter(tFilters)
+                }
+            )
+
+            if(props.callFilter) {
+                await handleApplyFilter()
+                props.setCallFilter(false)
+            }
+        }
+        getMetadata()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [props.callFilter, time])
+
+    var classes_buttons : Array<any> = getbuttons(classes, classesFilter, setClassFilter, nullStr, setnullStr, n_classes,'class', classes.length)
+    var res_buttons : Array<any> = getbuttons(resolutions, resFilter, setResFilter, nullStr, setnullStr, n_res,'res', resolutions.length)
+    var tag_buttons : Array<any> = getbuttons(tags, tagFilter, setTagFilter, nullStr, setnullStr, n_tags,'tag', tags.length)
 
     return (
         <>
+            {
+                loading ? <LoadingScreen key={'ldscyoloflterppp'} /> : <></>
+            }
             {
                 branch ? <BranchPopup key={'brpp'} setPopup={setBranch}/> : <></>
             }
             <div key={"flterpp"} className="bg-white absolute z-40 top-20 rounded-lg dark:bg-slate-900 w-full h-[250px] border-[0.5px] border-gray-500">
                 <div className="w-full justify-between flex h-[30px]">
                     <div className="px-2">
-                        <button onClick={() => props.setPopup(0)} className='text-xs px-1 w-[15px] h-[15px] flex-col bg-red-400 hover:bg-red-200 rounded-full'></button>
+                        <button onClick={() => {
+                        props.setShortcuts(true)
+                        props.setPopup(false)
+                        }} className='text-xs px-1 w-[15px] h-[15px] flex-col bg-red-400 hover:bg-red-200 rounded-full'></button>
+                    </div>
+
+                    <div className="px-2">
+                        <button onClick={() => setQuery(!query)} className='text-xs text-center text-white font-base w-[120px] h-[20px] bg-blue-600 hover:bg-blue-800 rounded-full'>
+                            structured query
+                        </button>
                     </div>
                 </div>
-                <div className="flex w-full h-[150px] overflow-scroll justify-start gap-2 p-2">
-                    <div className="h-[120px] w-[200px] border rounded-md shadow-inner border-gray-500">
-                        <div className="px-1 gap-1 flex text-xs w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
-                            <div>
-                                Classes
+                {
+                    query ? 
+                    <div className="flex w-full h-[150px] overflow-x-scroll justify-between gap-2 p-1">
+                        <Editor
+                            className="border border-gray-500 overflow-scroll rounded-md w-1/2 bg-white text-black dark:bg-gray-800 dark:text-yellow-400"
+                            value={code}
+                            onValueChange={setCode}
+                            highlight={(code) => highlight(code, languages.python)}
+                            padding={10}
+                            style={{
+                                fontFamily: '"Fira code", "Fira Mono", monospace',
+                                fontSize: 12,
+                            }}
+                        />
+                        <div className="border border-gray-500 rounded-md w-1/2 flex flex-col"> 
+                            <div className="dark:bg-gray-600 px-1 w-full flex flex-col justify-center text-sm rounded-t-md bg-gray-100 border-b border-gray-500 h-[20px]">
+                                schema
                             </div>
-
-                            <button className="underline text-blue-500" onClick={() => toggleVariable(true,classesFilter,setClassFilter)}>
-                                Select All
-                            </button>
-
-                            <button className="underline text-blue-500" onClick={() => toggleVariable(false,classesFilter,setClassFilter)}>
-                                Clear All
-                            </button>
-                        </div>
-                        <div className="overflow-scroll h-[100px]">
-                            {classes_buttons}
+                            <div className="w-full h-full overflow-y-scroll text-xs">
+                                <pre>
+                                    {schema}
+                                </pre>
+                            </div>        
                         </div>
                     </div>
+                    :
+                    <div className="flex w-full h-[150px] overflow-x-scroll justify-start gap-2 p-1">
+                        <div className="h-[120px] w-[200px] border rounded-md shadow-inner border-gray-500">
+                            <div className="px-1 gap-1 flex text-xs w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
+                                <div>
+                                    Classes
+                                </div>
 
-                    <div className="h-[120px] w-[200px] border rounded-md shadow-inner border-gray-500">
-                        <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
-                            <div>
-                                Resolutions
+                                <button className="underline text-blue-500" onClick={() => toggleVariable(true,classesFilter,setClassFilter)}>
+                                    Select All
+                                </button>
+
+                                <button className="underline text-blue-500" onClick={() => toggleVariable(false,classesFilter,setClassFilter)}>
+                                    Clear All
+                                </button>
                             </div>
-
-                            <button className="underline text-blue-500" onClick={() => toggleVariable(true, resFilter, setResFilter)}>
-                                Select All
-                            </button>
-
-                            <button className="underline text-blue-500" onClick={() => toggleVariable(false, resFilter, setResFilter)}>
-                                Clear All
-                            </button>
-                        </div>
-                        <div className="overflow-scroll h-[100px]">
-                            {res_buttons}
-                        </div>
-                    </div>
-
-                    <div className="h-[120px] w-[200px] border rounded-md shadow-inner border-gray-500">
-                        <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
-                            <div>
-                                Tags
+                            <div className="overflow-y-scroll h-[100px]">
+                                {classes_buttons}
                             </div>
-
-                            <button className="underline text-blue-500" onClick={() => toggleVariable(true, tagFilter, setTagFilter)}>
-                                Select All
-                            </button>
-
-                            <button className="underline text-blue-500" onClick={() => toggleVariable(false, tagFilter, setTagFilter)}>
-                                Clear All
-                            </button>
                         </div>
-                        <div className="overflow-scroll h-[100px]">
-                            {tag_buttons}
-                        </div>
-                    </div>
 
-                    <div className="w-[200px]  h-[120px]">
-                        <div className="w-[200px] h-[50px] border rounded-md shadow-inner border-gray-500">
+                        <div className="h-[120px] w-[200px] border rounded-md shadow-inner border-gray-500">
                             <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
                                 <div>
-                                    Bounding box area
+                                    Resolutions
                                 </div>
+
+                                <button className="underline text-blue-500" onClick={() => toggleVariable(true, resFilter, setResFilter)}>
+                                    Select All
+                                </button>
+
+                                <button className="underline text-blue-500" onClick={() => toggleVariable(false, resFilter, setResFilter)}>
+                                    Clear All
+                                </button>
                             </div>
-                            <div className="w-full px-5">
-                                <Slider
-                                    getAriaLabel={() => 'Bounding box area'}
-                                    value={sliderBox}
-                                    onChange={(event: Event, newValue: number | number[]) => {
-                                        setSliderBox(newValue as number[]);
-                                    }}
-                                    valueLabelFormat={(x)=>{
-                                        return `${x}%`
-                                    }}
-                                    valueLabelDisplay="auto"
-                                    getAriaValueText={()=>{return ''}}
-                                    />
+                            <div className="overflow-y-scroll h-[100px]">
+                                {res_buttons}
                             </div>
                         </div>
 
-                        <div className="mt-[20px] w-[200px] h-[50px] border rounded-md shadow-inner border-gray-500">
+                        <div className="h-[120px] w-[200px] border rounded-md shadow-inner border-gray-500">
                             <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
                                 <div>
-                                    Date of change
+                                    Tags
                                 </div>
-                            </div>
-                            <div className="w-full px-5">
-                                <Slider
-                                    getAriaLabel={() => 'Bounding box area'}
-                                    value={sliderDate}
-                                    onChange={(event: Event, newValue: number | number[]) => {
-                                        setSliderDate(newValue as number[]);
-                                    }}
-                                    valueLabelDisplay="auto"
-                                    getAriaValueText={()=>{return ''}}
-                                    />
-                            </div>
-                        </div>
-                    </div>
 
-                    <div className="w-[200px] h-[120px]">
-                        <div className="w-[200px] h-[50px] border rounded-md shadow-inner border-gray-500">
-                            <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
-                                <div>
-                                    Objects per image
+                                <button className="underline text-blue-500" onClick={() => toggleVariable(true, tagFilter, setTagFilter)}>
+                                    Select All
+                                </button>
+
+                                <button className="underline text-blue-500" onClick={() => toggleVariable(false, tagFilter, setTagFilter)}>
+                                    Clear All
+                                </button>
+                            </div>
+                            <div className="overflow-y-scroll h-[100px]">
+                                {tag_buttons}
+                            </div>
+                        </div>
+
+                        <div className="w-[200px]  h-[120px]">
+                            <div className="w-[200px] h-[50px] border rounded-md shadow-inner border-gray-500">
+                                <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
+                                    <div>
+                                        Bounding box area
+                                    </div>
+                                </div>
+                                <div className="w-full px-5">
+                                    <Slider
+                                        getAriaLabel={() => 'Bounding box area'}
+                                        value={sliderBox}
+                                        step={0.01}
+                                        onChange={(event: Event, newValue: number | number[]) => {
+                                            setSliderBox(newValue as number[]);
+                                        }}
+                                        valueLabelFormat={(x)=>{
+                                            return `${x}%`
+                                        }}
+                                        valueLabelDisplay="auto"
+                                        getAriaValueText={()=>{return ''}}
+                                        />
                                 </div>
                             </div>
-                            <div className="w-full px-5">
-                                <Slider
-                                    getAriaLabel={() => 'Objects per image'}
-                                    value={sliderClasses}
-                                    onChange={(event: Event, newValue: number | number[]) => {
-                                        setSliderClasses(newValue as number[]);
-                                    }}
-                                    valueLabelFormat={(x)=>{
-                                        return `${Math.floor(numClasses * x/100)} objects`
-                                    }}
-                                    valueLabelDisplay="auto"
-                                    getAriaValueText={()=>{return ''}}
-                                    />
+
+                            <div className="mt-[20px] w-[200px] h-[50px] border rounded-md shadow-inner border-gray-500">
+                                <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
+                                    <div>
+                                        Date of change
+                                    </div>
+                                </div>
+                                <div className="w-full px-5">
+                                    <Slider
+                                        getAriaLabel={() => 'Bounding box area'}
+                                        value={sliderDate}
+                                        onChange={(event: Event, newValue: number | number[]) => {
+                                            setSliderDate(newValue as number[]);
+                                        }}
+                                        valueLabelDisplay="auto"
+                                        getAriaValueText={()=>{return ''}}
+                                        />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="w-[200px] h-[120px]">
+                            <div className="w-[200px] h-[50px] border rounded-md shadow-inner border-gray-500">
+                                <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
+                                    <div>
+                                        Objects per image
+                                    </div>
+                                </div>
+                                <div className="w-full px-5">
+                                    <Slider
+                                        getAriaLabel={() => 'Objects per image'}
+                                        value={sliderClasses}
+                                        onChange={(event: Event, newValue: number | number[]) => {
+                                            setSliderClasses(newValue as number[]);
+                                        }}
+                                        valueLabelFormat={(x)=>{
+                                            return `${Math.floor(numClasses * x/100)} objects`
+                                        }}
+                                        valueLabelDisplay="auto"
+                                        getAriaValueText={()=>{return ''}}
+                                        />
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                }
                 
                 <div className="flex justify-around">
                     <div className="px-5 py-4 justify-start">

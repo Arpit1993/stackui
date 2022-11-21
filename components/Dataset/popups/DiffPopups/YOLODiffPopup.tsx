@@ -82,16 +82,16 @@ const YOLODiffPopup = (props) => {
                     </div>
                     <div className="flex justify-center gap-2">
                         <div className="mt-2 gap-2">
-                            <DropdownVersion label={'Image Version'} keyId={props.keyId} setV={setV1} len={props.len} v={v1} />
-                            <DropdownVersion label={'Label Version'} keyId={props.keyId} setV={setL1} len={len_labels} v={l1} />
-                            <div className="w-[500px] h-[500px] rounded-md dark:text-black text-center border-2 flex flex-col justify-center border-black bg-white dark:bg-black">
+                            <DropdownVersion className="z-10" label={'Image Version'} keyId={props.keyId} setV={setV1} len={props.len} v={v1} />
+                            <DropdownVersion className="z-10" label={'Label Version'} keyId={props.keyId} setV={setL1} len={len_labels} v={l1} />
+                            <div className="z-0 w-[500px] h-[500px] rounded-md dark:text-black text-center border-2 flex flex-col justify-center border-black bg-white dark:bg-black">
                                 {d1}
                             </div>
                         </div>
                         <div className="mt-2  gap-2">
-                            <DropdownVersion label={'Image Version'} keyId={props.keyId} setV={setV2} len={props.len} v={v2} />
-                            <DropdownVersion label={'Label Version'} keyId={props.keyId} setV={setL2} len={len_labels} v={l2} />
-                            <div className="w-[500px] h-[500px] rounded-md dark:text-black text-center border-2 flex flex-col justify-center border-black bg-white dark:bg-black">
+                            <DropdownVersion className="z-10" label={'Image Version'} keyId={props.keyId} setV={setV2} len={props.len} v={v2} />
+                            <DropdownVersion className="z-10" label={'Label Version'} keyId={props.keyId} setV={setL2} len={len_labels} v={l2} />
+                            <div className="z-0 w-[500px] h-[500px] rounded-md dark:text-black text-center border-2 flex flex-col justify-center border-black bg-white dark:bg-black">
                                 {d2}
                             </div>
                         </div>

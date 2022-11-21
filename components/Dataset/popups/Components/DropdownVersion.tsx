@@ -13,13 +13,13 @@ const DropdownVersion = (props) => {
     const renderButton = () => {
       if (props.v == props.len){
         return (
-          <Menu.Button className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+          <Menu.Button className="z-50 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
             {props.label} {props.v}
           </Menu.Button>
         )
       } else {
         return (
-          <Menu.Button className="py-2.5 px-5 mr-2 mb-2 text-sm font-body text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+          <Menu.Button className="z-50 py-2.5 px-5 mr-2 mb-2 text-sm font-body text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
             {props.label} {props.v}
           </Menu.Button>
         )
@@ -37,8 +37,8 @@ const DropdownVersion = (props) => {
             {({ active }) => (
               <button
                 className={classNames(
-                  active ? 'bg-gray-100 text-gray-900  w-full' : 'text-gray-700',
-                  'block px-4 py-2 text-sm w-full'
+                  active ? 'z-50 bg-gray-100 text-gray-900  w-full' : 'z-50 text-gray-700',
+                  'z-50 block px-4 py-2 text-sm w-full'
                 )}
                 onClick={()=>handleClick(x,props.setV)}
               >
@@ -50,7 +50,7 @@ const DropdownVersion = (props) => {
     }
 
     return (
-        <Menu as="div" className="relative inline-block text-left mb-2">
+        <Menu as="div" className="z-50 relative inline-block text-left mb-2">
           <div>
             {renderButton()}
           </div>

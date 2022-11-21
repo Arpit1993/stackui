@@ -7,6 +7,7 @@ import YOLOFilterPopup from "../../popups/YOLOFilterPopup";
 import FileFilterPopup from "../../popups/FileFilterPopup";
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import { Dvr } from "@mui/icons-material";
 
 function commit(comment: string){
     fetch('http://localhost:8000/commit_req?comment='.concat(comment))
@@ -27,6 +28,7 @@ const TopBar = (props) => {
 
     const handleSubmit = (event: React.ChangeEvent<any> ) => {
         event.preventDefault()
+        props.setShortcuts(false)
         setFilterPopup(true)
         setCallFilter(true)
     }
@@ -34,13 +36,17 @@ const TopBar = (props) => {
     return (    
         <>
             <div className="flex w-full justify-between relative">
-                <div className="pr-10 py-2 w-min">
-                    <h1 className="px-2 py-2 w-50 h-8 overflow-scroll"> {props.props.dataset} </h1>
-                    <h2 className="px-2 py-2 w-50 h-8 underline overflow-scroll hover:cursor-pointer"> 
-                        {props.props.URI}
-                    </h2>
-                </div>
-                <div className="flex w-max justify-end">
+               <div className="w-1/3 flex flex-col">
+                    <div className="w-3/4 overflow-x-auto">
+                    <h1 className="font-semibold text-lg px-2 py-2 w-max h-10"> {props.props.dataset} </h1>
+                    </div>
+                    <div className="w-3/4 overflow-x-auto">
+                        <h2 className="px-2 py-2 w-max h-10 underline text-ellipsis hover:cursor-pointer"> 
+                            {props.props.URI}
+                        </h2>
+                    </div>
+               </div>
+                <div className="flex w-2/3 text-ellipsis justify-end">
                     <div className="flex gap-2 mt-6 w-full">
                         <button onClick={()=>commit('')} className="h-min py-2.5 px-5 mr-2 mb-2 text-sm font-body text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"> 
                             <div className="flex flex-col justify-center">
@@ -51,14 +57,24 @@ const TopBar = (props) => {
                             </div>
                         </button>
 
-                        <button onClick={()=>setAddPopup(!addPopup)} className="h-min text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700" > 
+                        <button onClick={()=>
+                            {
+                                props.setShortcuts(addPopup)
+                                setAddPopup(!addPopup)
+                            }
+                            } className="h-min text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700" > 
                             <div className="flex gap-2">
                                     <CloudUploadIcon className="h-5 w-5"/>
                                     {'Upload'}
                                 </div>
                         </button>
 
-                        <button onClick={()=>setFilterPopup(!filterPopup)} className="w-[60px] h-[40px] flex flex-col justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" > 
+                        <button onClick={()=>
+                            {
+                                props.setShortcuts(filterPopup)
+                                setFilterPopup(!filterPopup)
+                            }
+                            } className="w-[60px] h-[40px] flex flex-col justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" > 
                             {<Image className="invert" src={'/Icons/filter-search.png'} alt='' width={'40px'} height={'40px'} objectFit={'contain'} />}
                         </button>
                         
@@ -86,20 +102,20 @@ const TopBar = (props) => {
                     ? 
                         (filterPopup) 
                         ? 
-                            <YOLOFilterPopup setPage={props.setPage} callFilter={callFilter} setCallFilter={setCallFilter} schema={props.schema} txt={txt} popup={filterPopup} setFiltering={props.setFiltering} setPopup={setFilterPopup} key={'yffp'}/> 
+                            <YOLOFilterPopup setShortcuts={props.setShortcuts} setPage={props.setPage} callFilter={callFilter} setCallFilter={setCallFilter} schema={props.schema} txt={txt} popup={filterPopup} setFiltering={props.setFiltering} setPopup={setFilterPopup} key={'yffp'}/> 
                         : 
                             <></>
                     :
                         (filterPopup) 
                         ? 
-                            <FileFilterPopup setPage={props.setPage} callFilter={callFilter} setCallFilter={setCallFilter} schema={props.schema} txt={txt} popup={filterPopup} setFiltering={props.setFiltering} setPopup={setFilterPopup} key={'fffp'}/> 
+                            <FileFilterPopup setShortcuts={props.setShortcuts} setPage={props.setPage} callFilter={callFilter} setCallFilter={setCallFilter} schema={props.schema} txt={txt} popup={filterPopup} setFiltering={props.setFiltering} setPopup={setFilterPopup} key={'fffp'}/> 
                         : 
                             <></>
 
                 }
             </div>
             { 
-                addPopup ? <AddFilePopup popup={addPopup} setPopup={setAddPopup} key={'afpp'}/> : <></>
+                addPopup ? <AddFilePopup popup={addPopup} setShortcuts={props.setShortcuts} setPopup={setAddPopup} key={'afpp'}/> : <></>
             }
         </>
     )

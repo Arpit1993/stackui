@@ -48,9 +48,11 @@ const YOLOHistoryPopUp = (props) => {
 
                 const res2 = await fetch('http://localhost:8000/label_versions?key='.concat(props.keyId).concat('&l=3&page=').concat(page))
                 const data2 = await res2.json();
-                setChangesLabels(Object.values(data2.commits))
-                setlabelName(data2.keyId)
-                setMaxPages(Math.max(data.len/max_commits,data2.len/max_commits))
+                if (!(Object.keys(data2).length == 0)){
+                    setChangesLabels(Object.values(data2.commits))
+                    setlabelName(data2.keyId)
+                    setMaxPages(Math.max(data.len/max_commits,data2.len/max_commits))
+                }
             }
             getChanges(page)
         }

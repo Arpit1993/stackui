@@ -30,6 +30,7 @@ const FileFilterPopup = (props) => {
             setTime(false)
         } else {
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [nullStr])
 
 
@@ -75,7 +76,10 @@ const FileFilterPopup = (props) => {
             <div key={"flterpp"} className="bg-white absolute z-40 top-20 rounded-lg dark:bg-slate-900 w-full h-[100px] border-[0.5px] border-gray-500">
                 <div className="w-full justify-between flex h-[30px]">
                     <div className="px-2">
-                        <button onClick={() => props.setPopup(0)} className='text-xs px-1 w-[15px] h-[15px] flex-col bg-red-400 hover:bg-red-200 rounded-full'></button>
+                        <button onClick={() => {
+                        props.setShortcuts(true)
+                        props.setPopup(false)
+                        }} className='text-xs px-1 w-[15px] h-[15px] flex-col bg-red-400 hover:bg-red-200 rounded-full'></button>
                     </div>
                 </div>
 

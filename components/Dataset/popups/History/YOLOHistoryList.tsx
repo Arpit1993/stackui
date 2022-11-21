@@ -15,8 +15,10 @@ const YOLOHistoryList = (props) => {
             })
             fetch('http://localhost:8000/label_versions?key='.concat(props.keyId).concat('&l=2&page=0'))
             .then((data) => data.json()).then((res) => {
-                setVersionLabel(Object.values(res.commits))
-                setlabelName(res.keyId)
+                if (!(Object.keys(res).length == 0)){
+                    setVersionLabel(Object.values(res.commits))
+                    setlabelName(res.keyId)
+                }
             })
         }
         fetchVersions()

@@ -13,20 +13,52 @@ const ImageThumbnail = (props) => {
     const height: number = Math.ceil(450/Math.sqrt(props.max_view)) 
 
     return (
-        <>
+        <div className={`relative h-[${height}px] w-[${width}px]`}>
             {
                 popup ? 
-                    <FileTagPopup key={`tfpp ${props.file['name']}`} setPopup={setPopup} file={props.file}/>
+                    <FileTagPopup setShortcuts={props.setShortcuts} key={`tfpp ${props.file['name']}`} setPopup={setPopup} file={props.file}/>
                  : <></>
             }
-            <div className={`h-[${height}px] w-[${width}px] flex relative z-10`}>
-                {
-                    (props.file['tags'].length > 0) ? 
-                    <button key={`tags-${props.file['name']}`} className="absolute border z-30 ml-1 mt-1 w-[15px] h-[15px] bg-red-500 rounded-full hover:bg-red-700" onClick={() => setPopup(true)}>
-                    </button>
-                    : <></>
-                }
+            <div className="absolute z-[25] right-2">
+                <DropdownFile selected={props.selected[props.index]} setShortcuts={props.setShortcuts} setTagsPopup={props.setTagsPopup} setPopup={setPopup}/>
+            </div>
+            {
+                (props.file['tags'].length > 0) ? 
+                <button key={`tags-${props.file['name']}`} className="absolute border z-20 ml-1 mt-1 w-[15px] h-[15px] bg-red-500 rounded-full hover:bg-red-700" onClick={() => setPopup(true)}>
+                </button>
+                : <></>
+            }
+            {
+                (props.selected[props.index]) ? 
+                <button key={`selected-${props.file['name']}`} className="absolute z-20 right-0 bottom-0 mr-2 mb-1 w-[20px] h-[20px] bg-white/50 border-black border hover:bg-white/30 flex flex-col justify-center" onClick={() => {
+                    var arr = props.selected
+                    arr.splice(props.index,1,!props.selected[props.index])
+                    props.setSelected(arr)
+                    props.setPointer(props.index)
+                    setNullStr(nullStr.concat('x'))
+                }}>
+                    <div className="flex justify-center">
+                        <SquareIcon className="w-[18px] h-[18px] fill-blue-500"/>
+                    </div>
+                </button>
+                :
+                <button key={`nselected-${props.file['name']}`} className="absolute z-20 right-0 bottom-0 mr-2 mb-1 w-[20px] h-[20px] bg-white/50 border-black border hover:bg-white/30" onClick={() => {
+                    var arr = props.selected
+                    if(props.selected.length > 0){
+                        arr.splice(props.index,1,!props.selected[props.index])
+                        props.setSelected(arr)
+                        props.setPointer(props.index)
+                        setNullStr(nullStr.concat('x'))
+                    }
+                }}>
+                </button>
+            }
+            <div className={`w-full h-full flex z-10`}>
                 <button className={`justify-center flex flex-col z-10 rounded-lg h-full w-full bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 hover:dark:bg-black border-[0.5px] border-gray-400 text-left text-xs`} key={`${props.index.toString()}defg`} onClick={() => props.handleObjectClick(props.file['name'].substring(props.dataset.length))}>
+                    {
+                        <button className={props.selected[props.index] ? `absolute z-[21] justify-center flex flex-col rounded-lg h-full w-full bg-blue-500/30 hover:bg-blue-500/50` : `absolute  z-[21] justify-center flex flex-col rounded-lg h-full w-full hover:bg-white/20`} key={`${props.index.toString()}defg2`} onClick={() => props.handleObjectClick(props.file['name'].substring(props.dataset.length))}>
+                        </button>
+                    }
                     {
                         props.waiting ? 
                         <div className='relative h-full flex justify-center'>
@@ -56,37 +88,8 @@ const ImageThumbnail = (props) => {
                         />
                     }
                 </button>
-                {
-                    <button className={props.selected[props.index] ? `absolute z-20 justify-center flex flex-col rounded-lg h-full w-full bg-blue-500/30 hover:bg-blue-500/50` : `absolute z-20 justify-center flex flex-col rounded-lg h-full w-full hover:bg-white/20`} key={`${props.index.toString()}defg2`} onClick={() => props.handleObjectClick(props.file['name'].substring(props.dataset.length))}>
-                    </button>
-                }
-                {
-                    (props.selected[props.index]) ? 
-                    <button key={`selected-${props.file['name']}`} className="absolute z-30 right-0 bottom-0 mr-2 mb-1 w-[20px] h-[20px] bg-white/50 border-black border hover:bg-white/30 flex flex-col justify-center" onClick={() => {
-                        var arr = props.selected
-                        arr.splice(props.index,1,!props.selected[props.index])
-                        props.setSelected(arr)
-                        props.setPointer(props.index)
-                        setNullStr(nullStr.concat('x'))
-                    }}>
-                        <div className="flex justify-center">
-                            <SquareIcon className="w-[18px] h-[18px] fill-blue-500"/>
-                        </div>
-                    </button>
-                    :
-                    <button key={`nselected-${props.file['name']}`} className="absolute z-30 right-0 bottom-0 mr-2 mb-1 w-[20px] h-[20px] bg-white/50 border-black border hover:bg-white/30" onClick={() => {
-                        var arr = props.selected
-                        arr.splice(props.index,1,!props.selected[props.index])
-                        props.setSelected(arr)
-                        setNullStr(nullStr.concat('x'))
-                    }}>
-                    </button>
-                }
-                <div className="absolute z-[50] right-2">
-                    <DropdownFile setPopup={setPopup}/>
-                </div>
             </div>
-        </>
+        </div>
     )
     
 }
