@@ -58,7 +58,7 @@ const Infobar = (props) => {
 
                     :
 
-                    <div className="w-full p-2 h-[100px] overflow-clip">
+                    <div className="w-full p-2 h-[106px] overflow-clip">
                         <article className="text-xs dark:text-white">
                             <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                 {readme}
@@ -67,12 +67,12 @@ const Infobar = (props) => {
                     </div>
                 }
 
-                <button className="flex justify-end text-sm underline text-gray-600" onClick={() => { setReadmePopup(true) } }>
+                <button className="flex justify-end mt-1 text-sm underline text-gray-600" onClick={() => { setReadmePopup(true) } }>
                     view more
                 </button>
             </div>
 
-            <div className="p-2">
+            <div>
                 
                 <h2 className='text-center text-lg p-4 text-bold under'>
                     Recent Activity
