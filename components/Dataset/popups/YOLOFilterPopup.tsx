@@ -8,6 +8,8 @@ import { highlight, languages } from 'prismjs/components/prism-core';
 import 'prismjs/components/prism-clike';
 import 'prismjs/components/prism-javascript';
 import 'prismjs/components/prism-python';
+import Datepicker from "react-tailwindcss-datepicker";
+
 
 
 const getbuttons = (variable, varFilter, setVarFilter, nullStr, setnullStr, n_var, name, n_buttons) => {
@@ -54,10 +56,10 @@ const YOLOFilterPopup = (props) => {
     const [schema, setSchema] = useState( `datapoint: dict\n\tkey: string\n\tnum_classes: string<int>\n\tclasses: list<string>\n\tresolution: string\n\ttags: list<string>\n\tlabels: list<dict>:\n\t\t'0': class\n\t\t'1': x\n\t\t'2': y\n\t\t'3': w\n\t\t'4': h`)
     const [query, setQuery] = useState(false)
 
+    const [date, setDate] = useState({startDate: null, endDate: null});
     const [branch, setBranch] = useState(false)
     
     const [sliderBox, setSliderBox] = useState([0,100])
-    const [sliderDate, setSliderDate] = useState([0,100])
     const [sliderClasses, setSliderClasses] = useState([0,100])
 
     const [classes, setClasses] = useState([])
@@ -74,8 +76,6 @@ const YOLOFilterPopup = (props) => {
     const [tagFilter, setTagFilter] = useState({})
     
     const [time, setTime] = useState(true)
-
-
     const [loading, setLoading] = useState(false)
 
     // weird hack to make the checkboxes bg-color change when setState, otherwise state remains the same
@@ -144,6 +144,13 @@ const YOLOFilterPopup = (props) => {
             idx+=1
         }
 
+        if(date.endDate && date.startDate){
+            filters[idx] = {
+                'date': [date.startDate.replace('-','/'), date.endDate.replace('-','/')]
+            }
+            idx+=1
+        }
+
         if(sliderClasses[0] > 0 || sliderClasses[1] < 100){
             filters[idx] = {
                 'num_classes': [Math.floor(numClasses * sliderClasses[0]/100),Math.floor(numClasses * sliderClasses[1]/100)]
@@ -195,8 +202,8 @@ const YOLOFilterPopup = (props) => {
                 setClassFilter(cFilter)
                 setTagFilter(tFilter)
                 setSliderBox([0,100])
-                setSliderDate([0,100])
                 setSliderClasses([0,100])
+                setDate({startDate: null, endDate: null})
                 setnullStr('')
             }
         )
@@ -320,7 +327,7 @@ const YOLOFilterPopup = (props) => {
                     :
                     <div className="flex w-full h-[150px] overflow-x-scroll justify-start gap-2 p-1">
                         <div className="h-[120px] w-[200px] border rounded-md shadow-inner border-gray-500">
-                            <div className="px-1 gap-1 flex text-xs w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
+                            <div className="p-1 gap-1 flex text-xs w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
                                 <div>
                                     Classes
                                 </div>
@@ -376,7 +383,7 @@ const YOLOFilterPopup = (props) => {
                             </div>
                         </div>
 
-                        <div className="w-[200px]  h-[120px]">
+                        <div className="h-[120px] w-[200px]">
                             <div className="w-[200px] h-[50px] border rounded-md shadow-inner border-gray-500">
                                 <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
                                     <div>
@@ -400,28 +407,7 @@ const YOLOFilterPopup = (props) => {
                                 </div>
                             </div>
 
-                            <div className="mt-[20px] w-[200px] h-[50px] border rounded-md shadow-inner border-gray-500">
-                                <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
-                                    <div>
-                                        Date of change
-                                    </div>
-                                </div>
-                                <div className="w-full px-5">
-                                    <Slider
-                                        getAriaLabel={() => 'Bounding box area'}
-                                        value={sliderDate}
-                                        onChange={(event: Event, newValue: number | number[]) => {
-                                            setSliderDate(newValue as number[]);
-                                        }}
-                                        valueLabelDisplay="auto"
-                                        getAriaValueText={()=>{return ''}}
-                                        />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="w-[200px] h-[120px]">
-                            <div className="w-[200px] h-[50px] border rounded-md shadow-inner border-gray-500">
+                            <div className="w-[200px] mt-[20px] h-[50px] border rounded-md shadow-inner border-gray-500">
                                 <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
                                     <div>
                                         Objects per image
@@ -441,6 +427,22 @@ const YOLOFilterPopup = (props) => {
                                         getAriaValueText={()=>{return ''}}
                                         />
                                 </div>
+                            </div>
+                        </div>
+
+                        <div className="w-[300px] h-[120px] border rounded-md shadow-inner border-gray-500">
+                            <div className="flex gap-1 text-xs px-1 w-[298px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
+                                <div>
+                                    Date of change
+                                </div>
+                            </div>
+                            <div className="w-full p-5 gap-3">
+                                <Datepicker
+                                    useRange={false}
+                                    separator={"to"}
+                                    value={date}
+                                    onChange={setDate}
+                                />
                             </div>
                         </div>
                     </div>

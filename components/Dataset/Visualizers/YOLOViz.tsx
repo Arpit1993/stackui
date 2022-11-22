@@ -5,9 +5,6 @@ import BoundingBox from "./Items/BoundingBox";
 import ClearIcon from '@mui/icons-material/Clear';
 import AddIcon from '@mui/icons-material/Add';
 
-const width_extra: number = 0
-const height_extra: number = 7
-
 const YOLOViz = (props) => {
     
     const [usableStr, setUsableStr] = useState<string>('')
@@ -19,6 +16,9 @@ const YOLOViz = (props) => {
     const [first, setFirst] = useState<Boolean>(true)
     const [editing, setEditing] = useState<Boolean>(false)
     const [options, setOptions] = useState<Boolean>(false)
+
+    const width_extra: number = 0
+    const height_extra: number = 7
 
     var boxes: Array<any> = []
 
@@ -73,7 +73,7 @@ const YOLOViz = (props) => {
     }
 
     return (
-        <div className={editing ? "w-full h-full cursor-crosshair" : "w-full h-full"}>
+        <div className={editing ? "relative w-full h-full cursor-crosshair" : "relative  w-full h-full"}>
             <Image alt='' key="cmp1" className="z-0 absolute top-0 left-0 w-full h-max" src={im.src} objectFit={'contain'} width={props.ww+width_extra} height={props.wh+height_extra} />
             <div className="absolute top-0 left-0">
                 {boxes}
@@ -185,6 +185,7 @@ const YOLOViz = (props) => {
                         var edit_arr = Array(arr_copy.length).fill(false)
                         edit_arr[edit_arr.length-1] = true
                         setEditableLabel(edit_arr)
+                        setEditing(true)
                         }} className={"z-30 flex gap-1 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"}>
                         <AddIcon className="h-[20px] w-[20px]"/>
                         {'Add'}

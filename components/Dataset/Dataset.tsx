@@ -1,5 +1,5 @@
 import React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Explorer from "./explorer/Explorer";
 import Infobar from "./infobar/Infobar";
 import { useRouter } from "next/router"
@@ -9,19 +9,19 @@ const Dataset = () => {
     // states for each json
     const [files, setFiles] = useState<Array<any>>([])
     const [URI, setURI] = useState({schema: '', storage: '', dataset: '', storage_dataset: ''});
-    const [commits, setCommits] = useState([]);
+    const [commits, setCommits] = useState<Array<any>>([]);
     const [len, setLen] = useState<number>(0);
     const [page, setPage] = useState<number>(0);
     const [waiting, setWaiting] = useState<Boolean>(true);
-    const [schema, setSchema] = useState('files');
+    const [schema, setSchema] = useState<string>('files');
     const [view, setView] = useState<Boolean>((schema == 'yolo' || schema == 'labelbox') ? false : true);
     const [filtering, setFiltering] = useState<string>('x');
     const [max_view, setMaxView] = useState<number>(view ? 36 : 36)
-    const [first, setFirst] = useState<Boolean>(true)
+    const first = useRef(true)
     const router = useRouter()
     const [shortcuts, setShortcuts] = useState<Boolean>(false)
     const [loading, setLoading] = useState<Boolean>(true)
-
+    const dataset = router.query.dataset
     // reads the API endpoints
     
     useEffect(() => {
@@ -29,16 +29,16 @@ const Dataset = () => {
             var view_ex = view
             var max_view_var = max_view
 
-            if (first){
-                await fetch('http://localhost:8000/connect/?uri='.concat(router.query.dataset))
+            if (first.current){
+                await fetch('http://localhost:8000/connect/?uri='.concat(dataset as string))
                 const schema_res = await fetch(`http://localhost:8000/schema`).then((response) => response.json())
                 setSchema(await schema_res.value);
-                if(schema_res.value == 'yolo' || schema_res.value == 'labelbox'){
+                if(await schema_res.value == 'yolo' || await schema_res.value == 'labelbox'){
                     view_ex = false
                     max_view_var = 36
                     setView(false)
                     setMaxView(36)
-                    setFirst(false)
+                    first.current = false
                     setFiles(
                         Array(1).fill({
                            name: '',
@@ -61,12 +61,12 @@ const Dataset = () => {
 
             var files_: Array<any> = [];
 
-            for(var i = 0; i < current.keys.length; i++){
-                const isImage = ['jpg','png','jpeg','tiff','bmp','eps'].includes(current.keys[i].split('.').pop())
+            for(var i = 0; i < await current.keys.length; i++){
+                const isImage = ['jpg','png','jpeg','tiff','bmp','eps'].includes(await current.keys[i].split('.').pop())
                 if (isImage && !view_ex){
                     setWaiting(true)
                     const thumbnail_  = 
-                    await fetch(`http://localhost:8000/get_thumbnail?file=${current.keys[i].substring(await uri.storage_dataset.length)}`)
+                    await fetch(`http://localhost:8000/get_thumbnail?file=${await current.keys[i].substring(await length)}`)
                     .then((res) => res.body.getReader()).then((reader) =>
                     new ReadableStream({
                         start(controller) {
@@ -85,25 +85,25 @@ const Dataset = () => {
                     }))
                     .then((stream) => new Response(stream)).then((response) => response.blob())
                     .then((blob) => URL.createObjectURL(blob))
-                    const tags = await fetch(`http://localhost:8000/get_tags?file=${current.keys[i].substring(await length)}`)
+                    const tags = await fetch(`http://localhost:8000/get_tags?file=${await current.keys[i].substring(await length)}`)
                     .then((res) => res.json())
 
                     files_.push({
-                        name: current.keys[i],
-                        base_name: current.keys[i].substring(length),
+                        name: await current.keys[i],
+                        base_name: await current.keys[i].substring(length),
                         last_modified: current.lm[i],
                         thumbnail: await thumbnail_,
                         tags: await tags
                     })
                 } else{
-                    const tags = await fetch(`http://localhost:8000/get_tags?file=${current.keys[i].substring(await length)}`)
+                    const tags = await fetch(`http://localhost:8000/get_tags?file=${await current.keys[i].substring(await length)}`)
                     .then((res) => res.json())
                     
                     files_.push({
-                        name: current.keys[i],
-                        base_name: current.keys[i].substring(length),
-                        last_modified: current.lm[i],
-                        thumbnail: isImage ? '/Icons/icon-image-512.webp' : '/Icons/file-icon.jpeg',
+                        name: await current.keys[i],
+                        base_name: await current.keys[i].substring(length),
+                        last_modified: await current.lm[i],
+                        thumbnail: (await isImage) ? '/Icons/icon-image-512.webp' : '/Icons/file-icon.jpeg',
                         tags: await tags
                     })
                 }
@@ -113,14 +113,14 @@ const Dataset = () => {
             setFiles(await files_)
             setLoading(false)
         }
-    
-        fetchFiles()
+        if(dataset){
+            fetchFiles()
+            const newLocal: number = 4;
+            fetch(`http://localhost:8000/last_n_commits/?n=`.concat(newLocal.toString()))
+                .then((response) => response.json()).then((data) => Object.values(data)).then((res) => setCommits(res as []));
+        }
 
-        const newLocal: number = 4;
-        fetch(`http://localhost:8000/last_n_commits/?n=`.concat(newLocal.toString()))
-            .then((response) => response.json()).then((data) => Object.values(data)).then((res) => setCommits(res as []));
-
-    }, [page, view, filtering, max_view, first, router.query])
+    }, [page, view, filtering, max_view, router.query, dataset])
 
     const dataprops = {dataset: URI.dataset, URI: URI.storage, storage_dataset: URI.storage_dataset};
 

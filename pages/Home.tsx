@@ -6,12 +6,10 @@ export default function Main () {
         <div className="h-full flex flex-col justify-center">
             <div className='p-10 text-5xl flex flex-col justify-center items-center font-bold h-max text-center'>
                 <h1 className="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">Welcome to stack</h1>
-                <h1 className="mb-4 text-3xl font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-6xl">
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">
-                        {'Supercharge '} 
-                    </span> 
-                    your datasets
-                </h1>
+                <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
+                <span className="block xl:inline bg-gradient-to-r bg-clip-text text-transparent from-blue-800 to-blue-800 via-blue-400 animate-text">Supercharge </span>{' '}
+                <span className="block xl:inline">your datasets</span>{' '}
+              </h1>
             </div>
             <p className="text-lg font-normal text-center text-gray-500 lg:text-xl dark:text-gray-400 mb-6">
                 Explore, Curate, Version control, and Collaborate.
@@ -19,7 +17,7 @@ export default function Main () {
     
             <div className="p-10 flex justify-center gap-2">
                 <Link href="/NewDataset" passHref>
-                    <button className="flex focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"> 
+                    <button className="flex focus:outline-none text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"> 
                         Add a new dataset
                         <svg className="ml-2 -mr-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
                     </button>

@@ -1,8 +1,5 @@
 import React, { useEffect, useState, useRef } from "react"
 
-const offset_x = -5
-const offset_y = 0
-
 const hexToRgb = (hex: string) => {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result ? {
@@ -35,6 +32,9 @@ const BoundingBox = (props) => {
     
     const [selecting, setSelecting] = useState(false)
     const canvasRef = useRef(null)
+
+    const offset_x = -5
+    const offset_y = 0
 
     var splitString = `${props.class_number}`.split("");
     var reverseArray = splitString.reverse();

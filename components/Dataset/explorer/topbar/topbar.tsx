@@ -28,7 +28,7 @@ const TopBar = (props) => {
 
     const handleSubmit = (event: React.ChangeEvent<any> ) => {
         event.preventDefault()
-        props.setShortcuts(false)
+        props.setShortcuts(() => {return false})
         setFilterPopup(true)
         setCallFilter(true)
     }
@@ -57,24 +57,14 @@ const TopBar = (props) => {
                             </div>
                         </button>
 
-                        <button onClick={()=>
-                            {
-                                props.setShortcuts(addPopup)
-                                setAddPopup(!addPopup)
-                            }
-                            } className="h-min text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700" > 
+                        <button onClick={()=> {props.setShortcuts(() => {return !addPopup}); setAddPopup(!addPopup)}} className="h-min text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700" > 
                             <div className="flex gap-2">
                                     <CloudUploadIcon className="h-5 w-5"/>
                                     {'Upload'}
                                 </div>
                         </button>
 
-                        <button onClick={()=>
-                            {
-                                props.setShortcuts(filterPopup)
-                                setFilterPopup(!filterPopup)
-                            }
-                            } className="w-[60px] h-[40px] flex flex-col justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" > 
+                        <button onClick={()=>{props.setShortcuts(() => {return !filterPopup}); setFilterPopup(!filterPopup)}} className="w-[60px] h-[40px] flex flex-col justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" > 
                             {<Image className="invert" src={'/Icons/filter-search.png'} alt='' width={'40px'} height={'40px'} objectFit={'contain'} />}
                         </button>
                         
