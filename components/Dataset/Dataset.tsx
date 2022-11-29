@@ -137,7 +137,7 @@ const Dataset = () => {
                 <Explorer shortcuts={shortcuts} setShortcuts={setShortcuts} props={props} page={page} setPage={setPage} max_view={max_view} setMaxView={setMaxView} view={view} setView={setView} len={len} waiting={waiting} setFiltering={setFiltering} schema={schema}/>
             </div>
             <div  className='w-1/5 h-full'>
-                <Infobar shortcuts={shortcuts} setShortcuts={setShortcuts} commits={commits}/>
+                <Infobar shortcuts={shortcuts} setShortcuts={setShortcuts} commits={commits} dataset={URI.storage_dataset}/>
             </div>
         </div>
     )

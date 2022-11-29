@@ -26,7 +26,7 @@ export default function Datasets() {
                 </button>
             </Link>
             <div className="">
-                {datasets.map( (dataset) => <DatasetComponent key={`dataset${dataset.name}`} dataset={dataset} setLoading={setLoading}/>)}
+                {datasets.map( (dataset) => <DatasetComponent datasets={datasets} key={`dataset${dataset.name}`} dataset={dataset} setLoading={setLoading}/>)}
             </div>
             {
                 loading ? <LoadingScreen msg={'Connecting...'}  key={'ld'}/> : <></>

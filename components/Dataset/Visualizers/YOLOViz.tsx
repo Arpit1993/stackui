@@ -16,6 +16,9 @@ const YOLOViz = (props) => {
     const [first, setFirst] = useState<Boolean>(true)
     const [editing, setEditing] = useState<Boolean>(false)
     const [options, setOptions] = useState<Boolean>(false)
+    
+    const myRef = useRef(null)
+    const executeScroll = () => myRef.current.scrollIntoView()    
 
     const width_extra: number = 0
     const height_extra: number = 7
@@ -103,7 +106,7 @@ const YOLOViz = (props) => {
                                                 <input type="checkbox" checked={active[idx]} onChange={()=>{
                                                         var arr_copy = active;
                                                         arr_copy.splice(idx,1,!active[idx]);
-                                                        setActive(arr_copy);
+                                                        setActive(() => {return arr_copy});
                                                         setNullStr(nullstr.concat('z'));
                                                     }
                                                 }
@@ -120,17 +123,32 @@ const YOLOViz = (props) => {
                                                             }
                                                             arr_copy1[idx][0] = usableStr
                                                             updated_labels.current = Object.assign({},arr_copy1)
+                                                            props.setnewLabels(() => {return updated_labels.current})
+                                                            props.setSubmit(true)
                                                             setLabels(arr_copy1)
                                                             
                                                             var arr_copy = editableLabel
                                                             arr_copy[idx] = !arr_copy[idx]
                                                             setUsableStr('')
-                                                            setEditableLabel(arr_copy)
+                                                            setEditableLabel(() => {return arr_copy})
                                                             setNullStr(nullstr.concat('ds'))
                                                         }}>
                                                             <label>
-                                                                <input className="w-full text-black font-normal" type="text" value={usableStr} 
-                                                                onChange={(e) => {setUsableStr(e.target.value)}} />
+                                                                <input className="w-full text-black font-normal border border-black" type="text" value={usableStr} 
+                                                                onChange={(e) => {
+                                                                    setUsableStr(e.target.value)
+                                                                    var arr_copy1: Array<Array<any>> = Object.values(updated_labels.current)
+                                                                    const idx1 = arr_copy1.indexOf(props.keyId)
+                                                                    if (idx1 > -1){
+                                                                        arr_copy1.splice(idx1,1)
+                                                                    }
+                                                                    arr_copy1[idx][0] = usableStr
+                                                                    updated_labels.current = Object.assign({},arr_copy1)
+                                                                    props.setnewLabels(() => {return updated_labels.current})
+                                                                    props.setSubmit(true)
+                                                                    setLabels(() => {return arr_copy1})
+                                                                    setNullStr(nullstr.concat('df'))
+                                                                    }} />
                                                             </label>
                                                         </form>
                                                         :
@@ -154,6 +172,9 @@ const YOLOViz = (props) => {
                                                                     arr_copy.splice(idx1,1)
                                                                 }
                                                                 updated_labels.current = Object.assign({},arr_copy)
+                                                                props.setnewLabels(() => {return updated_labels.current})
+                                                                props.setSubmit(true)
+                                                                setUsableStr('new label')
                                                                 setLabels(arr_copy)
                                                                 setNullStr(nullstr.concat('z'))
                                                                 }
@@ -166,6 +187,7 @@ const YOLOViz = (props) => {
                                         </li>
                                 )
                             }
+                            <div ref={myRef} className='mt-10'></div>
                         </ul>
                     </div>
                 </div>
@@ -180,12 +202,21 @@ const YOLOViz = (props) => {
                             arr_copy.splice(idx1,1)
                         }
                         updated_labels.current = Object.assign({},arr_copy)
-                        setLabels(arr_copy)
+                        props.setnewLabels(() => {
+                            return updated_labels.current
+                        })
+                        props.setSubmit(true)
+
+                        setLabels(() => {return arr_copy})
                         setNullStr(nullstr.concat('z'))
                         var edit_arr = Array(arr_copy.length).fill(false)
                         edit_arr[edit_arr.length-1] = true
-                        setEditableLabel(edit_arr)
+                        setEditableLabel(() => {return edit_arr})
                         setEditing(true)
+                        executeScroll()
+                        var arr_copy = active;
+                        arr_copy.push(true);
+                        setActive(() => {return arr_copy});
                         }} className={"z-30 flex gap-1 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"}>
                         <AddIcon className="h-[20px] w-[20px]"/>
                         {'Add'}

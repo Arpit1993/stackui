@@ -3,6 +3,7 @@ import ViewOptions from "./Items/ViewOptions";
 import { SetStateAction, useCallback, useEffect, useState } from "react";
 import ImageThumbnail from "./Items/ImageThumbnail";
 import React from "react";
+import SliceButton from "./Items/SliceButton";
 import SelectionTagPopup from "./Popups/SelectionTagPopup";
 import { Tooltip } from "@mui/material";
 
@@ -134,10 +135,8 @@ const FileExplorer = (props) => {
                 }
             }
         }
-            
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props, selected, pointer, max_pages])
+    }, [props, selected, pointer, max_pages, props.shortcuts])
 
     useEffect(() => {
         props.setShortcuts(true)
@@ -152,7 +151,7 @@ const FileExplorer = (props) => {
             document.removeEventListener('keydown', handleKeyPress);
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[props.files, props.page, props.view, props.max_view, pointer, selected, handleKeyPress])
+    },[props.files, props.page, props.view, props.max_view, props.shortcuts, pointer, selected, handleKeyPress])
     
     var listofButtons: Array<any> = [];
 
@@ -278,24 +277,29 @@ const FileExplorer = (props) => {
             }
             <div className="h-full">
                 <div className="z-10 flex text-xs w-full justify-between px-5">
-                    <div className="z-10 w-1/6 flex flex-col justify-center h-max py-2"> 
-                        Page {props.page+1 | 0} of {max_pages-0.001+1 | 0}
-                    </div>
-                    <Tooltip title={'Explorer options'} placement="bottom">
+                    <Tooltip title={'Dataset slice'} placement="right">
                         <div className="w-min">
-                                <ViewOptions setMaxView={props.setMaxView} setView={props.setView} 
-                                        setPage={props.setPage} max_view={props.max_view} view_label={view_label} view={props.view} 
-                                        switch_={switch_} setPointer={setPointer} setSwitch={setSwitch} setFiltering={props.setFiltering}
-                                        schema={props.schema} setThumbnailView={setThumbnailView} thumbnailView={thumbnailView}/>
+                            <SliceButton dataset={props.dataset} setFiltering={props.setFiltering}/>
+                        </div>
+                    </Tooltip>
+                    <Tooltip title={'Explorer options'} placement="left">
+                        <div className="w-min">
+                            <ViewOptions setMaxView={props.setMaxView} setView={props.setView} 
+                                    setPage={props.setPage} max_view={props.max_view} view_label={view_label} view={props.view} 
+                                    switch_={switch_} setPointer={setPointer} setSwitch={setSwitch} setFiltering={props.setFiltering}
+                                    schema={props.schema} setThumbnailView={setThumbnailView} thumbnailView={thumbnailView}/>
                         </div>
                     </Tooltip>
                 </div>
                 <div className="z-0 h-[480px] w-full flex justify-center p-1">
                     {container_var}
                 </div>
-                <div className="z-10">
+                <div className="z-10 flex justify-between">
                     <div className="flex justify-left text-xs mt-2 mb-2 rounded-sm">
                         {listofButtons}
+                    </div>
+                    <div className="z-10 w-1/6 flex flex-col justify-center h-max text-sm py-2"> 
+                        Page {props.page+1 | 0} of {max_pages-0.001+1 | 0}
                     </div>
                 </div>
                 {

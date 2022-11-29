@@ -45,7 +45,7 @@ const DatasetComponent = (props) => {
             {
                 popup 
                     ? 
-                        <DatasetOptionsPopup key={'dataset_options'} dataset={props.dataset} setPopup={setPopup} />
+                        <DatasetOptionsPopup datasets={props.datasets} key={'dataset_options'} dataset={props.dataset} setPopup={setPopup} />
                     : 
                         <></>
             }

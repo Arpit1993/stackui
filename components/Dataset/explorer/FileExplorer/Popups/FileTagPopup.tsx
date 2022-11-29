@@ -38,7 +38,7 @@ const FileTagPopup = (props) => {
                     click to close
                 </button>
             }
-            <div className="z-50 p-2 text-sm fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 bg-white dark:bg-gray-900 w-1/4 h-1/4">
+            <div className="z-50 p-2 text-sm rounded-md fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-300 bg-white dark:bg-gray-900 w-1/4 h-1/4">
                 <div className="flex-col justify-between">
                     <div className="w-full justify-between flex">
                         <button onClick={() => {
@@ -54,7 +54,7 @@ const FileTagPopup = (props) => {
                         </div>
                     </div>
                     <div className="w-full">
-                        <div className="border border-black overflow-scroll h-[40px] p-2 flex gap-2">
+                        <div className="border border-gray-300 rounded-md overflow-scroll h-[40px] p-2 flex gap-2">
                             {
                                 (tags.length > 0) ?
                                 tags.map( (tag, idx) => 

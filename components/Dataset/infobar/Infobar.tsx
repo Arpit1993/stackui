@@ -13,6 +13,7 @@ const Infobar = (props) => {
     const [readme, setReadme] = useState('')
 
     useEffect(()=>{
+        setReadme('')
         fetch('http://localhost:8000/get_readme/').
             then((res) => res.body.getReader()).then((reader) =>
             new ReadableStream({
@@ -32,7 +33,7 @@ const Infobar = (props) => {
                 }
             })).then((stream) => new Response(stream)).then((response) => response.blob())
             .then((blob) => blob.text()).then(setReadme)
-    },[setReadme])
+    },[props.dataset])
 
     return (
         <div className='p-2 w-full grow flex flex-col flew-col justify-between rounded-lg bg-white-50'>

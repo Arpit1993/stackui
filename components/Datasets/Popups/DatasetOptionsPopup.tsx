@@ -4,17 +4,23 @@ import FormData from "form-data";
 import DropdownSchema from "../../Dataset/Items/DropdownSchema";
 import LoadingScreen from "../../LoadingScreen";
 import posthog from 'posthog-js'
+import ClearIcon from '@mui/icons-material/Clear';
+import AddIcon from '@mui/icons-material/Add';
+import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 
 const DatasetOptionsPopup = (props) => {
 
-    const [uri , setURI ] = useState(props.dataset.storage)
-    const [name, setName] = useState(props.dataset.name)
+    const [uri , setURI ] = useState<string>(props.dataset.storage)
+    const [name, setName] = useState<string>(props.dataset.name)
     
-    const [loading, setLoading] = useState(false)
-    const [schema, setSchema] = useState('Loading...')
-    const [accessKey, setAccessKey] = useState('NoKey')
-    const [secretKey, setsecretKey] = useState('NoKey')
-    const [region, setRegion] = useState('NoRegion')
+    const [loading, setLoading] = useState<Boolean>(false)
+    const [schema, setSchema] = useState<string>('Loading...')
+    const [accessKey, setAccessKey] = useState<string>('NoKey')
+    const [secretKey, setsecretKey] = useState<string>('NoKey')
+    const [region, setRegion] = useState<string>('NoRegion')
+    const [hierarchy, setHierarchy] = useState({'parent': '', 'children': Array(0)})
+    const [selecting, setSelecting] = useState<Boolean>(false)
+    const [selecting1, setSelecting1] = useState<Boolean>(false)
 
     useEffect(()=>{
         setLoading(true)
@@ -23,9 +29,10 @@ const DatasetOptionsPopup = (props) => {
                 fetch(`http://localhost:8000/schema/`).then((response) => response.json())
                 .then((res) => setSchema(res.value)).then(() => setLoading(false))
             }
-        )
-        
-    },[])
+        ).then(() => {
+            fetch('http://localhost:8000/get_current_hierarchy').then((res) => res.json()).then(setHierarchy)
+        })
+    },[props])
 
     const handleKey1Change = (event) => {
         setAccessKey(event.target.value)
@@ -82,6 +89,25 @@ const DatasetOptionsPopup = (props) => {
         )
     }
 
+    const handleDeleteChild = (child) => {
+        fetch(`http://localhost:8000/current_remove_child?uri=${child}`).then(() => {
+            fetch('http://localhost:8000/get_current_hierarchy').then((res) => res.json()).then(setHierarchy)
+        })
+    }
+
+    const handleAddParent = (parent) => {
+        fetch(`http://localhost:8000/add_parent_to_current?parent=${parent}`).then(() => {
+            fetch('http://localhost:8000/get_current_hierarchy').then((res) => res.json()).then(setHierarchy)
+        })
+        setSelecting1(false)
+    }
+    
+    const handleAddChild = (child) => {
+        fetch(`http://localhost:8000/add_child_to_current?child=${child}`).then(() => {
+            fetch('http://localhost:8000/get_current_hierarchy').then((res) => res.json()).then(setHierarchy)
+        })
+        setSelecting(false)
+    }
 
     return (
         <>
@@ -190,12 +216,106 @@ const DatasetOptionsPopup = (props) => {
                             }
                         </div>
 
-                        <div className="flex justify-center gap-5 mt-5">
+                        <div className="flex justify-center mt-5">
                             <div className="flex flex-col">
                                 <div className="flex justify-center">
                                     <DropdownSchema schema={schema} setSchema={setSchema} />
                                 </div>
-                                
+                                <ol className="flex gap-0 justify-center w-full h-24">
+                                    <li className="relative mb-0">
+                                        <div className="mt-3">
+                                            <ul className="w-48 text-sm h-24 font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                                <li className="py-2 px-4 w-full rounded-t-lg border-b border-gray-200 dark:border-gray-600">
+                                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                                                        Parent dataset
+                                                    </h3>
+                                                </li>
+                                                <li className="py-2 px-4 w-full overflow-x-scroll border-b border-gray-200 dark:border-gray-600"> 
+                                                    <button onClick={()=>{setSelecting1(!selecting1)}} className={"z-30 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"}>
+                                                        {
+                                                            hierarchy['parent'] == '' ? <AddIcon className="h-[20px] w-[20px]"/> : null
+                                                        }
+                                                        {hierarchy['parent'] == '' ? 'None' : hierarchy['parent']}
+                                                    </button>
+                                                    <div className={selecting1 ? 'absolute' : 'invisible absolute'}>
+                                                        <ul className="w-48 h-60 overflow-y-scroll text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                                            <li className="py-2 px-4 w-full overflow-clip text-center rounded-t-lg border-b border-gray-200 dark:border-gray-600">Datasets</li>
+                                                            {
+                                                                props.datasets.map(
+                                                                    (dataset, idx) => {
+                                                                        return (
+                                                                            <button onClick={() => handleAddParent(dataset.storage)} key={`dataset in list ${idx} ${dataset}`} className="py-2 px-4 w-full border-b border-gray-200 hover:bg-gray-400 dark:border-gray-600">
+                                                                                {dataset.storage}
+                                                                            </button>
+                                                                        )
+                                                                    }
+                                                                )
+                                                            }
+                                                            <li className="py-2 px-4 w-full rounded-b-lg"></li>
+                                                        </ul>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+                                    <div className="flex flex-col justify-center">
+                                        <ArrowRightAltIcon className="h-[30px] w-[30px]"/>
+                                    </div>
+                                    <li className="relative mb-0">
+                                        <div className="mt-3">             
+                                            <ul className="w-50 h-24 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                                <li className="py-2 flex gap-2 px-4 w-full rounded-t-lg border-b border-gray-200 dark:border-gray-600">
+                                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                                                        Branches
+                                                    </h3>
+                                                    <div className="relative">
+                                                        <button onClick={()=>{setSelecting(!selecting)}} className={"flex justify-center items-center z-30 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"}>
+                                                            <AddIcon className="h-[10px] w-[10px]"/>
+                                                            {'Add'}
+                                                        </button>
+                                                        <div className={selecting ? 'absolute' : 'invisible absolute'}>
+                                                            <ul className="w-48 h-48 overflow-y-scroll text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                                                <li className="py-2 px-4 w-full text-center rounded-t-lg border-b border-gray-200 dark:border-gray-600">Datasets</li>
+                                                                {
+                                                                    props.datasets.map(
+                                                                        (dataset, idx) => {
+                                                                            return (
+                                                                                <button onClick={() => handleAddChild(dataset.storage)} key={`dataset in list ${idx} ${dataset}`} className="py-2 px-4 w-full border-b border-gray-200 hover:bg-gray-400 dark:border-gray-600">
+                                                                                    {dataset.storage}
+                                                                                </button>
+                                                                            )
+                                                                        }
+                                                                    )
+                                                                }
+                                                                <li className="py-2 px-4 w-full rounded-b-lg"></li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <div className="overflow-x-scroll h-12">
+                                                    {
+                                                        hierarchy.children.map(
+                                                            (child, idx) => {
+                                                                return (
+                                                                <li key={`dataset child${child}${idx}`} className="py-2 px-4 overflow-scroll border-b border-gray-200 dark:border-gray-600">
+                                                                    <div className="flex gap-1">
+                                                                        {child}
+                                                                        <button onClick={() => handleDeleteChild(child)}>
+                                                                            <ClearIcon className="h-[15px] w-[15px]"/>
+                                                                        </button>
+                                                                    </div>
+                                                                </li>)
+                                                            }
+                                                        )
+                                                    }
+                                                </div>
+                                                <li className="relative py-2 px-4 w-full rounded-b-lg">
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </li>
+                                </ol>
+
                                 <div className="flex justify-center gap-2 mt-5">
                                     <button onClick={() => props.setPopup(false)} className="w-[200px] h-[50px] py-2.5 px-5 mr-2 mb-2 text-sm font-body text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
                                         Cancel
@@ -209,6 +329,7 @@ const DatasetOptionsPopup = (props) => {
 
                     </div>
                 </div>
+
 
             </div>
             {loading ? <LoadingScreen msg={'Setting up'}  key={'ldcO'}/> : <></>}

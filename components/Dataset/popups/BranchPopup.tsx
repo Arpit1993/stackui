@@ -26,18 +26,19 @@ const BranchPopup = (props) => {
                     "Content-Type": "application/json" 
                 }, 
                 body: data}
+        ).then(
+            () => {
+                posthog.capture('Added a branch', { property: 'value' })
+                window.location.reload();
+            }
         )
-
-        posthog.capture('Added a branch', { property: 'value' })
-
-        window.location.href='/Datasets';
     }
 
     return (
         <div key={"brnchpp"} className="absolute z-50 top-20 bg-white rounded-lg dark:bg-slate-900 w-full h-[250px] border-[0.5px] border-gray-500">
             <div className="w-full justify-between flex h-[30px]">
                 <div className="px-2">
-                    <button onClick={() => props.setPopup(0)} className='text-xs px-1 w-[15px] h-[15px] flex-col bg-red-400 hover:bg-red-200 rounded-full'></button>
+                    <button onClick={() => props.setPopup(false)} className='text-xs px-1 w-[15px] h-[15px] flex-col bg-red-400 hover:bg-red-200 rounded-full'></button>
                 </div>
             </div>
             <div className="flex justify-center h-[120px] gap-2">
