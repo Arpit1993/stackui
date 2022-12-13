@@ -23,7 +23,7 @@ const FileHistoryList = (props) => {
             </div>
             <div className="w-[300px]">
                 {
-                    versions.map((data, index) => <ItemFileVersion  key={index.toString()} keyId={props.keyId} version={data.version} date={data.date} commit={data.commit}/>)
+                    versions.map((data, index) => <ItemFileVersion  key={index.toString()} noClick={index == 0} keyId={props.keyId} version={data.version} date={data.date} commit={data.commit}/>)
                 }
             </div>
         </>

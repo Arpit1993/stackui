@@ -5,7 +5,7 @@ import React from "react"
 const Sidebar = () => {
 
     return (
-        <div className='h-screen py-4 px-3 bg-gray-50 rounded dark:bg-gray-900'>
+        <div className='h-screen w-[17%] py-4 px-3 bg-gray-50 rounded dark:bg-gray-900'>
                 <div className='flex flex-col justify-top h-full'>
                     <h1 className='py-5 w-full flex justify-center text-2xl font-bold text-center'>
                         <Image className="dark:invert" src="/stack-logo.png" width={'200'} height={'56'} objectFit={'contain'} alt=''></Image>

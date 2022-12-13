@@ -12,6 +12,7 @@ const SliceButton = (props) => {
 
     const [slices, setSlices] = useState<Object>({})
     const [branches, setBranches] = useState<Array<any>>([])
+    const [versions, setVersions] = useState<Object>({})
     const [hierarchy, setHierarchy] = useState<any>({'parent': '', 'children': Array(0)})
 
     useEffect(() => {
@@ -23,7 +24,22 @@ const SliceButton = (props) => {
 
         fetch('http://localhost:8000/get_current_hierarchy/').then((res) => res.json())
         .then(setHierarchy)
-    }, [props.dataset])
+
+        fetch('http://localhost:8000/get_versions/').then((res) => res.json())
+        .then(setVersions)
+    }, [props.dataset, mode])
+
+    const handleAddVersion = () => {
+        fetch(`http://localhost:8000/add_version?`).then(() => {props.setFiltering('Setver1');props.setFiltering('setver2');setMode(2)})
+    }
+
+    const handleSelectVersion = (version) => {
+        fetch(`http://localhost:8000/select_version?version=${version}`).then(() => {props.setFiltering(`SStver1${version}`);props.setFiltering(`SStver2${version}`)})
+    }
+    
+    const handleResetVersion = () => {
+        fetch(`http://localhost:8000/reset_version`).then(() => {window.location.reload()})
+    }
 
     const handleMerge = (uri) => {
         fetch(`http://localhost:8000/merge_child_to_master?uri=${uri}`).then(() => {window.location.reload()})
@@ -68,7 +84,7 @@ const SliceButton = (props) => {
             <Popover.Button className='w-full h-[50px] flex flex-col justify-center text-xs'>
                 <div className="w-full h-[50px] text-xs flex gap-2 justify-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-body rounded-lg px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
                     <AccountTreeIcon className="fill-black dark:fill-white h-[20px]"/>
-                    <div className='overflow-clip text-clip text-left text-black h-[16px]'>
+                    <div className='overflow-clip text-clip text-left dark:text-white text-black h-[16px]'>
                         {
                             (slice == '') ? (hierarchy.parent == ''? 'main' : `branch`) : slice
                         }
@@ -77,7 +93,7 @@ const SliceButton = (props) => {
             </Popover.Button>
 
             <Popover.Panel className="absolute z-auto">
-                <div className="flex flex-col z-auto w-72 border border-gray-300 dark:border-gray-800 bg-white rounded divide-y divide-gray-300 shadow dark:bg-gray-900">
+                <div className="flex flex-col z-auto w-[260px] border border-gray-300 dark:border-gray-800 bg-white rounded divide-y divide-gray-300 shadow dark:bg-gray-900">
                     <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
                         <ul className="flex flex-wrap -mb-px">
                             <li className=":">
@@ -100,12 +116,13 @@ const SliceButton = (props) => {
                     {
                         (mode == 0) ? 
                         <>
-                            <button onClick={()=>handleResetSliceClick()} className="flex justify-center p-2 bg-zinc-100 hover:bg-gray-200 dark:bg-gray-900 dark:hover:bg-slate-800">
-                                <div className="flex gap-2 text-xs">
+                            <button onClick={()=>handleResetSliceClick()} className="flex w-full p-2 bg-white hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800">
+                                <div className="flex w-full justify-between gap-2 text-xs">
                                     <div>
                                         All data
                                     </div>
                                     <div>
+                                        <span className="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800">Default</span>
                                     </div>
                                 </div>
                             </button>
@@ -114,21 +131,23 @@ const SliceButton = (props) => {
                                     (slice_name) => 
                                         {
                                             // eslint-disable-next-line react/jsx-key
-                                            return <button onClick={() => handleSliceClick(slice_name)} className="flex p-2 hover:bg-gray-100 dark:hover:bg-gray-800">
-                                                <div className="flex gap-1 justify-between w-full text-xs">
-                                                    <div>
-                                                        {slice_name}
-                                                    </div>
-                                                    <div>
-                                                        ({slices[slice_name]})
-                                                    </div>
+                                            return <div className="flex items-center p-2">
+                                                <div className="flex items-center gap-1 justify-between w-full text-xs">
+                                                    <button className='flex gap-1 justify-between w-full' onClick={() => handleSliceClick(slice_name)}>
+                                                        <div>
+                                                            {slice_name}
+                                                        </div>
+                                                        <div>
+                                                            ({slices[slice_name]})
+                                                        </div>
+                                                    </button>
                                                     <Tooltip title={'Delete slice'} placement="right">
                                                         <button onClick={() => handleRemoveSliceClick(slice_name)}>
-                                                            <CloseIcon className="hover:fill-slate-500"/>
+                                                            <CloseIcon className="hover:fill-gray-500"/>
                                                         </button>
                                                     </Tooltip>
                                                 </div>
-                                            </button>
+                                            </div>
                                         }
                                 )
                             }   
@@ -136,11 +155,11 @@ const SliceButton = (props) => {
                         : null
                     }
 
-{
+                    {
                         (mode == 1) ? 
                         <>
-                            <button onClick={()=>{}} className="flex justify-center p-2 bg-zinc-100 hover:bg-gray-200 dark:bg-gray-900 dark:hover:bg-slate-800">
-                                <div className="flex justify-between gap-2 text-xs">
+                            <button onClick={()=>{if(hierarchy.parent != ''){window.location.href='/dataset/'.concat(encodeURIComponent(hierarchy.parent));}}} className="flex justify-center p-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-900 dark:hover:bg-gray-800">
+                                <div className="flex items-center justify-between gap-2 text-xs">
                                     <div>
                                         {(hierarchy.parent == ''? 'main' : `branch of ${hierarchy.parent}`)}
                                     </div>
@@ -150,7 +169,7 @@ const SliceButton = (props) => {
                                                 (hierarchy.parent == '') ? null : 
                                                 <Tooltip title={'Merge to parent'} placement="right">
                                                     <button onClick={() => {handleMergeCurrent()}}>
-                                                        <VerticalAlignTopIcon className="hover:fill-slate-500"/>
+                                                        <VerticalAlignTopIcon className="hover:fill-gray-500"/>
                                                     </button>
                                                 </Tooltip>
                                             )
@@ -163,21 +182,60 @@ const SliceButton = (props) => {
                                     (child) => 
                                         {
                                             // eslint-disable-next-line react/jsx-key
-                                            return <button onClick={() => {window.location.href='/dataset/'.concat(encodeURIComponent(child));}} className="flex p-2 hover:bg-gray-100 dark:hover:bg-gray-800">
+                                            return <div className="flex p-2">
                                                 <div className="flex gap-1 justify-between w-full text-xs">
-                                                    <div>
+                                                    <button onClick={() => {window.location.href='/dataset/'.concat(encodeURIComponent(child));}} >
                                                         {child}
-                                                    </div>
+                                                    </button>
                                                     <Tooltip title={'Merge to main'} placement="right">
                                                         <button onClick={() => {handleMerge(child)}}>
-                                                            <MergeIcon className="hover:fill-slate-500"/>
+                                                            <MergeIcon className="hover:fill-gray-500"/>
                                                         </button>
                                                     </Tooltip>
                                                 </div>
-                                            </button>
+                                            </div>
                                         }
                                 )
                             }   
+                        </>
+                        : null
+                    }
+
+                    {
+                        (mode == 2) ? 
+                        <>
+                            <button onClick={()=>{handleResetVersion()}} className="flex w-full p-2 bg-white hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800">
+                                <div className="flex justify-between w-full gap-2 text-xs">
+                                    <div>
+                                        {'Latest version'}
+                                    </div>
+                                    <div>
+                                        <span className="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800">Default</span>
+                                    </div>
+                                </div>
+                            </button>
+                            {
+                                Object.keys(versions).slice(0).reverse().map(
+                                    (version) => 
+                                        {
+                                            // eslint-disable-next-line react/jsx-key 
+                                            return version == "current_v" ? null : <div className="flex p-2 hover:bg-gray-200 dark:bg-gray-900 dark:hover:bg-gray-800">
+                                                <Tooltip title={`checkpoint at ${versions[version].date}`} placement="right">
+                                                    <button onClick={() => { handleSelectVersion(version) }} className="flex gap-1 justify-between w-full text-xs">
+                                                        {versions[version].label}
+                                                    </button>
+                                                </Tooltip>
+                                            </div>
+                                        }
+                                )
+                            }
+                            <div className="flex p-2 justify-center dark:bg-gray-900">
+                                <Tooltip title={`Create a new version tag with current data`} placement="right">
+                                    <button onClick={() => {handleAddVersion()}} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                                        {'New version'}
+                                    </button>
+                                </Tooltip>
+                            </div>   
                         </>
                         : null
                     }

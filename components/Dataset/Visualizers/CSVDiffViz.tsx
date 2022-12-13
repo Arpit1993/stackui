@@ -125,7 +125,7 @@ const CsvDiffViz = (props) => {
         )
     } else {
         return (
-            <div className="h-full flex w-full justify-center dark:bg-slate-800 dark:text-white">
+            <div className="h-full flex w-full justify-center dark:bg-gray-800 dark:text-white">
                 <div key="cmp5" className="w-max flex flex-col justify-center">
                     <div className='flex'>
                         <div className='text-green-500 w-40 border-2 border-blue py-2 px-5'>

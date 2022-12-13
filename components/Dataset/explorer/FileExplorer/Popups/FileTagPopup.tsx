@@ -14,7 +14,7 @@ const FileTagPopup = (props) => {
         props.file['tags'] = await fetch(`http://localhost:8000/get_tags?file=${props.file['name']}`).then((res) => res.json())
         setTags(await props.file['tags'])
         if(props.file['tags'].length == 0){
-            props.setShortcuts(true)
+            props.shortcuts.current = true
             props.setPopup(false)
         }
     }
@@ -24,7 +24,7 @@ const FileTagPopup = (props) => {
         await fetch(`http://localhost:8000/add_tag?file=${props.file['name']}&tag=${newtag}`)
         props.file['tags'] = await fetch(`http://localhost:8000/get_tags?file=${props.file['name']}`).then((res) => res.json())
         setTags(await props.file['tags'])
-        props.setShortcuts(true)
+        props.shortcuts.current = true
         props.setPopup(false)
     }
 
@@ -32,7 +32,7 @@ const FileTagPopup = (props) => {
         <>
             {
                 <button onClick={() => {
-                    props.setShortcuts(true)
+                    props.shortcuts.current = true
                     props.setPopup(false)
                     }} key={'ctp1'} className="z-40 bg-white/20 backdrop-blur-sm  fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
                     click to close
@@ -42,19 +42,19 @@ const FileTagPopup = (props) => {
                 <div className="flex-col justify-between">
                     <div className="w-full justify-between flex">
                         <button onClick={() => {
-                            props.setShortcuts(true)
+                            props.shortcuts.current = true
                             props.setPopup(false)
-                            }} className='text-xs px-1 w-[15px] h-[15px] flex-col bg-red-400 hover:bg-red-200 rounded-full'> 
+                            }} className='text-xs px-1 w-[15px] h-4 flex-col bg-red-400 hover:bg-red-200 rounded-full'> 
                         </button> 
                         <div className="place-self-center text-md py-2 font-bold">
-                            File tags
+                            File comments
                         </div>
                         <div>
 
                         </div>
                     </div>
                     <div className="w-full">
-                        <div className="border border-gray-300 rounded-md overflow-scroll h-[40px] p-2 flex gap-2">
+                        <div className="border overflow-scroll border-gray-300 rounded-md items-center h-[50px] p-1 flex gap-2">
                             {
                                 (tags.length > 0) ?
                                 tags.map( (tag, idx) => 
@@ -79,7 +79,7 @@ const FileTagPopup = (props) => {
                             <label className="flex justify-center mt-2 gap-1"> 
                                 <input onChange={handleChange}
                                     className= "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-                                    placeholder="tag" type="text" />   
+                                    placeholder="comment" type="text" />   
                                 <div className="flex flex-col justify-center">
                                     <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-body rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                         +

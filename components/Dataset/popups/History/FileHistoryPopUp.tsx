@@ -32,14 +32,14 @@ function generateButtons(page, handleClick){
 const FileHistoryPopUp = (props) => {
 
     const [changes, setChanges] = useState([])
-    const [page, setPage] = useState(0)
-    const [maxPages, setMaxPages] = useState(0)
+    const [page, setPage] = useState<number>(0)
+    const [maxPages, setMaxPages] = useState<number>(0)
     const max_commits = 7
 
     useEffect(() => {
         if (props.popup){
             const getChanges = async (page) =>  {
-                const res = await fetch(('http://localhost:8000/key_versions?key='.concat(props.keyId).concat('&l=7&page=').concat(0)))
+                const res = await fetch(`http://localhost:8000/key_versions?key=${props.keyId}&l=7&page=${0}`)
                 const data = await res.json();
                 setChanges(Object.values(data.commits))
                 setMaxPages(data.len/max_commits)
@@ -50,7 +50,7 @@ const FileHistoryPopUp = (props) => {
 
     const fetchChanges = async (page) => {
         if (props.popup){
-            const res = await fetch(('http://localhost:8000/key_versions?key='.concat(props.keyId).concat('&l=7&page=').concat(page)))        
+            const res = await fetch(`http://localhost:8000/key_versions?key=${props.keyId}&l=7&page=${page}`)        
             const data = await res.json();
             setMaxPages(data.len/max_commits)
             return data.commits
@@ -73,7 +73,7 @@ const FileHistoryPopUp = (props) => {
     <div className="text-sm absolute z-50  top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 rounded-lg bg-white dark:bg-gray-900 w-[1100px]  h-[700px]">
         <div className="w-full justify-between flex">
             <div className="py-1 px-2">
-                <button onClick={() => props.setPopup(0)} className='text-xs px-1 w-[15px] h-[15px] flex-col bg-red-400 hover:bg-red-200 rounded-full'></button>
+                <button onClick={() => props.setPopup(false)} className='text-xs px-1 w-[15px] h-4 flex-col bg-red-400 hover:bg-red-200 rounded-full'></button>
             </div>
             <div className="place-self-center py-2 font-bold">
                 Versions of file {props.keyId}
@@ -83,7 +83,7 @@ const FileHistoryPopUp = (props) => {
         <ul className="text-xs h-[570px] font-body rounded-lg border 
                 text-gray-900 bg-white border-gray-200
                   dark:bg-gray-900 dark:border-gray-600 dark:text-white">
-            {changes.map((data, index) => <ItemFileVersion key={'IFV'.concat(index.toString())} keyId={props.keyId} version={data.version} date={data.date} commit={data.commit}/>)}
+            {changes.map((data, index) => <ItemFileVersion noClick={index == 0 && page == 0} key={'IFV'.concat(index.toString())} keyId={props.keyId} version={data.version} date={data.date} commit={data.commit}/>)}
         </ul>
         <div className="flex justify-evenly mt-5">
             {buttons}

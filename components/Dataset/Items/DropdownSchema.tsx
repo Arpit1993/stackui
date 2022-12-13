@@ -9,12 +9,12 @@ function classNames(...classes) {
 
 const DropdownSchema = (props) => {
     
-    const [option, setOption] = useState(0)
+    const [option, setOption] = useState<number>(0)
 
     return (
         <Menu as="div" className="frelative inline-block text-left mb-2">
           <div className="flex gap-2">
-            <Menu.Button onClick={()=>{setOption(0)}} className="justify-center w-[200px] h-[40px] text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-body rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+            <Menu.Button onClick={()=>{setOption(false)}} className="justify-center w-52 h-[40px] text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-body rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
               <div className="flex justify-between text-sm">
                 <div className="py-2">
                   Dataset Metadata
@@ -39,8 +39,8 @@ const DropdownSchema = (props) => {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Menu.Items className="absolute z-10 mt-2 w-[200px] origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-              <div className="py-1 h-[200px] overflow-scroll">
+            <Menu.Items className="absolute z-10 mt-2 w-52 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+              <div className="py-1 h-52 overflow-scroll">
               <Menu.Item>
                   {({ active }) => (
                     <button
@@ -62,7 +62,7 @@ const DropdownSchema = (props) => {
                     <>
                       {
                         (option == 1) ? 
-                        <div className="left-[200px] absolute z-10 mt-2 w-[200px] origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        <div className="left-52 absolute z-10 mt-2 w-52 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                           <button
                             className={'hover:bg-gray-100 hover:text-gray-900 text-gray-700 block px-4 py-2 text-sm w-full'}
                             onClick={()=>props.setSchema('yolo')}
@@ -94,7 +94,7 @@ const DropdownSchema = (props) => {
                       }
                       <button
                         className={'hover:bg-gray-100 hover:text-gray-900 text-gray-700 block px-4 py-2 text-sm w-full'}
-                        onClick={()=>setOption(1)}
+                        onClick={()=>setOption(true)}
                       >
                         Computer Vision
                       </button>
@@ -107,7 +107,7 @@ const DropdownSchema = (props) => {
                     <>
                       {
                         (option == 2) ? 
-                        <div className="left-[200px] absolute z-10 mt-2 w-[200px] origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        <div className="left-52 absolute z-10 mt-2 w-52 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                           <button
                             className={'hover:bg-gray-100 hover:cursor-not-allowed hover:text-gray-900 text-gray-700 block px-4 py-2 text-sm w-full'}
                             disabled={true}
@@ -143,7 +143,7 @@ const DropdownSchema = (props) => {
                       onClick={()=>props.setSchema('files')
                       }
                     >
-                      CSV
+                      Tabular (CSV or Parquet)
                     </button>
                   )}
                 </Menu.Item>
@@ -152,7 +152,7 @@ const DropdownSchema = (props) => {
                     <>
                       {
                         (option == 3) ? 
-                        <div className="left-[200px] absolute z-10 mt-2 w-[200px] origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        <div className="left-52 absolute z-10 mt-2 w-52 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                           <button
                             className={'hover:bg-gray-100 hover:cursor-not-allowed hover:text-gray-900 text-gray-700 block px-4 py-2 text-sm w-full'}
                             disabled={true}

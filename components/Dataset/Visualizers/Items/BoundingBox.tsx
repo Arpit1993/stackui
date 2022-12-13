@@ -77,6 +77,10 @@ const BoundingBox = (props) => {
                         dragBR.current = true
                     }
                 
+                } else {
+                    if (!props.diff){
+                        props.setEditing(true)
+                    }
                 }
             }
         
@@ -180,6 +184,7 @@ const BoundingBox = (props) => {
             }
         }
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [color, color_hex, props, selecting])
     
     return(

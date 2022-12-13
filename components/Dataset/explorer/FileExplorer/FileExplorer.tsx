@@ -6,10 +6,12 @@ import React from "react";
 import SliceButton from "./Items/SliceButton";
 import SelectionTagPopup from "./Popups/SelectionTagPopup";
 import { Tooltip } from "@mui/material";
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
 const FileExplorer = (props) => {
     const [keyVar, setKey] = useState<String>('');
     const [popup, setPopup] = useState<Boolean>(false)
+    const [anomalies, setAnomalies] = useState<Boolean>(false)
     const [switch_, setSwitch] = useState<Boolean>(true)
     const [thumbnailView, setThumbnailView] = useState<Boolean>(true)
     const [selected, setSelected] = useState<Array<Boolean>>([])
@@ -26,7 +28,7 @@ const FileExplorer = (props) => {
     var container_var: Array<any> = []
     
     const handleObjectClick = (key_in: String) => {
-        props.setShortcuts(false)
+        props.shortcuts.current = false
         setPopup(true)
         setKey(key_in)
     }
@@ -34,9 +36,10 @@ const FileExplorer = (props) => {
     const max_files: number = 10;
     const max_images: number = props.max_view;
     const max_pages =  props.view ? props.len / max_files : props.len / max_images;
-    
+
     const handleKeyPress = useCallback((event) => {
-        if (props.shortcuts){
+        console.log(props.shortcuts.current)
+        if (props.shortcuts.current == true){
             if (event.shiftKey){
                 if (event.key == '_'){
                     props.setMaxView(Math.floor(Math.min(Math.pow((Math.sqrt(props.max_view)+1),2),36)))
@@ -130,16 +133,15 @@ const FileExplorer = (props) => {
                 }
 
                 if (event.key == 't' && selected.includes(true)){
-                    props.setShortcuts(false)
+                    props.shortcuts.current = false
                     setTagsPopup(true)
                 }
             }
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props, selected, pointer, max_pages, props.shortcuts])
+    }, [props, selected, pointer, max_pages, props.shortcuts.current])
 
     useEffect(() => {
-        props.setShortcuts(true)
         const checkSelected = async () => {
             if(selected.length < await props.files.length){
                 setSelected(Array(await props.files.length).fill(false))
@@ -151,7 +153,7 @@ const FileExplorer = (props) => {
             document.removeEventListener('keydown', handleKeyPress);
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[props.files, props.page, props.view, props.max_view, props.shortcuts, pointer, selected, handleKeyPress])
+    },[props.files, props.page, props.view, props.max_view, props.shortcuts.current, pointer, selected, handleKeyPress])
     
     var listofButtons: Array<any> = [];
 
@@ -206,7 +208,7 @@ const FileExplorer = (props) => {
                 <div className='grid grid-rows-20 gap-1'>
                     {
                         files.filter((item, index) =>  index < idx_max && index >= idx_min ).map((file,index) =>
-                            <button className="w-full text-left"  key={`${index.toString()}abc`}  onClick={() => handleObjectClick(file['name'].substring(props.dataset.length))}>
+                            <button className="w-full text-left"  key={`${index.toString()}abc`}  onClick={() => handleObjectClick(file['name'])}>
                                 <div className="grid grid-cols-2 gap-1 text-xs py-2 px-4 bg-white dark:bg-gray-800 rounded-lg dark:hover:bg-black justify-between w-full hover:bg-gray-300 border-b border-gray-200 dark:border-gray-600">
                                     <div className="h-5 truncate"> 
                                         {file['name'].substring(props.dataset.length)}
@@ -259,7 +261,7 @@ const FileExplorer = (props) => {
                 <div className={class_var}>
                     {
                         files.filter((data, idx) => idx < idx_max ).map( (file, index) =>
-                            <ImageThumbnail setShortcuts={props.setShortcuts} key={`thumb-${file['name']}`} setTagsPopup={setTagsPopup} selected={selected} setPointer={setPointer} setSelected={setSelected} dataset={props.dataset} thumbnailView={thumbnailView} max_view={props.max_view} file={file} index={index} waiting={props.waiting} handleObjectClick={handleObjectClick}/>
+                            <ImageThumbnail shortcuts={props.shortcuts} key={`thumb-${file['name']}`} setTagsPopup={setTagsPopup} selected={selected} setPointer={setPointer} setSelected={setSelected} dataset={props.dataset} thumbnailView={thumbnailView} max_view={props.max_view} file={file} index={index} waiting={props.waiting} handleObjectClick={handleObjectClick}/>
                         )
                     }
                 </div>
@@ -271,17 +273,21 @@ const FileExplorer = (props) => {
         <>
             {
                 tagsPopup  ? 
-                <SelectionTagPopup setShortcuts={props.setShortcuts} setMaxView={props.setMaxView} max_view={props.max_view} files={files} selected={selected} setSelected={setSelected} setPopup={setTagsPopup}/>
+                <SelectionTagPopup shortcuts={props.shortcuts} setMaxView={props.setMaxView} max_view={props.max_view} files={files} selected={selected} setSelected={setSelected} setPopup={setTagsPopup}/>
                 : 
                 <></>
             }
             <div className="h-full">
                 <div className="z-10 flex text-xs w-full justify-between px-5">
-                    <Tooltip title={'Dataset slice'} placement="right">
+                    <Tooltip title={'Dataset slices, branches, and versions'} placement="right">
                         <div className="w-min">
                             <SliceButton dataset={props.dataset} setFiltering={props.setFiltering}/>
                         </div>
                     </Tooltip>
+                    <div className={!anomalies ? "invisible h-full w-full py-3" :"h-full w-full flex gap-2 justify-center text-sm py-3 items-center"}> 
+                        <ErrorOutlineIcon className="w-1/10 h-1/10 shadow-sm fill-white rounded-full overflow-hidden bg-red-500 hover:bg-red-700"/>
+                        {'# anomalies detected'}
+                    </div>
                     <Tooltip title={'Explorer options'} placement="left">
                         <div className="w-min">
                             <ViewOptions setMaxView={props.setMaxView} setView={props.setView} 
@@ -303,7 +309,7 @@ const FileExplorer = (props) => {
                     </div>
                 </div>
                 {
-                    popup ? <FilePopup setShortcuts={props.setShortcuts} schema={props.schema} popup={popup} setPopup={setPopup} keyId={keyVar} key={'fcp'}/> : <></>
+                    popup ? <FilePopup shortcuts={props.shortcuts} schema={props.schema} popup={popup} setPopup={setPopup} keyId={keyVar} key={'fcp'}/> : <></>
                 }
             </div>
         </>

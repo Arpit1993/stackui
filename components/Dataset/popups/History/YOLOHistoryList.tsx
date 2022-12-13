@@ -29,17 +29,17 @@ const YOLOHistoryList = (props) => {
             <div className="text-center py-5 font-light text-base flex flex-col">
                 Image Versions
             </div>
-            <div className="w-[300px]">
+            <div className="w-full">
                 {
-                    versionsImage.map((data, index) => <ItemFileVersion key={`${index.toString()}image`} keyId={props.keyId} version={data.version} date={data.date} commit={data.commit}/>)
+                    versionsImage.map((data, index) => <ItemFileVersion noClick={index == 0} key={`${index.toString()}image`} keyId={props.keyId} version={data.version} date={data.date} commit={data.commit}/>)
                 }
             </div>
             <div className="text-center py-5 font-light text-base flex flex-col">
                 Label Versions
             </div>
-            <div className="w-[300px]">
+            <div className="w-full">
                 {
-                    versionsLabel.map((data, index) => <ItemFileVersion key={`${index.toString()}label`} keyId={labelName} version={data.version} date={data.date} commit={data.commit}/>)
+                    versionsLabel.map((data, index) => <ItemFileVersion noClick={index == 0} key={`${index.toString()}label`} keyId={labelName} version={data.version} date={data.date} commit={data.commit}/>)
                 }
             </div>
         </>

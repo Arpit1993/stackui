@@ -23,11 +23,11 @@ const getbuttons = (variable, varFilter, setVarFilter, nullStr, setnullStr, n_va
             var_buttons.push(
                 <ul key={`abc ${cl} ${name}`} className="w-full flex px-1 mb-1 mt-1">
                     <button  onClick={async ()=>{
-                        const cf = varFilter
+                        var cf = varFilter
                         cf[cl] = !cf[cl]
                         setVarFilter(cf)
                         setnullStr(nullStr+'a')
-                    }} className="w-full h-6 bg-gray-200 shadow-lg rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-600 dark:border-gray-600">
+                    }} className="w-full py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-gray-100 rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
                         {`${cl} (${n_var[cl]})`}
                     </button>
                 </ul>
@@ -36,11 +36,11 @@ const getbuttons = (variable, varFilter, setVarFilter, nullStr, setnullStr, n_va
             var_buttons.push(
                 <ul key={`abc ${cl} ${name}`} className="w-full flex px-1 mb-1 mt-1">
                     <button  onClick={async ()=>{
-                        const cf = varFilter
+                        var cf = varFilter
                         cf[cl] = !cf[cl]
                         setVarFilter(cf)
                         setnullStr(nullStr+'a')
-                    }} className="w-full h-6 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-500 dark:border-gray-600">
+                    }} className="w-full py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
                         {`${cl} (${n_var[cl]})`}
                     </button>
                 </ul>
@@ -74,7 +74,7 @@ const YOLOFilterPopup = (props) => {
 
     const [n_tags, setNTags] = useState({})
     const [tags, setTags] = useState([])
-    const [numClasses, setNumClasses] = useState(0)
+    const [numClasses, setNumClasses] = useState<number>(0)
     const [tagFilter, setTagFilter] = useState({})
     
     const [time, setTime] = useState(true)
@@ -83,6 +83,7 @@ const YOLOFilterPopup = (props) => {
     // weird hack to make the checkboxes bg-color change when setState, otherwise state remains the same
     // TODO
     const [nullStr, setnullStr] = useState('')
+    const ref = useRef(null)
 
     const toggleVariable = (toggle, filter, setFilter) => {
         var cf = filter
@@ -216,6 +217,7 @@ const YOLOFilterPopup = (props) => {
         setLoading(false)
     }
 
+
     useEffect( () => {
         const getMetadata = async () => {
             await fetch('http://localhost:8000/schema_metadata').then((res) => res.json()).then(
@@ -271,7 +273,23 @@ const YOLOFilterPopup = (props) => {
             }
         }
         getMetadata()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+        function handleClickOutside(event) {
+            if (ref.current && !ref.current.contains(event.target)) {
+            //   props.setPopup(false)
+            //   props.shortcuts.current = true
+            }
+          }
+
+
+        // Bind the event listener
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+        // Unbind the event listener on clean up
+        document.removeEventListener("mousedown", handleClickOutside);
+        };
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.callFilter, time])
 
     var classes_buttons : Array<any> = getbuttons(classes, classesFilter, setClassFilter, nullStr, setnullStr, n_classes,'class', classes.length)
@@ -284,18 +302,18 @@ const YOLOFilterPopup = (props) => {
                 loading ? <LoadingScreen key={'ldscyoloflterppp'} /> : <></>
             }
             {
-                branch ? <BranchPopup key={'brpp'} setPopup={setBranch}/> : <></>
+                branch ? <BranchPopup ref_={ref} key={'brpp'} setPopup={setBranch}/> : <></>
             }
             {
-                slice ? <SlicePopup key={'slicpp'} setPopup={setSlice}/> : <></>
+                slice ? <SlicePopup ref_={ref} key={'slicpp'} setPopup={setSlice}/> : <></>
             }
-            <div key={"flterpp"} className="bg-white absolute z-40 top-20 rounded-lg dark:bg-slate-900 w-full h-[250px] border-[0.5px] border-gray-500">
-                <div className="w-full justify-between flex h-[30px]">
+            <div key={"flterpp"} ref={ref} className="bg-white absolute z-40 top-20 rounded-lg dark:bg-gray-900 w-full h-[250px] border-[0.5px] border-gray-500">
+                <div className="w-full justify-between flex h-8">
                     <div className="px-2">
                         <button onClick={() => {
-                        props.setShortcuts(true)
+                        props.shortcuts.current = true
                         props.setPopup(false)
-                        }} className='text-xs px-1 w-[15px] h-[15px] flex-col bg-red-400 hover:bg-red-200 rounded-full'></button>
+                        }} className='text-xs px-1 w-[15px] h-4 flex-col bg-red-400 hover:bg-red-200 rounded-full'></button>
                     </div>
 
                     <div className="px-2">
@@ -331,70 +349,44 @@ const YOLOFilterPopup = (props) => {
                     </div>
                     :
                     <div className="flex w-full overflow-x-scroll mb-[-400px] pb-[400px] justify-start gap-2 p-1">
-                        <div className="h-[120px] w-[200px] border rounded-md shadow-inner border-gray-500">
-                            <div className="p-1 gap-1 flex text-xs w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
-                                <div>
-                                    Classes
-                                </div>
-
-                                <button className="underline text-blue-500" onClick={() => toggleVariable(true,classesFilter,setClassFilter)}>
-                                    Select All
-                                </button>
-
-                                <button className="underline text-blue-500" onClick={() => toggleVariable(false,classesFilter,setClassFilter)}>
-                                    Clear All
-                                </button>
+                        <div> 
+                            <div className="text-sm">
+                                Classes
                             </div>
-                            <div className="overflow-y-scroll h-[100px]">
-                                {classes_buttons}
+                            <div className="h-[100px] w-52 border rounded-md shadow-inner border-gray-300">
+                                <div className="overflow-y-scroll h-[98px]">
+                                    {classes_buttons}
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                        <div className="text-sm">
+                                Resolutions
+                            </div>
+                            <div className="h-[100px] w-52 border rounded-md shadow-inner border-gray-300">
+                                <div className="overflow-y-scroll h-[98px]">
+                                    {res_buttons}
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div className="text-sm">
+                                Comments
+                            </div>
+                            <div className="h-[100px] w-52 border rounded-md shadow-inner border-gray-300">
+                                <div className="overflow-y-scroll h-[98px]">
+                                    {tag_buttons}
+                                </div>
                             </div>
                         </div>
 
-                        <div className="h-[120px] w-[200px] border rounded-md shadow-inner border-gray-500">
-                            <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
-                                <div>
-                                    Resolutions
-                                </div>
-
-                                <button className="underline text-blue-500" onClick={() => toggleVariable(true, resFilter, setResFilter)}>
-                                    Select All
-                                </button>
-
-                                <button className="underline text-blue-500" onClick={() => toggleVariable(false, resFilter, setResFilter)}>
-                                    Clear All
-                                </button>
+                        <div className="h-[120px] w-52">
+                            <div className="text-sm">
+                                Bounding box area
                             </div>
-                            <div className="overflow-y-scroll h-[100px]">
-                                {res_buttons}
-                            </div>
-                        </div>
-
-                        <div className="h-[120px] w-[200px] border rounded-md shadow-inner border-gray-500">
-                            <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
-                                <div>
-                                    Tags
-                                </div>
-
-                                <button className="underline text-blue-500" onClick={() => toggleVariable(true, tagFilter, setTagFilter)}>
-                                    Select All
-                                </button>
-
-                                <button className="underline text-blue-500" onClick={() => toggleVariable(false, tagFilter, setTagFilter)}>
-                                    Clear All
-                                </button>
-                            </div>
-                            <div className="overflow-y-scroll h-[100px]">
-                                {tag_buttons}
-                            </div>
-                        </div>
-
-                        <div className="h-[120px] w-[200px]">
-                            <div className="w-[200px] h-[50px] border rounded-md shadow-inner border-gray-500">
-                                <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
-                                    <div>
-                                        Bounding box area
-                                    </div>
-                                </div>
+                            <div className="w-52 h-8 border rounded-md shadow-inner border-gray-300">
+                                {/* <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
+                                </div> */}
                                 <div className="w-full px-5">
                                     <Slider
                                         getAriaLabel={() => 'Bounding box area'}
@@ -411,13 +403,12 @@ const YOLOFilterPopup = (props) => {
                                         />
                                 </div>
                             </div>
-
-                            <div className="w-[200px] mt-[20px] h-[50px] border rounded-md shadow-inner border-gray-500">
-                                <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
-                                    <div>
-                                        Objects per image
-                                    </div>
-                                </div>
+                            <div className="mt-[15px] text-sm">
+                                Objects per image
+                            </div>
+                            <div className="w-52 h-8 border rounded-md shadow-inner border-gray-300">
+                                {/* <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
+                                </div> */}
                                 <div className="w-full px-5">
                                     <Slider
                                         getAriaLabel={() => 'Objects per image'}
@@ -434,20 +425,19 @@ const YOLOFilterPopup = (props) => {
                                 </div>
                             </div>
                         </div>
-
-                        <div className="relative w-[300px] h-[120px] border rounded-md shadow-inner border-gray-500">
-                            <div className="flex gap-1 text-xs px-1 w-[298px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
-                                <div>
-                                    Date of change
-                                </div>
+                        <div>
+                            <div className="text-sm">
+                                Date of change
                             </div>
-                            <div className="absolute w-full p-5 gap-3">
-                                <Datepicker
-                                    useRange={false}
-                                    separator={"to"}
-                                    value={date}
-                                    onChange={setDate}
-                                />
+                            <div className="relative w-[300px] h-[100px] border rounded-md shadow-inner border-gray-300">
+                                <div className="absolute w-full p-8 gap-3">
+                                    <Datepicker
+                                        useRange={false}
+                                        separator={"to"}
+                                        value={date}
+                                        onChange={setDate}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>

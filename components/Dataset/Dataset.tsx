@@ -19,7 +19,7 @@ const Dataset = () => {
     const [max_view, setMaxView] = useState<number>(view ? 36 : 36)
     const first = useRef(true)
     const router = useRouter()
-    const [shortcuts, setShortcuts] = useState<Boolean>(false)
+    const shortcuts = useRef<Boolean>(false)
     const [loading, setLoading] = useState<Boolean>(true)
     const dataset = router.query.dataset
     // reads the API endpoints
@@ -30,6 +30,7 @@ const Dataset = () => {
             var max_view_var = max_view
 
             if (first.current){
+                shortcuts.current = true
                 await fetch('http://localhost:8000/connect/?uri='.concat(dataset as string))
                 const schema_res = await fetch(`http://localhost:8000/schema`).then((response) => response.json())
                 setSchema(await schema_res.value);
@@ -39,15 +40,15 @@ const Dataset = () => {
                     setView(false)
                     setMaxView(36)
                     first.current = false
-                    setFiles(
-                        Array(1).fill({
-                           name: '',
-                           base_name: '',
-                           last_modified: '',
-                           thumbnail: '/Icons/icon-image-512.webp',
-                           tags: []
-                       })
-                    )
+                    setFiles( () => {
+                        return Array(1).fill({
+                            name: '',
+                            base_name: '',
+                            last_modified: '',
+                            thumbnail: '/Icons/icon-image-512.webp',
+                            tags: []
+                        })
+                    })
                 }
             }
 
@@ -62,11 +63,11 @@ const Dataset = () => {
             var files_: Array<any> = [];
 
             for(var i = 0; i < await current.keys.length; i++){
-                const isImage = ['jpg','png','jpeg','tiff','bmp','eps'].includes(await current.keys[i].split('.').pop())
+                const isImage =  [current.keys[i].includes('.jpg'),current.keys[i].includes('.png'),current.keys[i].includes('.jpeg'),current.keys[i].includes('.tiff'),current.keys[i].includes('.bmp'),current.keys[i].includes('.eps')].includes(true)
                 if (isImage && !view_ex){
                     setWaiting(true)
                     const thumbnail_  = 
-                    await fetch(`http://localhost:8000/get_thumbnail?file=${await current.keys[i].substring(await length)}`)
+                    await fetch(`http://localhost:8000/get_thumbnail?file=${await current.keys[i]}`)
                     .then((res) => res.body.getReader()).then((reader) =>
                     new ReadableStream({
                         start(controller) {
@@ -85,7 +86,7 @@ const Dataset = () => {
                     }))
                     .then((stream) => new Response(stream)).then((response) => response.blob())
                     .then((blob) => URL.createObjectURL(blob))
-                    const tags = await fetch(`http://localhost:8000/get_tags?file=${await current.keys[i].substring(await length)}`)
+                    const tags = await fetch(`http://localhost:8000/get_tags?file=${await current.keys[i]}`)
                     .then((res) => res.json())
 
                     files_.push({
@@ -96,7 +97,7 @@ const Dataset = () => {
                         tags: await tags
                     })
                 } else{
-                    const tags = await fetch(`http://localhost:8000/get_tags?file=${await current.keys[i].substring(await length)}`)
+                    const tags = await fetch(`http://localhost:8000/get_tags?file=${await current.keys[i]}`)
                     .then((res) => res.json())
                     
                     files_.push({
@@ -110,7 +111,7 @@ const Dataset = () => {
             }
             setWaiting(false)
             setFiles([])
-            setFiles(await files_)
+            setFiles(() => {return files_})
             setLoading(false)
         }
         if(dataset){
@@ -134,10 +135,10 @@ const Dataset = () => {
                 : null
             }
             <div className='w-4/5 h-full'> 
-                <Explorer shortcuts={shortcuts} setShortcuts={setShortcuts} props={props} page={page} setPage={setPage} max_view={max_view} setMaxView={setMaxView} view={view} setView={setView} len={len} waiting={waiting} setFiltering={setFiltering} schema={schema}/>
+                <Explorer shortcuts={shortcuts} props={props} page={page} setPage={setPage} max_view={max_view} setMaxView={setMaxView} view={view} setView={setView} len={len} waiting={waiting} filtering={filtering} setFiltering={setFiltering} schema={schema}/>
             </div>
             <div  className='w-1/5 h-full'>
-                <Infobar shortcuts={shortcuts} setShortcuts={setShortcuts} commits={commits} dataset={URI.storage_dataset}/>
+                <Infobar shortcuts={shortcuts} commits={commits} dataset={URI.storage_dataset}/>
             </div>
         </div>
     )

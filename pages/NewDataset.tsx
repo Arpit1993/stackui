@@ -8,7 +8,7 @@ import { Tooltip } from "@mui/material";
 
 export default function NewDatasets() {        
 
-    const [loading , setLoading ] = useState(0)
+    const [loading , setLoading ] = useState<Boolean>(false)
     const [uri , setURI ] = useState('local')
     const [storage , setStorage ] = useState('local')
     const [name, setName] = useState('My Dataset')
@@ -46,7 +46,7 @@ export default function NewDatasets() {
 
     const handleSubmit = async () => {    
         if (uri.length > 0){
-            setLoading(1)
+            setLoading(true)
 
             if (storage == 'gs'){
                 const data = new FormData();
@@ -124,7 +124,7 @@ export default function NewDatasets() {
     const gsKeys = (storage == 'gs') ? [
         <div className="w-[400px]" key={'gck'}>
             <form className="flex justify-center p-2">
-                    <label className="p-2 flex flex-col justify-center items-center w-full h-[200px] bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                    <label className="p-2 flex flex-col justify-center items-center w-full h-52 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
                         <div className="flex flex-col justify-center items-center pt-5 pb-6">
                             <svg aria-hidden="true" className="mb-3 w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
                             <p className="mb-2 text-base text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload</span> upload key file from GS </p>
@@ -167,61 +167,64 @@ export default function NewDatasets() {
     ]
     
     const InputForm = [
-            <div className="flex justify-center"  key={'ip'}>
-                <div className="p-5 mt-5 mb-5 w-[1000px] h-[600px] justify-start flex flex-col">    
+            <div className="flex"  key={'ip'}>
+                <div className="p-5 mt-5 mb-5 w-[1000px] h-[600px] justify-between flex flex-col">    
                     
-                    
-                    <div className="mb-2 flex justify-center w-full">
-                        <form className="flex justify-center w-[560px]">
-                            <div className="block mb-2 w-[160px] text-sm p-3 font-body text-gray-900 dark:text-gray-300">
-                                Dataset name:
-                            </div>
-                            <label className="block text-gray-700 text-sm w-[400px]"> 
-                                <div className="">
-                                    <input onChange={handleNameChange} onInput={handleNameChange}
-                                    className= "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-                                    placeholder="e.g. My Dataset" type="text" />   
+                    <div>
+
+                        <div className="mb-2 flex justify-center w-full">
+                            <form className="flex justify-center w-[560px]">
+                                <div className="block mb-2 w-[160px] text-sm p-3 font-body text-gray-900 dark:text-gray-300">
+                                    Dataset name:
                                 </div>
-                            </label>
-                        </form>
-                    </div>
+                                <label className="block text-gray-700 text-sm w-[400px]"> 
+                                    <div className="">
+                                        <input onChange={handleNameChange} onInput={handleNameChange}
+                                        className= "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                                        placeholder="e.g. My Dataset" type="text" />   
+                                    </div>
+                                </label>
+                            </form>
+                        </div>
 
-                    <div className="mb-5 flex justify-center">
-                        <form className="flex justify-self-center w-[560px]">
-                            <div className="block mb-2 w-[160px] text-sm p-3 font-body text-gray-900 dark:text-gray-300">
-                                Dataset path or URI: 
-                            </div>
-                            <label className="block text-gray-700 text-sm w-[400px]"> 
-                                <div className="">
-                                <Tooltip title={tooltip_msg} placement="bottom">
-                                    <input  onChange={handleURIChange} onInput={handleURIChange}
-                                    className= "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-                                    placeholder={placehoder} type="text" />   
-                                </Tooltip>
+                        <div className="mb-5 flex justify-center">
+                            <form className="flex justify-self-center w-[560px]">
+                                <div className="block mb-2 w-[160px] text-sm p-3 font-body text-gray-900 dark:text-gray-300">
+                                    Dataset path or URI: 
                                 </div>
-                            </label>
-                        </form>
-                    </div>
+                                <label className="block text-gray-700 text-sm w-[400px]"> 
+                                    <div className="">
+                                    <Tooltip title={tooltip_msg} placement="bottom">
+                                        <input  onChange={handleURIChange} onInput={handleURIChange}
+                                        className= "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                                        placeholder={placehoder} type="text" />   
+                                    </Tooltip>
+                                    </div>
+                                </label>
+                            </form>
+                        </div>
 
-                    <a className="text-base flex justify-center dark:text-white underline mt-2 
-                    text-blue-500 hover:underline hover:text-gray-500" 
-                    href={instruction_link}>
-                        {instructions}
-                    </a>
-
-                    <div className="flex justify-center">
-                        {gsKeys}
-                        {awsKeys}
-                    </div>
-
-                    <div className="flex justify-center gap-5 mt-5">
-                        <div className="flex flex-col">
+                        <div className="flex justify-center mt-5" >
                             <DropdownSchema schema={schema} setSchema={setSchema} />
-                            <div className="mt-5 flex justify-center">
-                                <button onClick={() => handleSubmit()} className="w-[200px] h-[50px] text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-                                    Submit
-                                </button>
-                            </div>
+                        </div>
+
+                        <a className="text-base flex justify-center dark:text-white underline mt-2 
+                        text-blue-500 hover:underline hover:text-gray-500" 
+                        href={instruction_link}>
+                            {instructions}
+                        </a>
+
+                        <div className="flex justify-center">
+                            {gsKeys}
+                            {awsKeys}
+                        </div>
+                    </div>
+
+                    <div className="flex justify-end w-full mb-5">
+                        <div className="flex justify-center">
+                            <button onClick={() => handleSubmit()} className="w-52 h-[50px] text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                                Submit
+                            </button>
                         </div>
                     </div>
 

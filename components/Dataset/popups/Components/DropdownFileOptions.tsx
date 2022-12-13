@@ -25,7 +25,7 @@ const DropdownFileOptions = (props) => {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Menu.Items className="text-sm absolute right-0 z-10 mt-2 w-[200px] origin-top-right rounded-md border border-black backdrop-blur-md bg-white dark:bg-gray-700 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            <Menu.Items className="text-sm absolute right-0 z-10 mt-2 w-52 origin-top-right rounded-md border border-black backdrop-blur-md bg-white dark:bg-gray-700 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
               <div className="py-1 h-[113px] overflow-scroll">
               <Menu.Item>
                   {({ active }) => (

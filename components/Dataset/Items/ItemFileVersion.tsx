@@ -2,15 +2,14 @@ import React from "react";
 import { JSXElementConstructor, ReactElement, ReactFragment, ReactPortal, useState } from "react"
 import LoadingScreen from "../../LoadingScreen";
 
-const ItemFileVersion = (props: { version: string | number | boolean | ReactFragment | ReactPortal | ReactElement<any, string | JSXElementConstructor<any>> | null | undefined; commit: string | number | boolean | ReactFragment | ReactPortal | ReactElement<any, string | JSXElementConstructor<any>> | null | undefined; date: string | number | boolean | ReactFragment | ReactPortal | ReactElement<any, string | JSXElementConstructor<any>> | null | undefined; keyId: any }) => {
+const ItemFileVersion = (props) => {
 
-    const [popup, setPopup] = useState(0)
-    const [loading, setLoading] = useState(0)
+    const [loading, setLoading] = useState<Boolean>(false)
 
     const revertKey = async (version: number, keyId: string) => {
-        setLoading(1)
+        setLoading(true)
         await fetch('http://localhost:8000/revert_key_version?key='.concat(keyId).concat('&version=').concat(version.toString()))
-        setLoading(0)
+        setLoading(false)
         window.location.reload();
         return true
     }
@@ -20,8 +19,8 @@ const ItemFileVersion = (props: { version: string | number | boolean | ReactFrag
 
     return (
         <div className="flex w-full mb-1 px-2 gap-2">
-            <button onClick={() => setPopup(1)} className="text-start w-8/12">
-                <li className=" py-4 px-4 justify-between flex-col w-full rounded-md hover:bg-gray-300 border-[0.5px] border-gray-500 dark:border-gray-200 dark:hover:bg-gray-800">
+            <div className="text-start w-8/12">
+                <li className=" py-4 px-4 justify-between flex-col w-full rounded-md border-[0.5px] border-gray-500 dark:border-gray-200">
                     <div className="w-full flex truncate">
                         <div className="w-[100px]"> Version: </div>
                         <div className="w-full truncate"> {props.version} </div>
@@ -31,10 +30,15 @@ const ItemFileVersion = (props: { version: string | number | boolean | ReactFrag
                         <div className="w-full truncate"> {date} </div>
                     </div>
                 </li>
-            </button>
-            <button onClick={() => revertKey(props.version as number, props.keyId as string)} className=" text-start w-4/12">
-                <li className="w-full h-full flex text-center flex-col justify-center py-2.5 px-5 mr-2 mb-2 text-sm font-body text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-                    revert to V{props.version}
+            </div>
+            <button disabled={props.noClick} onClick={() => revertKey(props.version as number, props.keyId as string)} className=" text-start w-4/12">
+                <li className={
+                    props.noClick ? 
+                    "w-full h-full flex text-center flex-col justify-center py-2.5 px-5 mr-2 mb-2 text-sm font-body text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:cursor-not-allowed hover:bg-gray-100 hover:text-gray-900 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                    :
+                    "w-full h-full flex text-center flex-col justify-center py-2.5 px-5 mr-2 mb-2 text-sm font-body text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-red-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                }>
+                    Revert to V{props.version}
                 </li>
             </button>
             {Loading_screen}
