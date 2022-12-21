@@ -39,7 +39,6 @@ const Dataset = () => {
                     max_view_var = 36
                     setView(false)
                     setMaxView(36)
-                    first.current = false
                     setFiles( () => {
                         return Array(1).fill({
                             name: '',
@@ -50,6 +49,7 @@ const Dataset = () => {
                         })
                     })
                 }
+                first.current = false
             }
 
             const uri = await fetch(`http://localhost:8000/uri`).then((response) => response.json())

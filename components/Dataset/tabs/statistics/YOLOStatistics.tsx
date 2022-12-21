@@ -9,12 +9,12 @@ const YOLOStatistics = (props) => {
     },[props.filtering])
     
     return (
-        <button disabled={true} onClick={()=>{props.shortcuts.current = props.statisticsPopup; props.setStatisticsPopup(!props.statisticsPopup)}} className="fixed z-[30] left-[20%] bottom-0 w-[60%] h-[70%] bg-gray-50 dark:bg-gray-900">
-            <div className="w-full h-full overflow-scroll justify-between flex flex-col items-center">
-                {/* {
+        <div className="fixed z-[30] left-[20%] bottom-0 w-[60%] h-[75%] bg-gray-50 dark:bg-gray-900">
+            <div className="w-full h-full mt-10 overflow-scroll justify-between flex flex-col items-center">
+                {
                     (metadata) ?
-                    <Scatter data={metadata.size} title={'T-SNE embedding'}/> : <></>
-                } */}
+                    <Scatter data={metadata.size} title={'Embedding'}/> : <></>
+                }
                 {
                     (metadata) ?
                     <Histogram data={metadata.n_class} title={'Class distribution'}/> : <></>
@@ -28,7 +28,7 @@ const YOLOStatistics = (props) => {
                     <Histogram data={metadata.n_lm} title={'date of changes'}/> : <></>
                 }
             </div>
-        </button>
+        </div>
     )
 }
 

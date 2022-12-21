@@ -6,35 +6,28 @@ import LoadingScreen from "../../LoadingScreen"
 const FileFilterPopup = (props) => {
 
     const [branch, setBranch] = useState(false)
-
     const [filtering, setFiltering] = useState(false)
-
     const [time, setTime] = useState(true)
+    const [loading, setLoading] = useState(false)
 
     // weird hack to make the checkboxes actually change state, otherwise state remains the same
     // TODO
     const [nullStr, setnullStr] = useState('')
 
     useEffect( () => {
-
         const calls = async () => {
             if(props.callFilter) {
                 await handleApplyFilter()
                 props.setCallFilter(false)
             }
         }
-
         calls()
-
-        if (time){
-            setTime(false)
-        } else {
-        }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [nullStr])
+    }, [time, props.callFilter])
 
 
     const handleApplyFilter = async () => {
+        setLoading(true)
         props.setFiltering('y')
 
         var filters = {}
@@ -58,19 +51,25 @@ const FileFilterPopup = (props) => {
         posthog.capture('Applied filter', { property: 'value' })
     
         props.setFiltering('z')
+        props.setPage(0)
+        setTime(!time)
+        setLoading(false)
     }
 
     const handleResetFilter = async () => {
-        await fetch('http://localhost:8000/reset_filter/')
-        .then(() => props.setFiltering('w')).then(
-            () =>{
-                setnullStr('b')
-            }
-        )
+        setLoading(true)
+        props.setFiltering('y')
+        await fetch('http://localhost:8000/reset_filters')
+        props.setFiltering('z')
+        setTime(!time)
+        setLoading(false)
     }
 
     return (
         <>
+            {
+                loading ? <LoadingScreen key={'ldscfileflterppp'} /> : <></>
+            }
             {filtering ? <LoadingScreen key={'lds_fpp'}/> : <></>}
             {branch ? <BranchPopup key={'brpp'} setPopup={setBranch}/> : <></>}
             <div key={"flterpp"} className="bg-white absolute z-40 top-20 rounded-lg dark:bg-gray-900 w-full h-[100px] border-[0.5px] border-gray-500">

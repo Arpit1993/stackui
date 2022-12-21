@@ -39,17 +39,21 @@ const FileExplorer = (props) => {
 
     const handleKeyPress = useCallback((event) => {
         console.log(props.shortcuts.current)
+        
         if (props.shortcuts.current == true){
             if (event.shiftKey){
                 if (event.key == '_'){
-                    props.setMaxView(Math.floor(Math.min(Math.pow((Math.sqrt(props.max_view)+1),2),36)))
-                    props.setPage(0)
+                    event.preventDefault();
+                    props.setMaxView(Math.floor(Math.min(Math.pow((Math.sqrt(props.max_view)+1),2),36)));
+                    props.setPage(0);
                 } else if (event.key == '+'){
-                    props.setMaxView(Math.floor(Math.max(Math.pow((Math.sqrt(props.max_view)-1),2),1)))
-                    props.setPage(0)
+                    event.preventDefault();
+                    props.setMaxView(Math.floor(Math.max(Math.pow((Math.sqrt(props.max_view)-1),2),1)));
+                    props.setPage(0);
                 }
 
                 if (event.key == 'ArrowLeft') {
+                    event.preventDefault();
                     var surr = selected
                     const sol = selected.findIndex(element => element)
                     if(sol == -1){
@@ -64,6 +68,7 @@ const FileExplorer = (props) => {
                         setPointer(Math.max(pointer-1,-1))
                     }
                 } else if (event.key == 'ArrowRight'){
+                    event.preventDefault();
                     var surr = selected
                     const sol = selected.findIndex(element => element)
                     if(sol == -1){
@@ -78,6 +83,7 @@ const FileExplorer = (props) => {
                         setPointer(Math.min(pointer+1,props.files.length))
                     }
                 } else if (event.key == 'ArrowDown'){
+                    event.preventDefault();
                     var surr = selected
                     const sol = selected.findIndex(element => element)
                     if(sol == -1){
@@ -96,7 +102,8 @@ const FileExplorer = (props) => {
                         setPointer(Math.min(pointer+7,props.files.length))
                     }
                 } else if (event.key == 'ArrowUp'){
-                    var surr = selected
+                    event.preventDefault();
+                    var surr = selected;
                     const sol = selected.findIndex(element => element)
                     if(sol == -1){
                         for(var i = 0; i < 6; i++){
@@ -120,21 +127,25 @@ const FileExplorer = (props) => {
                 } 
             } else {
                 if (event.key == 'ArrowLeft' && !props.waiting) {
+                    event.preventDefault();
                     props.setPage(Math.max(props.page-1,0))
                 } else if (event.key == 'ArrowRight' && !props.waiting){
+                    event.preventDefault();
                     props.setPage(Math.min(max_pages-0.001|0,props.page+1|0))
                 }
             }
 
             if (event.ctrlKey){
                 if (event.key == 'a'){
+                    event.preventDefault();
                     setSelected(Array(props.files.length).fill(selected.includes(false)))
                     setPointer(selected.includes(false) ? props.files.length : -1)
                 }
 
                 if (event.key == 't' && selected.includes(true)){
-                    props.shortcuts.current = false
-                    setTagsPopup(true)
+                    event.preventDefault();
+                    props.shortcuts.current = false;
+                    setTagsPopup(true);
                 }
             }
         }
