@@ -93,23 +93,29 @@ const SliceButton = (props) => {
             </Popover.Button>
 
             <Popover.Panel className="absolute z-auto">
-                <div className="flex flex-col z-auto w-[260px] border border-gray-300 dark:border-gray-800 bg-white rounded divide-y divide-gray-300 shadow dark:bg-gray-900">
+                <div className="flex flex-col z-auto w-[290px] border border-gray-300 dark:border-gray-800 bg-white rounded divide-y divide-gray-300 shadow dark:bg-gray-900">
                     <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
                         <ul className="flex flex-wrap -mb-px">
                             <li className=":">
-                                <button onClick={()=>{setMode(0)}} className={mode == 0 ? "inline-block p-4 text-blue-600 rounded-t-lg border-b-2 border-blue-600 active dark:text-blue-500 dark:border-blue-500" : "inline-block p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"}>
-                                    Slices
-                                </button>
+                                <Tooltip title={'Lists all the subsets of the dataset (slices)'} placement="bottom">
+                                    <button onClick={()=>{setMode(0)}} className={mode == 0 ? "inline-block p-4 text-blue-600 rounded-t-lg border-b-2 border-blue-600 active dark:text-blue-500 dark:border-blue-500" : "inline-block p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"}>
+                                        Slices
+                                    </button>
+                                </Tooltip>
                             </li>
                             <li className="">
-                                <button onClick={()=>{setMode(1)}} className={mode == 1 ? "inline-block p-4 text-blue-600 rounded-t-lg border-b-2 border-blue-600 active dark:text-blue-500 dark:border-blue-500" : "inline-block p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"} aria-current="page">
-                                    Branches
-                                </button>
+                                <Tooltip title={'Lists all the branches (or parents) of this dataset'} placement="bottom">
+                                    <button onClick={()=>{setMode(1)}} className={mode == 1 ? "inline-block p-4 text-blue-600 rounded-t-lg border-b-2 border-blue-600 active dark:text-blue-500 dark:border-blue-500" : "inline-block p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"} aria-current="page">
+                                        Branches
+                                    </button>
+                                </Tooltip>
                             </li>
                             <li className="">
-                                <button onClick={()=>{setMode(2)}} className={mode == 2 ? "inline-block p-4 text-blue-600 rounded-t-lg border-b-2 border-blue-600 active dark:text-blue-500 dark:border-blue-500" : "inline-block p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"} aria-current="page">
-                                    Versions
-                                </button>
+                                <Tooltip title={'Preview previous versions of the dataset'} placement="bottom">
+                                    <button onClick={()=>{setMode(2)}} className={mode == 2 ? "inline-block p-4 text-blue-600 rounded-t-lg border-b-2 border-blue-600 active dark:text-blue-500 dark:border-blue-500" : "inline-block p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"} aria-current="page">
+                                        Checkpoints
+                                    </button>
+                                </Tooltip>
                             </li>
                         </ul>
                     </div>
@@ -130,8 +136,7 @@ const SliceButton = (props) => {
                                 Object.keys(slices).map(
                                     (slice_name) => 
                                         {
-                                            // eslint-disable-next-line react/jsx-key
-                                            return <div className="flex items-center p-2">
+                                            return <div key={`slice component ${slice_name}`} className="flex items-center p-2">
                                                 <div className="flex items-center gap-1 justify-between w-full text-xs">
                                                     <button className='flex gap-1 justify-between w-full' onClick={() => handleSliceClick(slice_name)}>
                                                         <div>
@@ -184,11 +189,11 @@ const SliceButton = (props) => {
                                             // eslint-disable-next-line react/jsx-key
                                             return <div className="flex p-2">
                                                 <div className="flex gap-1 justify-between w-full text-xs">
-                                                    <button onClick={() => {window.location.href='/dataset/'.concat(encodeURIComponent(child));}} >
-                                                        {child}
+                                                    <button className='w-[80%] overflow-clip' onClick={() => {window.location.href='/dataset/'.concat(encodeURIComponent(child.uri));}} >
+                                                        {child.name}
                                                     </button>
                                                     <Tooltip title={'Merge to main'} placement="right">
-                                                        <button onClick={() => {handleMerge(child)}}>
+                                                        <button onClick={() => {handleMerge(child.uri)}}>
                                                             <MergeIcon className="hover:fill-gray-500"/>
                                                         </button>
                                                     </Tooltip>
@@ -220,9 +225,9 @@ const SliceButton = (props) => {
                                         {
                                             // eslint-disable-next-line react/jsx-key 
                                             return version == "current_v" ? null : <div className="flex p-2 hover:bg-gray-200 dark:bg-gray-900 dark:hover:bg-gray-800">
-                                                <Tooltip title={`checkpoint at ${versions[version].date}`} placement="right">
+                                                <Tooltip title={`Preview of dataset at ${versions[version].date}`} placement="right">
                                                     <button onClick={() => { handleSelectVersion(version) }} className="flex gap-1 justify-between w-full text-xs">
-                                                        {versions[version].label}
+                                                        {versions[version].label.replace('Version','Checkpoint')}
                                                     </button>
                                                 </Tooltip>
                                             </div>
@@ -232,7 +237,7 @@ const SliceButton = (props) => {
                             <div className="flex p-2 justify-center dark:bg-gray-900">
                                 <Tooltip title={`Create a new version tag with current data`} placement="right">
                                     <button onClick={() => {handleAddVersion()}} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
-                                        {'New version'}
+                                        {'New checkpoint'}
                                     </button>
                                 </Tooltip>
                             </div>   

@@ -1,6 +1,6 @@
 import React from "react";
 import posthog from 'posthog-js'
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import LoadingScreen from "../../LoadingScreen";
 import FileHistoryPopUp from "./History/FileHistoryPopUp";
 import YOLOHistoryPopUp from "./History/YOLOHistoryPopUp";
@@ -13,6 +13,7 @@ import DropdownFileOptions from "./Components/DropdownFileOptions";
 import FileHistoryList from "./History/FileHistoryList";
 import YOLOHistoryList from "./History/YOLOHistoryList";
 import path from 'path'
+import CloseIcon from '@mui/icons-material/Close';
 
 const FilePopup = (props) => {
     
@@ -52,6 +53,46 @@ const FilePopup = (props) => {
         window.location.reload();
         return true
     }
+
+    const submitLabels = async () => {
+        setLoading(true)
+        const data = JSON.stringify(newLabels)
+        await fetch('http://localhost:8000/set_labels/', {
+            method: 'POST',
+            headers: { 
+                "Content-Type": "application/json" 
+            }, 
+            body: data}
+        )
+        setSubmit(false)
+        await fetch('http://localhost:8000/commit_req?comment='.concat(`fixed annotation on ${newLabels['keyId']}`))
+        setSubmit(false)
+        posthog.capture('Submitted a commit', { property: 'value' })
+        setLoading(false)
+    }
+
+
+    const handleKeyPress = useCallback((event) => {
+        if(!event.shiftKey){
+            if (event.key == 'ArrowLeft') {
+                fetch('http://localhost:8000/get_prev_key?key='.concat(props.keyId))
+                .then((res) => res.json()).then(
+                    (res) => props.setKeyId(res.key)
+                )
+            } else if (event.key == 'ArrowRight') {
+                fetch('http://localhost:8000/get_next_key?key='.concat(props.keyId))
+                .then((res) => res.json()).then(
+                    (res) => props.setKeyId(res.key)
+                )
+            }
+        }
+
+        if(event.ctrlKey){
+            if(submit && event.key == 's'){
+                submitLabels()
+            }
+        }
+    }, [props])
 
     useEffect(() => {
         const fetchData = async () => {
@@ -200,7 +241,13 @@ const FilePopup = (props) => {
         if (props.popup) {
             fetchStuff()
         }
-    }, [props, row, col, isYOLO, isImage, isCSV, isText, isJSON])
+
+        document.addEventListener('keydown', handleKeyPress);
+        return () => {
+            document.removeEventListener('keydown', handleKeyPress);
+        }
+
+    }, [props, row, col, isYOLO, isImage, isCSV, isText, isJSON, handleKeyPress])
     
     const Versionspopup = popup ? [
         isYOLO ? 
@@ -224,23 +271,6 @@ const FilePopup = (props) => {
         </>
     ] : [<></>]
 
-    const submitLabels = async () => {
-        setLoading(true)
-        const data = JSON.stringify(newLabels)
-        await fetch('http://localhost:8000/set_labels/', {
-            method: 'POST',
-            headers: { 
-                "Content-Type": "application/json" 
-            }, 
-            body: data}
-        )
-        setSubmit(false)
-        await fetch('http://localhost:8000/commit_req?comment='.concat(`fixed annotation on ${newLabels['keyId']}`))
-        setSubmit(false)
-        posthog.capture('Submitted a commit', { property: 'value' })
-        setLoading(false)
-    }
-
     return (
         <>  
             {
@@ -257,7 +287,9 @@ const FilePopup = (props) => {
                         <button onClick={() => {
                             props.shortcuts.current = true
                             props.setPopup(false)
-                            }} className='text-xs px-1 w-[15px] h-4 flex-col bg-red-400 hover:bg-red-200 rounded-full'></button>
+                            }} className='text-xs items-center flex justify-center text-gray-800 w-4 h-4 flex-col bg-red-400 hover:bg-red-200 rounded-full'>
+                            <CloseIcon className="invisible hover:visible w-3 h-3"/>
+                        </button>
                     </div>
                      
                     <div className="place-self-center py-2 font-bold">

@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from "react"
 import posthog from 'posthog-js'
+import LoadingScreen from "../../LoadingScreen"
 
 const BranchPopup = (props) => {
 
     const [copy, setCopy] = useState(true)
+    const [loading, setLoading] = useState(false)
     const [name, setName] = useState('')
     const [uri, setURI] = useState('')
 
@@ -17,6 +19,7 @@ const BranchPopup = (props) => {
 
     const handleBranchButton = async () => {
 
+        setLoading(true)
         var data
 
         if (copy){
@@ -33,6 +36,7 @@ const BranchPopup = (props) => {
                 body: data}
         ).then(
             () => {
+                setLoading(false)
                 posthog.capture('Added a branch', { property: 'value' })
                 window.location.reload();
             }
@@ -41,6 +45,15 @@ const BranchPopup = (props) => {
 
     return (
         <>
+            {
+                loading 
+                ?
+                <div className="z-[100]">
+                    <LoadingScreen/>
+                </div>
+                :
+                null
+            }
             {
                 <button key={'ccb'} onClick={() => {
                     props.setPopup(false)

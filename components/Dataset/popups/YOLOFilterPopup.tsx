@@ -10,7 +10,7 @@ import 'prismjs/components/prism-clike';
 import 'prismjs/components/prism-javascript';
 import 'prismjs/components/prism-python';
 import Datepicker from "react-tailwindcss-datepicker";
-
+import { Tooltip } from "@mui/material";
 
 
 const getbuttons = (variable, varFilter, setVarFilter, nullStr, setnullStr, n_var, name, n_buttons) => {
@@ -353,7 +353,7 @@ const YOLOFilterPopup = (props) => {
                             <div className="text-sm">
                                 Classes
                             </div>
-                            <div className="h-[100px] w-52 border rounded-md shadow-inner border-gray-300">
+                            <div className="h-[100px] w-[200px] border rounded-md shadow-inner border-gray-300">
                                 <div className="overflow-y-scroll h-[98px]">
                                     {classes_buttons}
                                 </div>
@@ -363,7 +363,7 @@ const YOLOFilterPopup = (props) => {
                         <div className="text-sm">
                                 Resolutions
                             </div>
-                            <div className="h-[100px] w-52 border rounded-md shadow-inner border-gray-300">
+                            <div className="h-[100px] w-[200px] border rounded-md shadow-inner border-gray-300">
                                 <div className="overflow-y-scroll h-[98px]">
                                     {res_buttons}
                                 </div>
@@ -373,18 +373,18 @@ const YOLOFilterPopup = (props) => {
                             <div className="text-sm">
                                 Comments
                             </div>
-                            <div className="h-[100px] w-52 border rounded-md shadow-inner border-gray-300">
+                            <div className="h-[100px] w-[200px] border rounded-md shadow-inner border-gray-300">
                                 <div className="overflow-y-scroll h-[98px]">
                                     {tag_buttons}
                                 </div>
                             </div>
                         </div>
 
-                        <div className="h-[120px] w-52">
+                        <div className="h-[120px] w-[200px]">
                             <div className="text-sm">
                                 Bounding box area
                             </div>
-                            <div className="w-52 h-8 border rounded-md shadow-inner border-gray-300">
+                            <div className="w-[200px] h-8 border rounded-md shadow-inner border-gray-300">
                                 {/* <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
                                 </div> */}
                                 <div className="w-full px-5">
@@ -406,7 +406,7 @@ const YOLOFilterPopup = (props) => {
                             <div className="mt-[15px] text-sm">
                                 Objects per image
                             </div>
-                            <div className="w-52 h-8 border rounded-md shadow-inner border-gray-300">
+                            <div className="w-[200px] h-8 border rounded-md shadow-inner border-gray-300">
                                 {/* <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
                                 </div> */}
                                 <div className="w-full px-5">

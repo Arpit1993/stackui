@@ -5,19 +5,22 @@ import FormData from "form-data";
 import DropdownSchema from "../components/Dataset/Items/DropdownSchema";
 import posthog from 'posthog-js'
 import { Tooltip } from "@mui/material";
+import { Toast } from "flowbite-react";
+import CloseIcon from '@mui/icons-material/Close';
 
 export default function NewDatasets() {        
 
     const [loading , setLoading ] = useState<Boolean>(false)
-    const [uri , setURI ] = useState('local')
-    const [storage , setStorage ] = useState('local')
-    const [name, setName] = useState('My Dataset')
+    const [uri , setURI ] = useState<String>('local')
+    const [storage , setStorage ] = useState<String>('local')
+    const [name, setName] = useState<String>('My Dataset')
 
     const [file, setFile] = useState(null)
-    const [schema, setSchema] = useState('files')
-    const [accessKey, setAccessKey] = useState('')
-    const [secretKey, setsecretKey] = useState('')
-    const [region, setRegion] = useState('us-east-1')
+    const [schema, setSchema] = useState<String>('Select...')
+    const [accessKey, setAccessKey] = useState<String>('')
+    const [secretKey, setsecretKey] = useState<String>('')
+    const [region, setRegion] = useState<String>('us-east-1')
+    const [failed, setFailed] = useState<Boolean>(false)
 
     const handleKey1Change = (event) => {
         setAccessKey(event.target.value)
@@ -62,7 +65,11 @@ export default function NewDatasets() {
                 const response2 = await fetch('http://localhost:8000/init_gskey/', reqOptions)
             }
 
-            const data = JSON.stringify({"uri": uri, "name": name,"key1": accessKey, "key2": secretKey, "key3": region, "schema": schema})
+            if (schema == 'Select...'){
+                var data = JSON.stringify({"uri": uri, "name": name,"key1": accessKey, "key2": secretKey, "key3": region, "schema": 'files'})
+            } else {
+                var data = JSON.stringify({"uri": uri, "name": name,"key1": accessKey, "key2": secretKey, "key3": region, "schema": schema})
+            }
             
             const response = await fetch('http://localhost:8000/init_web/', {
                 method: 'POST',
@@ -70,16 +77,17 @@ export default function NewDatasets() {
                     "Content-Type": "application/json" 
                 }, 
                 body: data}
+            ).then((res) => res.json()).then(
+                (res) => {
+                    if (res.success) {
+                        posthog.capture('Added a dataset', { property: 'value' })
+                        window.location.href='/dataset/'.concat(encodeURIComponent(name));
+                    } else {
+                        setLoading(false)
+                        setFailed(true)
+                    }
+                }
             )
-
-            posthog.capture('Added a dataset', { property: 'value' })
-
-            if (response.json().success) {
-                window.location.href='/dataset/'.concat(encodeURIComponent(name));
-            } else {
-                window.location.href='/Datasets';
-            }
-
         }
     }
 
@@ -236,6 +244,31 @@ export default function NewDatasets() {
 
     return (
         <>  
+            {
+                failed 
+                ?
+                <>
+                    <div onClick={() => {setFailed(false)}} className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                        <button className="z-[99] w-screen h-screen bg-slate-500/30">
+                        </button>
+                    </div>
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                        <div className="z-[100] flex items-center w-max h-20 px-5 py-2 bg-slate-100 dark:bg-slate-700 rounded-md">
+                            <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200">
+                                <CloseIcon className="h-5 w-5" />
+                            </div>
+                            <div className="ml-3 mr-3 text-sm">
+                                Submission failure
+                            </div>
+                            <button className="hover:invert" onClick={() => {setFailed(false)}}>
+                                <CloseIcon className="h-8 w-8" />
+                            </button>
+                        </div>
+                    </div>
+                </>
+                :
+                null
+            }
             {LoadingComp}
             {SelectForm}
             {InputForm}

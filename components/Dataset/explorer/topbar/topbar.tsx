@@ -26,6 +26,7 @@ const TopBar = (props) => {
     const [callFilter, setCallFilter] = useState<Boolean>(false)
     const [experimentsPopup,setExperimentsPopup] = useState<Boolean>(false)
     const [statisticsPopup,setStatisticsPopup] = useState<Boolean>(false)
+    const [tab, setTab] = useState<number>(0)
 
     const handleChange = (event: React.ChangeEvent<any>) => {
         setText(event.target.value)
@@ -72,7 +73,7 @@ const TopBar = (props) => {
                         </Tooltip>
 
                         <Tooltip title={'Experiments and runs'} placement="top">
-                            <button onClick={()=>{props.shortcuts.current = experimentsPopup; setExperimentsPopup(!experimentsPopup)}} className="w-[60px] h-[40px] flex flex-col justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" > 
+                            <button onClick={()=>{props.shortcuts.current = (tab == 2) ? true : false; setTab((tab == 2) ? 0 : 2)}} className="w-[60px] h-[40px] flex flex-col justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" > 
                                 <div className="flex gap-2">
                                     <ScienceIcon className="h-5 w-5"/>
                                 </div>
@@ -80,7 +81,7 @@ const TopBar = (props) => {
                         </Tooltip>
                         
                         <Tooltip title={'Statistics'} placement="top">
-                            <button onClick={()=>{props.shortcuts.current = statisticsPopup; setStatisticsPopup(!statisticsPopup)}} className="w-[60px] h-[40px] flex flex-col justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" > 
+                            <button onClick={()=>{props.shortcuts.current = (tab == 1) ? true : false; setTab((tab == 1) ? 0 : 1)}} className="w-[60px] h-[40px] flex flex-col justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" > 
                                 <div className="flex gap-2">
                                     <BarChartIcon className="h-5 w-5"/>
                                 </div>
@@ -133,9 +134,9 @@ const TopBar = (props) => {
                 {
                     (props.schema == 'yolo' || props.schema == 'labelbox') 
                     ? 
-                        (statisticsPopup) 
+                        (tab == 1) 
                         ? 
-                            <YOLOStatistics schema={props.schema} filtering={props.filtering} statisticsPopup={statisticsPopup} setStatisticsPopup={setStatisticsPopup} shortcuts={props.shortcuts}  /> 
+                            <YOLOStatistics schema={props.schema} filtering={props.filtering} shortcuts={props.shortcuts}  /> 
                         : 
                             <></>
                     :
@@ -144,9 +145,9 @@ const TopBar = (props) => {
                 {
                     (props.schema == 'yolo' || props.schema == 'labelbox') 
                     ? 
-                        (experimentsPopup) 
+                        (tab == 2) 
                         ? 
-                            <YOLOExperiments schema={props.schema} experimentsPopup={experimentsPopup} setExperimentsPopup={setExperimentsPopup} shortcuts={props.shortcuts}  />
+                            <YOLOExperiments schema={props.schema} shortcuts={props.shortcuts}  />
                         : 
                             <></>
                     :

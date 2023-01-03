@@ -30,7 +30,7 @@ const stringToColour = (str: string) => {
 
 const BoundingBox = (props) => {
     
-    const [selecting, setSelecting] = useState(false)
+    const [edit, setEdit] = useState<Boolean>(false)
     const canvasRef = useRef(null)
 
     const offset_x = -5
@@ -66,15 +66,19 @@ const BoundingBox = (props) => {
                 if(props.editing){
                     if (checkCloseEnough(mouseX.current, props.rect.x) && checkCloseEnough(mouseY.current, props.rect.y)) {
                         dragTL.current = true
+                        setEdit(true)
                     }
                     else if (checkCloseEnough(mouseX.current, props.rect.x + props.rect.w) && checkCloseEnough(mouseY.current, props.rect.y)) {
                         dragTR.current = true
+                        setEdit(true)
                     }
                     else if (checkCloseEnough(mouseX.current, props.rect.x) && checkCloseEnough(mouseY.current, props.rect.y + props.rect.h)) {
                         dragBL.current = true
+                        setEdit(true)
                     }
                     else if (checkCloseEnough(mouseX.current, props.rect.x + props.rect.w) && checkCloseEnough(mouseY.current, props.rect.y + props.rect.h)) {
                         dragBR.current = true
+                        setEdit(true)
                     }
                 
                 } else {
@@ -98,6 +102,8 @@ const BoundingBox = (props) => {
                 dragTR.current = false 
                 dragBL.current = false
                 dragBR.current = false
+
+                setEdit(false)
             }
         
             const mouseMove = (e) => {
@@ -129,7 +135,7 @@ const BoundingBox = (props) => {
                 if(dragBL.current || dragBR.current || dragTL.current || dragTR.current){
                     context.clearRect(0, 0, canvas.width, canvas.height);
                     context.lineWidth = 2;
-                    context.fillStyle = selecting ? `rgba(${color.r}, ${color.g}, ${color.b}, 0.3)` : `rgba(${color.r}, ${color.g}, ${color.b}, 0.1)`
+                    context.fillStyle = (props.selected || edit) ? `rgba(${color.r}, ${color.g}, ${color.b}, 0.4)` : `rgba(${color.r}, ${color.g}, ${color.b}, 0.1)`
                     context.fillRect(props.rect.x+offset_x, props.rect.y+offset_y, props.rect.w, props.rect.h)
                     context.strokeStyle = color_hex
                     context.strokeRect(props.rect.x+offset_x, props.rect.y+offset_y, props.rect.w, props.rect.h)
@@ -167,7 +173,7 @@ const BoundingBox = (props) => {
             
             context.clearRect(0, 0, canvas.width, canvas.height);
             context.lineWidth = 2;
-            context.fillStyle = selecting ? `rgba(${color.r}, ${color.g}, ${color.b}, 0.3)` : `rgba(${color.r}, ${color.g}, ${color.b}, 0.1)`
+            context.fillStyle = (props.selected || edit) ? `rgba(${color.r}, ${color.g}, ${color.b}, 0.4)` : `rgba(${color.r}, ${color.g}, ${color.b}, 0.1)`
             context.fillRect(props.rect.x+offset_x, props.rect.y+offset_y, props.rect.w, props.rect.h)
             context.strokeStyle = color_hex
             context.strokeRect(props.rect.x+offset_x, props.rect.y+offset_y, props.rect.w, props.rect.h)
@@ -185,7 +191,7 @@ const BoundingBox = (props) => {
         }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [color, color_hex, props, selecting])
+    }, [color, color_hex, props])
     
     return(
         <div className="z-20 absolute">

@@ -12,8 +12,8 @@ function classNames(...classes) {
 const DropdownVersionCoupled = (props) => {
     var options: Array<any> = []
 
-    const renderButton = (version) => {
-      if (props.vD == props.imageDate.length){
+    const renderButton = (version, len) => {
+      if (version == len){
         return (
           <Menu.Button className="z-50 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
             {props.label} {version}
@@ -30,25 +30,38 @@ const DropdownVersionCoupled = (props) => {
 
     const handleClick = async (v_new, setV) => {
         setV(v_new)
+        console.log('diit',v_new)
     }
 
     const imageDate = props.imageDate.map((el,idx)=>{return {type: 'image', v: props.imageDate.length-idx, date: new Date(el)}})
     const labelDate = props.labelDate.map((el,idx)=>{return {type: 'label', v: props.labelDate.length-idx, date: new Date(el)}})
 
-    const versions = Array().concat(imageDate, labelDate).sort(function(a,b){return b.date - a.date;});
+    const versions = Array().concat(imageDate, labelDate).sort(function(a,b){return b.date - a.date});
+
+    console.log(versions)
 
     function getAllIndexes(arr, condition) {
         var indexes: Array<number> = [];
-        for(var i: number = 0; i < arr.length; i++)
-            if(condition(arr[i])){
-                indexes.push(i);
+        for(var i: number = 0; i < arr.length; i++){
+            const m = i
+            if(condition(arr[m])){
+                indexes.push(m);
             }
+        }
         return indexes;
     }
     
     const x = Math.min(...getAllIndexes(versions, (el) => {if (el.v == props.vD && el.type == 'image'){ return true; } else if (el.v == props.vL && el.type == 'label'){ return true; } else { return false;}}))
-    const version = versions.length - x
-
+    const x_max = Math.max(...getAllIndexes(versions, (el) => {if (el.v == props.vD && el.type == 'image'){ return true; } else if (el.v == props.vL && el.type == 'label'){ return true; } else { return false;}}))
+    if (x == 0){
+      var version = versions.length
+    } else if (x_max == versions.length - 1){
+      var version = versions.length - x_max
+    }
+    else {
+      var version = versions.length - x
+    }
+    
     for(var i = 0; i < versions.length; i++){
         const x = i
         options.push(
@@ -61,8 +74,8 @@ const DropdownVersionCoupled = (props) => {
                   'z-50 block px-4 py-2 text-sm w-full'
                 )}
                 onClick={()=>{
-                    for (var j = 0; j < x+1; j++){
-                        const y = j
+                    for (var j = versions.length; j > x; j--){
+                        const y = j - 1
                         versions[y].type == 'image' ? handleClick(versions[y].v,props.setD) : handleClick(versions[y].v,props.setL)}}
                     }
               >
@@ -77,7 +90,7 @@ const DropdownVersionCoupled = (props) => {
     return (
         <Menu as="div" className="z-50 relative inline-block text-left mb-2">
           <div>
-            {renderButton(version)}
+            {renderButton(version, versions.length)}
           </div>
     
           <Transition

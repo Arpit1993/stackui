@@ -38,8 +38,6 @@ const FileExplorer = (props) => {
     const max_pages =  props.view ? props.len / max_files : props.len / max_images;
 
     const handleKeyPress = useCallback((event) => {
-        console.log(props.shortcuts.current)
-        
         if (props.shortcuts.current == true){
             if (event.shiftKey){
                 if (event.key == '_'){
@@ -320,7 +318,7 @@ const FileExplorer = (props) => {
                     </div>
                 </div>
                 {
-                    popup ? <FilePopup shortcuts={props.shortcuts} schema={props.schema} popup={popup} setPopup={setPopup} keyId={keyVar} key={'fcp'}/> : <></>
+                    popup ? <FilePopup shortcuts={props.shortcuts} schema={props.schema} popup={popup} setPopup={setPopup} setKeyId={setKey} keyId={keyVar} key={'fcp'}/> : <></>
                 }
             </div>
         </>

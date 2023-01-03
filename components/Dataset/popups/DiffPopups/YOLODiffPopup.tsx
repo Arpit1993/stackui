@@ -48,8 +48,8 @@ const YOLODiffPopup = (props) => {
         const fetchStuff = async (keyId, setD1, setD2, v1, v2, l1, l2) => {
             setD1(null)
             setD2(null)
-            await fetchData(keyId,v1,setD1, l1)
-            await fetchData(keyId,v2,setD2, l2)
+            await fetchData(keyId,v1,setD1,l1)
+            await fetchData(keyId,v2,setD2,l2)
         }
         if(props.popup == 1){ 
             if (first){
