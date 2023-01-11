@@ -30,7 +30,6 @@ const DropdownVersionCoupled = (props) => {
 
     const handleClick = async (v_new, setV) => {
         setV(v_new)
-        console.log('diit',v_new)
     }
 
     const imageDate = props.imageDate.map((el,idx)=>{return {type: 'image', v: props.imageDate.length-idx, date: new Date(el)}})
@@ -51,15 +50,33 @@ const DropdownVersionCoupled = (props) => {
         return indexes;
     }
     
-    const x = Math.min(...getAllIndexes(versions, (el) => {if (el.v == props.vD && el.type == 'image'){ return true; } else if (el.v == props.vL && el.type == 'label'){ return true; } else { return false;}}))
-    const x_max = Math.max(...getAllIndexes(versions, (el) => {if (el.v == props.vD && el.type == 'image'){ return true; } else if (el.v == props.vL && el.type == 'label'){ return true; } else { return false;}}))
-    if (x == 0){
+    const x_min = Math.min(...getAllIndexes(versions, (el) => {
+      if (el.v == props.vD && el.type == 'image'){
+         return true; 
+      } else if (el.v == props.vL && el.type == 'label'){ 
+        return true;
+      } else { 
+        return false;
+      }
+    }))
+
+    const x_max = Math.max(...getAllIndexes(versions, (el) => {
+      if (el.v == props.vD && el.type == 'image'){ 
+        return true; 
+      } else if (el.v == props.vL && el.type == 'label'){ 
+        return true; 
+      } else { 
+        return false;
+      }
+    }))
+
+    if (x_min  == 0){
       var version = versions.length
-    } else if (x_max == versions.length - 1){
+    } else if (x_max == versions.length - 1 && x_min == versions.length - 1){
       var version = versions.length - x_max
     }
     else {
-      var version = versions.length - x
+      var version = versions.length - x_min
     }
     
     for(var i = 0; i < versions.length; i++){
@@ -67,21 +84,27 @@ const DropdownVersionCoupled = (props) => {
         options.push(
             <Menu.Item>
             {({ active }) => (
-            <Tooltip placement="top" title={`${versions[x].type} version ${versions[x].v}`}>
+            <Tooltip placement="right" title={`${versions[x].type} version ${versions[x].v}`}>
               <button
                 className={classNames(
                   active ? 'z-50 bg-gray-100 text-gray-900  w-full' : 'z-50 text-gray-700',
                   'z-50 block px-4 py-2 text-sm w-full'
                 )}
                 onClick={()=>{
-                    for (var j = versions.length; j > x; j--){
-                        const y = j - 1
-                        versions[y].type == 'image' ? handleClick(versions[y].v,props.setD) : handleClick(versions[y].v,props.setL)}}
-                    }
+                  for (var j = 0; j < x; j++){
+                    const y = j
+                    versions[y].type == 'image' ? handleClick(versions[y].v,props.setD) : handleClick(versions[y].v,props.setL)
+                  } 
+                  
+                  for (var j = versions.length; j > x; j--){
+                    const y = j - 1
+                    versions[y].type == 'image' ? handleClick(versions[y].v,props.setD) : handleClick(versions[y].v,props.setL)
+                  }
+                }}
               >
-                Version {versions.length - x}
+                  Version {versions.length - x}
               </button>
-              </Tooltip>
+            </Tooltip>
             )}
           </Menu.Item>
         )

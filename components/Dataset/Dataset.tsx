@@ -109,9 +109,10 @@ const Dataset = () => {
                     })
                 }
             }
+        
             setWaiting(false)
             setFiles([])
-            setFiles(() => {return files_})
+            setFiles(() => {console.log(files_) ;return files_})
             setLoading(false)
         }
         if(dataset){

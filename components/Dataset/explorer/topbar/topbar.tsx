@@ -91,7 +91,7 @@ const TopBar = (props) => {
                         
 
                         <Tooltip title={'Filter'} placement="top">
-                            <button onClick={()=>{props.shortcuts.current = filterPopup; setFilterPopup(!filterPopup)}} className="w-[60px] h-[40px] flex flex-col justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" > 
+                            <button onClick={()=>{if(tab != 2){props.shortcuts.current = filterPopup; setFilterPopup(!filterPopup)}}} className="w-[60px] h-[40px] flex flex-col justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" > 
                                 {<Image className="invert" src={'/Icons/filter-search.png'} alt='' width={'40px'} height={'40px'} objectFit={'contain'} />}
                             </button>
                         </Tooltip>
@@ -118,13 +118,13 @@ const TopBar = (props) => {
                 {
                     (props.schema == 'yolo' || props.schema == 'labelbox') 
                     ? 
-                        (filterPopup) 
+                        (filterPopup && tab != 2) 
                         ? 
                             <YOLOFilterPopup shortcuts={props.shortcuts} setPage={props.setPage} callFilter={callFilter} setCallFilter={setCallFilter} schema={props.schema} txt={txt} popup={filterPopup} setFiltering={props.setFiltering} setPopup={setFilterPopup} key={'yffp'}/> 
                         : 
                             <></>
                     :
-                        (filterPopup) 
+                        (filterPopup && tab != 2)  
                         ? 
                             <FileFilterPopup shortcuts={props.shortcuts} setPage={props.setPage} callFilter={callFilter} setCallFilter={setCallFilter} schema={props.schema} txt={txt} popup={filterPopup} setFiltering={props.setFiltering} setPopup={setFilterPopup} key={'fffp'}/> 
                         : 

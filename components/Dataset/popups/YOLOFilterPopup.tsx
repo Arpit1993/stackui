@@ -27,7 +27,7 @@ const getbuttons = (variable, varFilter, setVarFilter, nullStr, setnullStr, n_va
                         cf[cl] = !cf[cl]
                         setVarFilter(cf)
                         setnullStr(nullStr+'a')
-                    }} className="w-full py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-gray-100 rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                    }} className="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
                         {`${cl} (${n_var[cl]})`}
                     </button>
                 </ul>
@@ -40,7 +40,7 @@ const getbuttons = (variable, varFilter, setVarFilter, nullStr, setnullStr, n_va
                         cf[cl] = !cf[cl]
                         setVarFilter(cf)
                         setnullStr(nullStr+'a')
-                    }} className="w-full py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                    }} className="bg-gray-100 text-gray-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">
                         {`${cl} (${n_var[cl]})`}
                     </button>
                 </ul>
@@ -170,7 +170,7 @@ const YOLOFilterPopup = (props) => {
                 }, 
                 body: data}
         )
-        
+
         posthog.capture('Applied filter', { property: 'value' })
     
         props.setFiltering('z')
@@ -211,12 +211,10 @@ const YOLOFilterPopup = (props) => {
             }
         )
 
-        handleApplyFilter()
         props.setFiltering('z')
         setTime(!time)
         setLoading(false)
     }
-
 
     useEffect( () => {
         const getMetadata = async () => {
@@ -445,18 +443,24 @@ const YOLOFilterPopup = (props) => {
                 
                 <div className="flex justify-around">
                     <div className="px-5 py-4 justify-start">
-                        <button onClick={() => {setBranch(true);}} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-                            Branch
-                        </button>
+                        <Tooltip title={'Creates a separate branch with the query results'} placement="bottom">
+                            <button onClick={() => {setBranch(true);}} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                                Branch
+                            </button>
+                        </Tooltip>
 
-                        <button onClick={() => {setSlice(true)}} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-                            Slice
-                        </button>
+                        <Tooltip title={'Groups the query results under a slice'} placement="bottom">
+                            <button onClick={() => {setSlice(true)}} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                                Slice
+                            </button>
+                        </Tooltip>
                     </div>
                     <div className="px-5 py-4 flex justify-end gap-2">
-                        <button onClick={() => handleResetFilter()} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
-                            Reset
-                        </button>
+                        <Tooltip title={'Resets query to full dataset'} placement="bottom">
+                            <button onClick={() => handleResetFilter()} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                                Reset
+                            </button>
+                        </Tooltip>
                         <button onClick={() => handleApplyFilter()} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
                             Apply
                         </button>

@@ -7,7 +7,7 @@ import posthog from 'posthog-js'
 import ClearIcon from '@mui/icons-material/Clear';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
-import { Toast } from "flowbite-react";
+import { Tooltip } from "@mui/material";
 
 const DatasetOptionsPopup = (props) => {
 
@@ -31,7 +31,7 @@ const DatasetOptionsPopup = (props) => {
                 .then((res) => setSchema(res.value)).then(() => setLoading(false))
             }
         ).then(() => {
-            fetch('http://localhost:8000/get_current_hierarchy').then((res) => res.json()).then(setHierarchy)
+            fetch('http://localhost:8000/get_current_hierarchy').then((res) => res.json()).then((res) => {setHierarchy(res)})
         })
     },[props])
 
@@ -225,7 +225,7 @@ const DatasetOptionsPopup = (props) => {
                                 <ol className="flex gap-0 justify-center w-full h-24">
                                     <li className="relative mb-0">
                                         <div className="mt-3">
-                                            <ul className="w-48 text-sm h-24 font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                            <ul className="w-56 text-sm h-24 font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                                 <li className="py-2 px-4 w-full rounded-t-lg border-b border-gray-200 dark:border-gray-600">
                                                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                                                         Parent dataset
@@ -234,20 +234,22 @@ const DatasetOptionsPopup = (props) => {
                                                 <li className="py-2 px-4 w-full overflow-x-scroll border-b border-gray-200 dark:border-gray-600"> 
                                                     <button onClick={()=>{setSelecting1(!selecting1)}} className={"z-30 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"}>
                                                         {
-                                                            hierarchy['parent'] == '' ? <AddIcon className="h-[20px] w-[20px]"/> : null
+                                                            hierarchy['parent']['uri'] == '' ? <AddIcon className="h-[20px] w-[20px]"/> : null
                                                         }
-                                                        {hierarchy['parent'] == '' ? 'None' : hierarchy['parent']}
+                                                        {hierarchy['parent']['uri'] == '' ? 'None' : hierarchy['parent']['name']}
                                                     </button>
                                                     <div className={selecting1 ? 'absolute' : 'invisible absolute'}>
-                                                        <ul className="w-48 h-60 overflow-y-scroll text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                                            <li className="py-2 px-4 w-full overflow-clip text-center rounded-t-lg border-b border-gray-200 dark:border-gray-600">Datasets</li>
+                                                        <ul className="w-56 h-60 overflow-y-scroll text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                                            <li className="py-2 px-4 w-full overflow-clip text-center rounded-t-lg font-medium border-b border-gray-200 dark:border-gray-600">Datasets</li>
                                                             {
                                                                 props.datasets.map(
                                                                     (dataset, idx) => {
                                                                         return (
-                                                                            <button onClick={() => handleAddParent(dataset.storage)} key={`dataset in list ${idx} ${dataset}`} className="py-2 px-4 w-full border-b border-gray-200 hover:bg-gray-400 dark:border-gray-600">
-                                                                                {dataset.storage}
-                                                                            </button>
+                                                                            <Tooltip key={`dataset in list ${idx} ${dataset.storage}`}  title={dataset.storage} placement="right">
+                                                                                <button onClick={() => handleAddParent(dataset.storage)} className="py-2 px-4 font-normal w-full border-b border-gray-200 hover:bg-gray-400 dark:border-gray-600">
+                                                                                    {dataset.name}
+                                                                                </button>
+                                                                            </Tooltip>
                                                                         )
                                                                     }
                                                                 )
@@ -264,26 +266,28 @@ const DatasetOptionsPopup = (props) => {
                                     </div>
                                     <li className="relative mb-0">
                                         <div className="mt-3">             
-                                            <ul className="w-50 h-24 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                            <ul className="w-56 h-24 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                                 <li className="py-2 flex gap-2 px-4 w-full rounded-t-lg border-b border-gray-200 dark:border-gray-600">
                                                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                                                         Branches
                                                     </h3>
-                                                    <div className="items-center relative">
+                                                    <div className="h-full w-full items-center relative">
                                                         <button onClick={()=>{setSelecting(!selecting)}} className={"flex justify-center items-center z-30 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"}>
                                                             <AddIcon className="h-[20px] w-[20px]"/>
                                                             {'Add'}
                                                         </button>
                                                         <div className={selecting ? 'absolute' : 'invisible absolute'}>
-                                                            <ul className="w-48 h-48 overflow-y-scroll text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                                                <li className="py-2 px-4 w-full text-center rounded-t-lg border-b border-gray-200 dark:border-gray-600">Datasets</li>
+                                                            <ul className="w-56 h-48 overflow-y-scroll text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                                                <li className="py-2 px-4 w-full text-center font-medium rounded-t-lg border-b border-gray-200 dark:border-gray-600">Datasets</li>
                                                                 {
                                                                     props.datasets.map(
                                                                         (dataset, idx) => {
                                                                             return (
-                                                                                <button onClick={() => handleAddChild(dataset.storage)} key={`dataset in list ${idx} ${dataset}`} className="py-2 px-4 w-full border-b border-gray-200 hover:bg-gray-400 dark:border-gray-600">
-                                                                                    {dataset.storage}
-                                                                                </button>
+                                                                                <Tooltip title={dataset.storage} key={`dataset in list ${idx} ${dataset.storage}`} placement="right">
+                                                                                    <button onClick={() => handleAddChild(dataset.storage)} className="py-2 px-4 w-full font-normal border-b border-gray-200 hover:bg-gray-400 dark:border-gray-600">
+                                                                                        {dataset.name}
+                                                                                    </button>
+                                                                                </Tooltip>
                                                                             )
                                                                         }
                                                                     )
@@ -298,10 +302,10 @@ const DatasetOptionsPopup = (props) => {
                                                         hierarchy.children.map(
                                                             (child, idx) => {
                                                                 return (
-                                                                <li key={`dataset child${child}${idx}`} className="py-2 px-4 overflow-scroll border-b border-gray-200 dark:border-gray-600">
+                                                                <li key={`dataset child${child.uri}${idx}`} className="py-2 px-4 overflow-scroll border-b border-gray-200 dark:border-gray-600">
                                                                     <div className="flex gap-1">
-                                                                        {child}
-                                                                        <button onClick={() => handleDeleteChild(child)}>
+                                                                        {child.name}
+                                                                        <button onClick={() => handleDeleteChild(child.uri)}>
                                                                             <ClearIcon className="h-4 w-[15px]"/>
                                                                         </button>
                                                                     </div>

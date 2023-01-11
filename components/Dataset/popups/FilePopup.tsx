@@ -54,25 +54,27 @@ const FilePopup = (props) => {
         return true
     }
 
-    const submitLabels = async () => {
-        setLoading(true)
-        const data = JSON.stringify(newLabels)
-        await fetch('http://localhost:8000/set_labels/', {
-            method: 'POST',
-            headers: { 
-                "Content-Type": "application/json" 
-            }, 
-            body: data}
-        )
-        setSubmit(false)
-        await fetch('http://localhost:8000/commit_req?comment='.concat(`fixed annotation on ${newLabels['keyId']}`))
-        setSubmit(false)
-        posthog.capture('Submitted a commit', { property: 'value' })
-        setLoading(false)
-    }
+    const submitLabels = useCallback(async () => {
+        if (submit){
+            setLoading(true)
+            const data = JSON.stringify(newLabels)
+            await fetch('http://localhost:8000/set_labels/', {
+                method: 'POST',
+                headers: { 
+                    "Content-Type": "application/json" 
+                }, 
+                body: data}
+            )
+            setSubmit(false)
+            await fetch('http://localhost:8000/commit_req?comment='.concat(`fixed annotation on ${newLabels['keyId']}`))
+            setSubmit(false)
+            posthog.capture('Submitted a commit', { property: 'value' })
+            setLoading(false)
+        }
+    },[newLabels, submit])
 
 
-    const handleKeyPress = useCallback((event) => {
+    const handleKeyPress = useCallback(async (event) => {
         if(!event.shiftKey){
             if (event.key == 'ArrowLeft') {
                 fetch('http://localhost:8000/get_prev_key?key='.concat(props.keyId))
@@ -88,7 +90,7 @@ const FilePopup = (props) => {
         }
 
         if(event.ctrlKey){
-            if(submit && event.key == 's'){
+            if(event.key == 's'){
                 submitLabels()
             }
         }
@@ -117,7 +119,7 @@ const FilePopup = (props) => {
                         }
                     })).then((stream) => new Response(stream)).then((response) => response.blob())
                     .then((blob) => URL.createObjectURL(blob)).then((img) => 
-                    [<YOLOViz key={'imgvz'}  diff={false} label_version={'current'} img={img} keyId={props.keyId} ww={800} wh={500} ox={0} oy={0} setnewLabels={setnewLabels} setSubmit={setSubmit}/>])
+                    [<YOLOViz key={'imgvz'}  diff={false} loading={loading} label_version={'current'} img={img} keyId={props.keyId} ww={800} wh={500} ox={0} oy={0} setnewLabels={setnewLabels} setSubmit={setSubmit}/>])
                     .then(setDataComp)
                 }
                 else if (isImage) {
@@ -238,16 +240,15 @@ const FilePopup = (props) => {
             await fetchData()
             fetchVersions()
         }
-        if (props.popup) {
-            fetchStuff()
-        }
+        fetchStuff()
+        setSubmit(false)
 
         document.addEventListener('keydown', handleKeyPress);
         return () => {
             document.removeEventListener('keydown', handleKeyPress);
         }
 
-    }, [props, row, col, isYOLO, isImage, isCSV, isText, isJSON, handleKeyPress])
+    }, [props, row, col, isYOLO, isImage, isCSV, isText, isJSON, handleKeyPress, loading])
     
     const Versionspopup = popup ? [
         isYOLO ? 
@@ -317,10 +318,10 @@ const FilePopup = (props) => {
                     </div>
                     <div className="flex w-full">
                         <div className="flex justify-center mt-4 w-[800px]">
-                            <button onClick={() => setPopup(true)} className="h-min text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"> 
+                            <button onClick={() => {setPopup(true); posthog.capture('Viewed datapoint history popup', { property: 'value' })}} className="h-min text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"> 
                                 See History 
                             </button>
-                            <button onClick={() => setCompare(true)} className="h-min text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"> 
+                            <button onClick={() => {setCompare(true); posthog.capture('Viewed datapoint compare popup', { property: 'value' })}} className="h-min text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"> 
                                 Compare versions
                             </button>
                             {/* <button onClick={()=>{}} className={"h-min focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"}>

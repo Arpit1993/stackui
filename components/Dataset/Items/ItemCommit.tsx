@@ -9,7 +9,7 @@ const ItemCommit = (props) => {
     const [loading, setLoading] = useState<Boolean>(false)
     const revert = async (version: number) => {
         setLoading(true)
-        await fetch('http://localhost:8000/revert?version='.concat(version.toString()))
+        await fetch(`http://localhost:8000/revert?version=${version}`)
         setLoading(false)
         window.location.reload();
         return true

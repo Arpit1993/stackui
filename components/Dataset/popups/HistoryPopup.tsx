@@ -1,6 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import ItemCommit from "../Items/ItemCommit";
+import posthog from 'posthog-js'
 
 function generateButtons(page, handleClick){
     var listofButtons: Array<any> = []
@@ -40,6 +41,7 @@ const HistoryPopup = (props) => {
         fetch(`http://localhost:8000/history/`).then((response) => response.json()).then((data) => { 
             setHistory(data)                
             setMaxPages(Object.keys(data).length/max_commits)
+            posthog.capture('Viewed history popup', { property: 'value' })
         });
     }, [props.history])
 

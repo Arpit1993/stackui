@@ -5,7 +5,6 @@ import FormData from "form-data";
 import DropdownSchema from "../components/Dataset/Items/DropdownSchema";
 import posthog from 'posthog-js'
 import { Tooltip } from "@mui/material";
-import { Toast } from "flowbite-react";
 import CloseIcon from '@mui/icons-material/Close';
 
 export default function NewDatasets() {        

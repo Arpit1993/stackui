@@ -6,7 +6,7 @@ import { useEffect } from "react";
 const Histogram = (props) => {
   useEffect(() => {
     if (props.data){
-        const keys = Object.keys(props.data).sort()
+        const keys = Object.keys(props.data)
         const config = {
             type: "bar",
             data: {
@@ -19,7 +19,7 @@ const Histogram = (props) => {
                   data: keys.map((key) => {
                     return props.data[key]
                   }),
-                  barThickness: 100,
+                  barThickness: 500/keys.length,
                 },
               ],
             },
@@ -42,14 +42,19 @@ const Histogram = (props) => {
                 x: {
                   grid: {
                     display: false
-                  }
+                  },
+                  ticks: {
+                    autoSkip: true,
+                    // maxRotation: 90,
+                    // minRotation: 90
+                  }          
                 },
                 y: {
                   grid: {
                     display: false
                   }
-                }
-              },
+                },
+              },        
               plugins: {
                 legend: {
                   display: false
@@ -79,7 +84,7 @@ const Histogram = (props) => {
           </div>
         </div>
         <div className="p-2 flex-auto">
-          <div className="relative h-350-px">
+          <div className="relative overflow-scroll h-350-px">
             <canvas id={`bar-chart ${props.title}`}/>
           </div>
         </div>

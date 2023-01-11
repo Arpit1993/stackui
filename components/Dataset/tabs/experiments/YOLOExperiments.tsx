@@ -20,7 +20,8 @@ const YOLOExperiments = (props) => {
             <div className="fixed z-[40] left-[20%] bottom-0 w-[60%] h-[80%] bg-gray-50 dark:bg-gray-900 flex justify-center">
                 <div className="p-2 grid grid-cols-2 justify-items-center gap-2 w-full h-full">
                     {
-                        Object.keys(projects).map(
+                        (Object.keys(projects).length > 0) ?
+                            Object.keys(projects).map(
                             (proj) =>  
                             {
                                 return <button key={`proj_comp ${proj}`}
@@ -45,6 +46,8 @@ const YOLOExperiments = (props) => {
                                 </button>
                             }
                         )
+                        :
+                        'No experiments yet'
                     }
                 </div>
             </div>  
@@ -85,7 +88,7 @@ const YOLOProject = (props) => {
                         }
                     )
                     :
-                    'No experiments yet'
+                    'No runs yet'
                 }
             </div>
         </div>

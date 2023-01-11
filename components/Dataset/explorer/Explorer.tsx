@@ -1,5 +1,6 @@
 import TopBar from "./topbar/topbar";
 import FileExplorer from "./FileExplorer/FileExplorer";
+import NERExplorer from "./FileExplorer/NERExplorer";
 import React, { useState } from "react";
 import GenerateDataPopup from "../popups/GenerateDataPopup";
 
@@ -13,7 +14,12 @@ const Explorer = (props) => {
             </div>
 
             <div className="px-5 h-[80%]">
-                <FileExplorer shortcuts={props.shortcuts} schema={props.schema} max_view={props.max_view} setFiltering={props.setFiltering} setMaxView={props.setMaxView} waiting={props.waiting} files={props.props.files} dataset={props.props.dataset} page={props.page} setPage={props.setPage} view={props.view} setView={props.setView} len={props.len}/>
+                {
+                    props.schema.includes('ner') ? 
+                    <NERExplorer shortcuts={props.shortcuts} schema={props.schema} max_view={props.max_view} setFiltering={props.setFiltering} setMaxView={props.setMaxView} waiting={props.waiting} files={props.props.files} dataset={props.props.dataset} page={props.page} setPage={props.setPage} view={props.view} setView={props.setView} len={props.len}/>
+                    :
+                    <FileExplorer shortcuts={props.shortcuts} schema={props.schema} max_view={props.max_view} setFiltering={props.setFiltering} setMaxView={props.setMaxView} waiting={props.waiting} files={props.props.files} dataset={props.props.dataset} page={props.page} setPage={props.setPage} view={props.view} setView={props.setView} len={props.len}/>
+                }
             </div>
         </div>
     )

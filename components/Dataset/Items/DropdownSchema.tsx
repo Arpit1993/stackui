@@ -25,8 +25,8 @@ const DropdownSchema = (props) => {
                 
               </div>
             </Menu.Button>
-            <div className="py-2 px-5 text-sm w-[100px] rounded-md text-center h-[40px] border border-gray-500">
-              {props.schema.charAt(0).toUpperCase() + props.schema.slice(1)}
+            <div className="py-2 px-5 text-sm w-[120px] rounded-md text-center h-[40px] border border-gray-500">
+              {props.schema.charAt(0).toUpperCase() + props.schema.slice(1).replace('_',' ')}
             </div>
           </div>
     
@@ -109,9 +109,8 @@ const DropdownSchema = (props) => {
                         (option == 2) ? 
                         <div className="left-52 absolute z-10 mt-2 w-52 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                           <button
-                            className={'hover:bg-gray-100 hover:cursor-not-allowed hover:text-gray-900 text-gray-700 block px-4 py-2 text-sm w-full'}
-                            disabled={true}
-                            onClick={()=>props.setSchema('files')}
+                            className={'hover:bg-gray-100 hover:text-gray-900 text-gray-700 block px-4 py-2 text-sm w-full'}
+                            onClick={()=>props.setSchema('spacy_ner')}
                           >
                             Spacy (NER)
                           </button>

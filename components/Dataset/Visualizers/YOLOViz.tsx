@@ -6,17 +6,17 @@ import BoundingBox from "./Items/BoundingBox";
 import ClearIcon from '@mui/icons-material/Clear';
 import AddIcon from '@mui/icons-material/Add';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import { More } from "@mui/icons-material";
 
 const YOLOViz = (props) => {
     
-    const [usableStr, setUsableStr] = useState<string>('')
+    const [usableStr, setUsableStr] = useState<string>('label')
     const [active, setActive] = useState<Array<any>>([])
     const [editableLabel, setEditableLabel] = useState<Array<any>>([])
     const [selectedLabel, setSelectedLabel] = useState<Array<any>>([])
     const [labels, setLabels] = useState<Array<any>>([])
     const [nullstr, setNullStr] = useState<String>('')
     const updated_labels = useRef<Array<any>>([])
+    const newRef = useRef<Array<any>>([])
     const [first, setFirst] = useState<Boolean>(true)
     const [editing, setEditing] = useState<Boolean>(false)
     const [options, setOptions] = useState<Boolean>(false)
@@ -45,7 +45,7 @@ const YOLOViz = (props) => {
     const addNewLabel = () => {
         var arr_copy: Array<any> = Object.values(updated_labels.current)
         arr_copy.push(
-        ['new label', 0.1, 0.1, 0.1, 0.1]   
+        ['label', 0, 0, 0, 0]   
         )
         const idx1 = arr_copy.indexOf(props.keyId)
         if (idx1 > -1){
@@ -58,6 +58,9 @@ const YOLOViz = (props) => {
             return updated_labels.current
         })
         props.setSubmit(true)
+
+        newRef.current = Array(arr_copy.length).fill(false)
+        newRef.current[newRef.current.length-1] = true
 
         setLabels(() => {return arr_copy})
         setNullStr(nullstr.concat('z'))
@@ -76,18 +79,49 @@ const YOLOViz = (props) => {
         setActive(() => {return arr_copy});
     }
 
+    const deleteLabel = (idx) => {
+        var arr_copy = Object.values(updated_labels.current)
+        arr_copy.splice(idx,1)
+        const idx1 = arr_copy.indexOf(props.keyId)
+        if (idx1 > -1){
+            arr_copy.splice(idx1,1)
+        }
+        newRef.current = Array(arr_copy.length).fill(false)
+        var dic_copy = Object.assign({},arr_copy)
+        dic_copy['keyId'] = props.keyId
+        updated_labels.current = dic_copy
+        props.setnewLabels(() => {return updated_labels.current})
+        props.setSubmit(true)
+        setUsableStr('label')
+        setLabels(() => {
+            return arr_copy
+        })
+        setNullStr(nullstr.concat('z'))
+    }
+
     const handleKeyPress = useCallback((event) => {
-        if(event.shiftKey){
-            if (event.key == 'N') {
+        console.log(selectedLabel)
+        if(event.ctrlKey){
+            if (event.key == 'n') {
+                event.preventDefault()
                 addNewLabel()
                 setOptions(true)
             }
-            if (event.key == 'E') {
+            else if (event.key == 'e') {
+                event.preventDefault()
                 setEditing(!editing)
+            }
+            else if (event.key == 'd') {
+                event.preventDefault()
+                for(var i = 0; i < selectedLabel.length; i++){
+                    if(selectedLabel[i] == true){
+                        deleteLabel(i)
+                    }
+                }
             }
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [setOptions, setEditing, editing, updated_labels])
+    }, [setOptions, setEditing, active, addNewLabel, deleteLabel, editing, updated_labels, newRef, selectedLabel])
 
     useEffect(() => {
         if(first){
@@ -98,6 +132,7 @@ const YOLOViz = (props) => {
                 setEditableLabel(() => {return Array(Object.values(res).length).fill(false)})
                 setSelectedLabel(() => {return Array(Object.values(res).length).fill(false)})
                 updated_labels.current = res
+                newRef.current = Array(Object.values(res).length).fill(false)
             });
             setFirst(false)
         }
@@ -118,8 +153,9 @@ const YOLOViz = (props) => {
             const y = (props.wh - height)/2 + labels[i][2]*height - h/2
     
             var rect = {x: Math.floor(x), y: Math.floor(y), h: Math.floor(h), w: Math.floor(w)}
+            
             boxes.push(
-                <BoundingBox class_number={labels[i][0]} 
+                <BoundingBox new={newRef} loading={props.loading} class_number={labels[i][0]} 
                 ww={props.ww} wh={props.wh} width={width} height={height} 
                 rect={rect} updated_labels={updated_labels} 
                 label_idx={i} keyId={props.keyId} setEditing={setEditing}
@@ -144,7 +180,7 @@ const YOLOViz = (props) => {
                             <MoreHorizIcon className="w-[20px] h-[20px]"/>
                         </button>
                         
-                        <div className={options ? "z-50 absolute right-0 justify-between flex flex-col gap-1 top-14 w-1/5 h-3/4 p-1 border border-gray-500 rounded-md bg-white dark:bg-gray-900" : 'invisible z-50 absolute right-0 justify-between flex flex-col gap-1 top-14 w-1/5 h-3/4'}>
+                        <div className={options ? "z-50 absolute right-[-160px] justify-between flex flex-col gap-1 top-14 w-1/5 h-3/4 p-1 border border-gray-500 rounded-md bg-white dark:bg-gray-900" : 'invisible z-50 absolute right-[-160px] justify-between flex flex-col gap-1 top-14 w-1/5 h-3/4'}>
                             <div className="mt-2 flex justify-center w-full">
                                 <button onClick={()=>{setEditing(!editing);setOptions(!options);}} className={editing ? "z-30 flex gap-1 text-gray-900 bg-gray-100 border border-gray-300 outline-none ring-4 ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:ring-gray-700" : "z-30 flex gap-1 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"}>
                                     <EditIcon className="h-[20px] w-[20px]"/>
@@ -234,25 +270,7 @@ const YOLOViz = (props) => {
                                                                 <div className="flex flex-col justify-center h-full">
                                                                     <button
                                                                         className="h-4 w-[15px]"
-                                                                        onClick={()=>{
-                                                                            var arr_copy = Object.values(updated_labels.current)
-                                                                            arr_copy.splice(idx,1)
-                                                                            const idx1 = arr_copy.indexOf(props.keyId)
-                                                                            if (idx1 > -1){
-                                                                                arr_copy.splice(idx1,1)
-                                                                            }
-                                                                            var dic_copy = Object.assign({},arr_copy)
-                                                                            dic_copy['keyId'] = props.keyId
-                                                                            updated_labels.current = dic_copy
-                                                                            props.setnewLabels(() => {return updated_labels.current})
-                                                                            props.setSubmit(true)
-                                                                            setUsableStr('new label')
-                                                                            setLabels(() => {
-                                                                                return arr_copy
-                                                                            })
-                                                                            setNullStr(nullstr.concat('z'))
-                                                                            }
-                                                                        }>
+                                                                        onClick={()=>{deleteLabel(idx)}}>
                                                                         <ClearIcon className="h-4 w-[15px]"/>
                                                                     </button>
                                                                 </div>

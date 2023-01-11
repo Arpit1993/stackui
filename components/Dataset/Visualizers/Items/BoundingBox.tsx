@@ -63,24 +63,29 @@ const BoundingBox = (props) => {
                 mouseX.current = e.pageX - client_rect.left;
                 mouseY.current = e.pageY - client_rect.top;
 
-                if(props.editing){
-                    if (checkCloseEnough(mouseX.current, props.rect.x) && checkCloseEnough(mouseY.current, props.rect.y)) {
-                        dragTL.current = true
-                        setEdit(true)
-                    }
-                    else if (checkCloseEnough(mouseX.current, props.rect.x + props.rect.w) && checkCloseEnough(mouseY.current, props.rect.y)) {
-                        dragTR.current = true
-                        setEdit(true)
-                    }
-                    else if (checkCloseEnough(mouseX.current, props.rect.x) && checkCloseEnough(mouseY.current, props.rect.y + props.rect.h)) {
-                        dragBL.current = true
-                        setEdit(true)
-                    }
-                    else if (checkCloseEnough(mouseX.current, props.rect.x + props.rect.w) && checkCloseEnough(mouseY.current, props.rect.y + props.rect.h)) {
+                if(props.editing && !props.loading){
+                    if (props.new.current[props.label_idx]){
                         dragBR.current = true
                         setEdit(true)
+                        console.log('yes')
+                    } else {
+                        if (checkCloseEnough(mouseX.current, props.rect.x) && checkCloseEnough(mouseY.current, props.rect.y)) {
+                            dragTL.current = true
+                            setEdit(true)
+                        }
+                        else if (checkCloseEnough(mouseX.current, props.rect.x + props.rect.w) && checkCloseEnough(mouseY.current, props.rect.y)) {
+                            dragTR.current = true
+                            setEdit(true)
+                        }
+                        else if (checkCloseEnough(mouseX.current, props.rect.x) && checkCloseEnough(mouseY.current, props.rect.y + props.rect.h)) {
+                            dragBL.current = true
+                            setEdit(true)
+                        }
+                        else if (checkCloseEnough(mouseX.current, props.rect.x + props.rect.w) && checkCloseEnough(mouseY.current, props.rect.y + props.rect.h)) {
+                            dragBR.current = true
+                            setEdit(true)
+                        }
                     }
-                
                 } else {
                     if (!props.diff){
                         props.setEditing(true)
@@ -96,6 +101,7 @@ const BoundingBox = (props) => {
                         arr_copy.splice(idx,1)
                     }
                     props.setLabels(arr_copy)
+                    console.log('absolutely')
                 }
 
                 dragTL.current = false 
@@ -109,27 +115,38 @@ const BoundingBox = (props) => {
             const mouseMove = (e) => {
                 mouseX.current = e.pageX - client_rect.left;
                 mouseY.current = e.pageY - client_rect.top;
-        
-                if (dragTL.current) {
-                    props.rect.w = (props.rect.x + props.rect.w - mouseX.current);
-                    props.rect.h = (props.rect.y + props.rect.h - mouseY.current);
+                
+                if (props.new.current[props.label_idx]){
+                    props.rect.w = 0;
+                    props.rect.h = 0;
                     props.rect.x = mouseX.current;
                     props.rect.y = mouseY.current;
-                } else if (dragTR.current) {
-                    props.rect.w = (mouseX.current - props.rect.x);
-                    props.rect.h = (props.rect.y + props.rect.h - mouseY.current);
-                    props.rect.x = mouseX.current - props.rect.w;
-                    props.rect.y = mouseY.current;
-                } else if (dragBL.current) {
-                    props.rect.w = (props.rect.x + props.rect.w - mouseX.current);
-                    props.rect.h = (mouseY.current - props.rect.y);
-                    props.rect.x = mouseX.current;
-                    props.rect.y = mouseY.current - props.rect.h;
-                } else if (dragBR.current) {
-                    props.rect.w = (mouseX.current - props.rect.x);
-                    props.rect.h = (mouseY.current - props.rect.y);
-                    props.rect.x = mouseX.current - props.rect.w;
-                    props.rect.y = mouseY.current - props.rect.h;
+                    if (dragBR.current){
+                        props.new.current[props.label_idx] = false
+                    }
+                    console.log('sure')
+                } else {
+                    if (dragTL.current) {
+                        props.rect.w = (props.rect.x + props.rect.w - mouseX.current);
+                        props.rect.h = (props.rect.y + props.rect.h - mouseY.current);
+                        props.rect.x = mouseX.current;
+                        props.rect.y = mouseY.current;
+                    } else if (dragTR.current) {
+                        props.rect.w = (mouseX.current - props.rect.x);
+                        props.rect.h = (props.rect.y + props.rect.h - mouseY.current);
+                        props.rect.x = mouseX.current - props.rect.w;
+                        props.rect.y = mouseY.current;
+                    } else if (dragBL.current) {
+                        props.rect.w = (props.rect.x + props.rect.w - mouseX.current);
+                        props.rect.h = (mouseY.current - props.rect.y);
+                        props.rect.x = mouseX.current;
+                        props.rect.y = mouseY.current - props.rect.h;
+                    } else if (dragBR.current) {
+                        props.rect.w = (mouseX.current - props.rect.x);
+                        props.rect.h = (mouseY.current - props.rect.y);
+                        props.rect.x = mouseX.current - props.rect.w;
+                        props.rect.y = mouseY.current - props.rect.h;
+                    }
                 }
 
                 if(dragBL.current || dragBR.current || dragTL.current || dragTR.current){
@@ -177,11 +194,11 @@ const BoundingBox = (props) => {
             context.fillRect(props.rect.x+offset_x, props.rect.y+offset_y, props.rect.w, props.rect.h)
             context.strokeStyle = color_hex
             context.strokeRect(props.rect.x+offset_x, props.rect.y+offset_y, props.rect.w, props.rect.h)
-
-            context.font = '12px sans-serif';
-            context.fillStyle = '#ffff';
-            context.fillText(props.class_number, props.rect.x+2, props.rect.y+12);
-
+            if (!props.new.current[props.label_idx]){
+                context.font = '12px sans-serif';
+                context.fillStyle = '#ffff';
+                context.fillText(props.class_number, props.rect.x+2, props.rect.y+12);
+            }
 
             return () => {
                 window.removeEventListener('mousedown', mouseDown);
@@ -189,14 +206,13 @@ const BoundingBox = (props) => {
                 window.removeEventListener('mousemove', mouseMove);
             }
         }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [color, color_hex, props])
     
     return(
         <div className="z-20 absolute">
             {
-                props.active ?
+                (props.active) ?
                 <canvas key={`boxx${props.class_number}${props.label_idx}`} ref={canvasRef} {...props} width={800} height={500} /> 
                 :
                 null

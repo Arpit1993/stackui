@@ -1,14 +1,14 @@
 import FilePopup from "../../popups/FilePopup";
 import ViewOptions from "./Items/ViewOptions";
-import { SetStateAction, useCallback, useEffect, useState } from "react";
-import ImageThumbnail from "./Items/ImageThumbnail";
+import { useCallback, useEffect, useState } from "react";
+import NERPreview from "./Items/NERPreview";
 import React from "react";
 import SliceButton from "./Items/SliceButton";
 import SelectionTagPopup from "./Popups/SelectionTagPopup";
 import { Tooltip } from "@mui/material";
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
-const FileExplorer = (props) => {
+const NERExplorer = (props) => {
     const [keyVar, setKey] = useState<String>('');
     const [popup, setPopup] = useState<Boolean>(false)
     const [anomalies, setAnomalies] = useState<Boolean>(false)
@@ -23,9 +23,7 @@ const FileExplorer = (props) => {
     var idx_min: number = 0;
     var idx_max: number = 0;
 
-    const view_label = props.view ? 'Grid View' : 'List view';
-    
-    var container_var: Array<any> = []
+    const view_label = 'List view';
     
     const handleObjectClick = (key_in: String) => {
         props.shortcuts.current = false
@@ -34,8 +32,7 @@ const FileExplorer = (props) => {
     }
 
     const max_files: number = 10;
-    const max_images: number = props.max_view;
-    const max_pages =  props.view ? props.len / max_files : props.len / max_images;
+    const max_pages =  props.len / max_files;
 
     const handleKeyPress = useCallback((event) => {
         if (props.shortcuts.current == true){
@@ -193,90 +190,8 @@ const FileExplorer = (props) => {
         </div>
     )
 
-    if (props.view) {
-        idx_min = 0;
-        idx_max = max_files;
-
-        container_var.push(
-            <div key={'fctnr1'}>
-                <div className='grid  w-[800px] grid-rows-20 gap-1'>
-                    <div className="grid grid-cols-2 gap-1">
-                        <div> 
-                            Filename
-                        </div>
-                        <div> 
-                            Time of last change
-                        </div>
-                    </div>
-
-                    <div className="flex py-1">
-                        <div className="flex-grow border-t border-gray-400"></div>
-                    </div>
-                </div>
-
-                <div className='grid grid-rows-20 gap-1'>
-                    {
-                        files.filter((item, index) =>  index < idx_max && index >= idx_min ).map((file,index) =>
-                            <button className="w-full text-left"  key={`${index.toString()}abc`}  onClick={() => handleObjectClick(file['name'])}>
-                                <div className="grid grid-cols-2 gap-1 text-xs py-2 px-4 bg-white dark:bg-gray-800 rounded-lg dark:hover:bg-black justify-between w-full hover:bg-gray-300 border-b border-gray-200 dark:border-gray-600">
-                                    <div className="h-5 truncate"> 
-                                        {file['name'].substring(props.dataset.length)}
-                                    </div>
-                                    <div> 
-                                        {new Date(file['last_modified'].concat(' GMT')).toString()}
-                                    </div>
-                                </div>
-                            </button>
-                        )
-                    }
-                </div>
-            </div>
-        );
-    } 
-    else {
-        idx_min = 0;
-        idx_max = max_images;
-
-        var class_var = ''
-
-        switch (props.max_view) {
-            case(36):
-                class_var = `grid grid-cols-6 w-full auto-rows-auto gap-1`
-                break
-            case(25):
-                class_var = `grid grid-cols-5 w-full auto-rows-auto gap-1`
-                break
-            case(16):
-                class_var = `grid grid-cols-4 w-full auto-rows-auto gap-1`
-                break
-            case(9):
-                class_var = `grid grid-cols-3 w-full auto-rows-auto gap-1`
-                break
-            case(4):
-                class_var = `grid grid-cols-2 w-full auto-rows-auto gap-1`
-                break
-            case(1):
-                class_var = `grid grid-cols-1 w-full auto-rows-auto gap-1`
-                break
-            default:
-                class_var = `grid grid-cols-3 w-full auto-rows-auto gap-1`
-                idx_max = 9
-                props.setMaxView(9)
-                break
-        }
-
-        container_var.push(
-            <div key={'fctnr2'}>
-                <div className={class_var}>
-                    {
-                        files.filter((data, idx) => idx < idx_max ).map( (file, index) =>
-                            <ImageThumbnail shortcuts={props.shortcuts} key={`thumb-${file['name']}`} setTagsPopup={setTagsPopup} selected={selected} setPointer={setPointer} setSelected={setSelected} dataset={props.dataset} thumbnailView={thumbnailView} max_view={props.max_view} file={file} index={index} waiting={props.waiting} handleObjectClick={handleObjectClick}/>
-                        )
-                    }
-                </div>
-            </div>
-        );
-    }
+    idx_min = 0;
+    idx_max = max_files;
 
     return (
         <>
@@ -305,7 +220,30 @@ const FileExplorer = (props) => {
                     </Tooltip>
                 </div>
                 <div className="z-0 h-[480px] w-full flex justify-center p-1">
-                    {container_var}
+                    <div key={'fctnr1'}>
+                        <div className='grid w-full gap-1'>
+                            <div className="grid grid-cols-2 gap-1">
+                                <div> 
+                                    Sentence
+                                </div>
+                                <div> 
+                                    Last change
+                                </div>
+                            </div>
+
+                            <div className="flex py-1">
+                                <div className="flex-grow border-t border-gray-400"></div>
+                            </div>
+                        </div>
+
+                        <div className='grid grid-rows-20 gap-1'>
+                            {
+                                files.filter((item, index) =>  index < idx_max && index >= idx_min ).map((file,index) =>
+                                    <NERPreview shortcuts={props.shortcuts} key={`thumb-${file['name']}`} setTagsPopup={setTagsPopup} selected={selected} setPointer={setPointer} setSelected={setSelected} dataset={props.dataset} thumbnailView={thumbnailView} max_view={props.max_view} file={file} index={index} waiting={props.waiting} handleObjectClick={handleObjectClick}/>
+                                )
+                            }
+                        </div>
+                    </div>
                 </div>
                 <div className="z-10 flex justify-between">
                     <div className="flex justify-left text-xs mt-2 mb-2 rounded-sm">
@@ -323,4 +261,4 @@ const FileExplorer = (props) => {
     )
 };
 
-export default FileExplorer;
+export default NERExplorer;

@@ -44,7 +44,6 @@ const YOLODiffPopup = (props) => {
     const [l2, setL2] = useState<number>(-1)
 
     useEffect( () => {
-
         const fetchStuff = async (keyId, setD1, setD2, v1, v2, l1, l2) => {
             setD1(null)
             setD2(null)
