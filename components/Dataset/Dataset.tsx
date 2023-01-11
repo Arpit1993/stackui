@@ -22,12 +22,25 @@ const Dataset = () => {
     const shortcuts = useRef<Boolean>(false)
     const [loading, setLoading] = useState<Boolean>(true)
     const dataset = router.query.dataset
+
+    const cancelRequest = useRef(null)
+
     // reads the API endpoints
     
     useEffect(() => {
+
+        const global_controller = new AbortController();
+        const { signal } = global_controller;
+
         const fetchFiles = async () => {
             var view_ex = view
             var max_view_var = max_view
+
+            if(cancelRequest.current){
+                for(var i = 0; i < cancelRequest.current.length; i++){
+                    cancelRequest.current[i].abort()
+                }
+            }
 
             if (first.current){
                 shortcuts.current = true
@@ -61,13 +74,18 @@ const Dataset = () => {
             setLen(await current.len)
 
             var files_: Array<any> = [];
-
+            cancelRequest.current = [];
             for(var i = 0; i < await current.keys.length; i++){
                 const isImage =  [current.keys[i].includes('.jpg'),current.keys[i].includes('.png'),current.keys[i].includes('.jpeg'),current.keys[i].includes('.tiff'),current.keys[i].includes('.bmp'),current.keys[i].includes('.eps')].includes(true)
                 if (isImage && !view_ex){
                     setWaiting(true)
+                    const controller = new AbortController();
+                    const { signal } = controller;
+                    
+                    cancelRequest.current.push(controller)
+
                     const thumbnail_  = 
-                    await fetch(`http://localhost:8000/get_thumbnail?file=${await current.keys[i]}`)
+                    await fetch(`http://localhost:8000/get_thumbnail?file=${await current.keys[i]}`, { signal })
                     .then((res) => res.body.getReader()).then((reader) =>
                     new ReadableStream({
                         start(controller) {
@@ -86,7 +104,7 @@ const Dataset = () => {
                     }))
                     .then((stream) => new Response(stream)).then((response) => response.blob())
                     .then((blob) => URL.createObjectURL(blob))
-                    const tags = await fetch(`http://localhost:8000/get_tags?file=${await current.keys[i]}`)
+                    const tags = await fetch(`http://localhost:8000/get_tags?file=${await current.keys[i]}`, { signal })
                     .then((res) => res.json())
 
                     files_.push({
@@ -97,7 +115,12 @@ const Dataset = () => {
                         tags: await tags
                     })
                 } else{
-                    const tags = await fetch(`http://localhost:8000/get_tags?file=${await current.keys[i]}`)
+                    const controller = new AbortController();
+                    const { signal } = controller;
+
+                    cancelRequest.current.push(controller)
+
+                    const tags = await fetch(`http://localhost:8000/get_tags?file=${await current.keys[i]}`, { signal })
                     .then((res) => res.json())
                     
                     files_.push({

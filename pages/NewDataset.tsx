@@ -64,11 +64,14 @@ export default function NewDatasets() {
                 const response2 = await fetch('http://localhost:8000/init_gskey/', reqOptions)
             }
 
+            var tmp_schema: String = ''
             if (schema == 'Select...'){
-                var data = JSON.stringify({"uri": uri, "name": name,"key1": accessKey, "key2": secretKey, "key3": region, "schema": 'files'})
+                tmp_schema = 'files'
             } else {
-                var data = JSON.stringify({"uri": uri, "name": name,"key1": accessKey, "key2": secretKey, "key3": region, "schema": schema})
+                tmp_schema = schema
             }
+
+            var data = JSON.stringify({"uri": uri, "name": name,"key1": accessKey, "key2": secretKey, "key3": region, "schema": tmp_schema})
             
             const response = await fetch('http://localhost:8000/init_web/', {
                 method: 'POST',
@@ -79,9 +82,10 @@ export default function NewDatasets() {
             ).then((res) => res.json()).then(
                 (res) => {
                     if (res.success) {
-                        posthog.capture('Added a dataset', { property: 'value' })
-                        window.location.href='/dataset/'.concat(encodeURIComponent(name));
+                        posthog.capture('Added a dataset and succeeded', { property: 'value' })
+                        window.location.href='/dataset/'.concat(encodeURIComponent(name.toString()));
                     } else {
+                        posthog.capture('Added a dataset and failed', { property: 'value' })
                         setLoading(false)
                         setFailed(true)
                     }

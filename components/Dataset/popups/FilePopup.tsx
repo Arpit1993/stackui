@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import posthog from 'posthog-js'
 import { useState, useEffect, useCallback } from "react";
 import LoadingScreen from "../../LoadingScreen";
@@ -29,6 +29,7 @@ const FilePopup = (props) => {
     const [Nversion, setNVersions] = useState<number>(0)
     const [dataComp, setDataComp] = useState(null)
 
+    const enableLRshortcut = useRef(true)
     const [submit, setSubmit] = useState<Boolean>(false)
     const [newLabels, setnewLabels] = useState({keyid: props.keyId})
     
@@ -75,7 +76,7 @@ const FilePopup = (props) => {
 
 
     const handleKeyPress = useCallback(async (event) => {
-        if(!event.shiftKey){
+        if(!event.shiftKey && enableLRshortcut.current){
             if (event.key == 'ArrowLeft') {
                 fetch('http://localhost:8000/get_prev_key?key='.concat(props.keyId))
                 .then((res) => res.json()).then(
@@ -94,7 +95,7 @@ const FilePopup = (props) => {
                 submitLabels()
             }
         }
-    }, [props])
+    }, [props, enableLRshortcut])
 
     useEffect(() => {
         const fetchData = async () => {
@@ -264,11 +265,11 @@ const FilePopup = (props) => {
     const Diffpopup =  compare ? [
         isYOLO ? 
         <>
-            <YOLODiffPopup schema={props.schema} keyId={props.keyId} setPopup={setCompare} popup={compare} dates={version.map((cm)=>cm.date)} len={Nversion}/>
+            <YOLODiffPopup schema={props.schema} enableLRshortcut={enableLRshortcut} keyId={props.keyId} setPopup={setCompare} popup={compare} dates={version.map((cm)=>cm.date)} len={Nversion}/>
         </>
         : 
         <>
-            <FileDiffPopup schema={props.schema} keyId={props.keyId} setPopup={setCompare} popup={compare} dates={version} len={Nversion}/>
+            <FileDiffPopup schema={props.schema} enableLRshortcut={enableLRshortcut} keyId={props.keyId} setPopup={setCompare} popup={compare} dates={version} len={Nversion}/>
         </>
     ] : [<></>]
 
@@ -318,10 +319,10 @@ const FilePopup = (props) => {
                     </div>
                     <div className="flex w-full">
                         <div className="flex justify-center mt-4 w-[800px]">
-                            <button onClick={() => {setPopup(true); posthog.capture('Viewed datapoint history popup', { property: 'value' })}} className="h-min text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"> 
+                            <button onClick={() => {setPopup(true); enableLRshortcut.current = false; posthog.capture('Viewed datapoint history popup', { property: 'value' })}} className="h-min text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"> 
                                 See History 
                             </button>
-                            <button onClick={() => {setCompare(true); posthog.capture('Viewed datapoint compare popup', { property: 'value' })}} className="h-min text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"> 
+                            <button onClick={() => {setCompare(true); enableLRshortcut.current = false; posthog.capture('Viewed datapoint compare popup', { property: 'value' })}} className="h-min text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"> 
                                 Compare versions
                             </button>
                             {/* <button onClick={()=>{}} className={"h-min focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"}>
