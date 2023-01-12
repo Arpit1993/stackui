@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Curve from "./Items/Curve";
 
-const YOLOExperiments = (props) => {
+const Experiments = (props) => {
     const [projects, setProjects] = useState<any>([])
     const [popup, setPopup] = useState<Boolean>(false)
     const [project, setProject] = useState<String>('')
@@ -14,7 +14,7 @@ const YOLOExperiments = (props) => {
         <>
             {
                 popup ? 
-                <YOLOProject project={project} setPopup={setPopup}/>
+                <Project project={project} setPopup={setPopup}/>
                 : null   
             }
             <div className="fixed z-[40] left-[20%] bottom-0 w-[60%] h-[80%] bg-gray-50 dark:bg-gray-900 flex justify-center">
@@ -55,7 +55,7 @@ const YOLOExperiments = (props) => {
     )
 }
 
-const YOLOProject = (props) => {
+const Project = (props) => {
     const [runs, setRuns]= useState<any>([])
     
     useEffect(()=>{
@@ -95,4 +95,4 @@ const YOLOProject = (props) => {
     )
 }
 
-export default YOLOExperiments;
+export default Experiments;

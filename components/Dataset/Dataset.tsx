@@ -23,15 +23,11 @@ const Dataset = () => {
     const [loading, setLoading] = useState<Boolean>(true)
     const dataset = router.query.dataset
 
-    const cancelRequest = useRef(null)
+    const cancelRequest = useRef<any>(null)
 
     // reads the API endpoints
     
     useEffect(() => {
-
-        const global_controller = new AbortController();
-        const { signal } = global_controller;
-
         const fetchFiles = async () => {
             var view_ex = view
             var max_view_var = max_view
@@ -62,6 +58,12 @@ const Dataset = () => {
                         })
                     })
                 }
+                if(await schema_res.value.includes('ner')){
+                    view_ex = false
+                    max_view_var = 7
+                    setView(false)
+                    setMaxView(7)
+                }
                 first.current = false
             }
 
@@ -83,53 +85,60 @@ const Dataset = () => {
                     const { signal } = controller;
                     
                     cancelRequest.current.push(controller)
-
-                    const thumbnail_  = 
-                    await fetch(`http://localhost:8000/get_thumbnail?file=${await current.keys[i]}`, { signal })
-                    .then((res) => res.body.getReader()).then((reader) =>
-                    new ReadableStream({
-                        start(controller) {
-                            return pump();
-                            function pump() {
-                                return reader.read().then(({ done, value }) => {
-                                    if (done) {
-                                        controller.close();
-                                        return;
-                                    }
-                                    controller.enqueue(value);
-                                    return pump();
-                                });
+                    try {
+                        const thumbnail_  = 
+                        await fetch(`http://localhost:8000/get_thumbnail?file=${await current.keys[i]}`, { signal })
+                        .then((res) => res.body.getReader()).then((reader) =>
+                        new ReadableStream({
+                            start(controller) {
+                                return pump();
+                                function pump() {
+                                    return reader.read().then(({ done, value }) => {
+                                        if (done) {
+                                            controller.close();
+                                            return;
+                                        }
+                                        controller.enqueue(value);
+                                        return pump();
+                                    });
+                                }
                             }
-                        }
-                    }))
-                    .then((stream) => new Response(stream)).then((response) => response.blob())
-                    .then((blob) => URL.createObjectURL(blob))
-                    const tags = await fetch(`http://localhost:8000/get_tags?file=${await current.keys[i]}`, { signal })
-                    .then((res) => res.json())
+                        }))
+                        .then((stream) => new Response(stream)).then((response) => response.blob())
+                        .then((blob) => URL.createObjectURL(blob))
+                        const tags = await fetch(`http://localhost:8000/get_tags?file=${await current.keys[i]}`, { signal })
+                        .then((res) => res.json())
 
-                    files_.push({
-                        name: await current.keys[i],
-                        base_name: await current.keys[i].substring(length),
-                        last_modified: current.lm[i],
-                        thumbnail: await thumbnail_,
-                        tags: await tags
-                    })
+                        files_.push({
+                            name: await current.keys[i],
+                            base_name: await current.keys[i].substring(length),
+                            last_modified: current.lm[i],
+                            thumbnail: await thumbnail_,
+                            tags: await tags
+                        })
+                    } catch {
+                        return
+                    }
                 } else{
                     const controller = new AbortController();
                     const { signal } = controller;
 
                     cancelRequest.current.push(controller)
-
-                    const tags = await fetch(`http://localhost:8000/get_tags?file=${await current.keys[i]}`, { signal })
-                    .then((res) => res.json())
                     
-                    files_.push({
-                        name: await current.keys[i],
-                        base_name: await current.keys[i].substring(length),
-                        last_modified: await current.lm[i],
-                        thumbnail: (await isImage) ? '/Icons/icon-image-512.webp' : '/Icons/file-icon.jpeg',
-                        tags: await tags
-                    })
+                    try {
+                        const tags = await fetch(`http://localhost:8000/get_tags?file=${await current.keys[i]}`, { signal })
+                        .then((res) => res.json())
+                        
+                        files_.push({
+                            name: await current.keys[i],
+                            base_name: await current.keys[i].substring(length),
+                            last_modified: await current.lm[i],
+                            thumbnail: (await isImage) ? '/Icons/icon-image-512.webp' : '/Icons/file-icon.jpeg',
+                            tags: await tags
+                        })
+                    } catch {
+                        return
+                    }
                 }
             }
         

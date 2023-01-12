@@ -9,8 +9,10 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ScienceIcon from '@mui/icons-material/Science';
-import YOLOExperiments from "../../tabs/experiments/YOLOExperiments";
 import YOLOStatistics from "../../tabs/statistics/YOLOStatistics";
+import NERFilterPopup from "../../popups/NERFilterPopup";
+import NERStatistics from "../../tabs/statistics/NERStatistics";
+import Experiments from "../../tabs/experiments/Experiments";
 
 function commit(comment: string){
     fetch('http://localhost:8000/commit_req?comment='.concat(comment))
@@ -124,11 +126,20 @@ const TopBar = (props) => {
                         : 
                             <></>
                     :
-                        (filterPopup && tab != 2)  
-                        ? 
-                            <FileFilterPopup shortcuts={props.shortcuts} setPage={props.setPage} callFilter={callFilter} setCallFilter={setCallFilter} schema={props.schema} txt={txt} popup={filterPopup} setFiltering={props.setFiltering} setPopup={setFilterPopup} key={'fffp'}/> 
-                        : 
-                            <></>
+                    
+                        (props.schema.includes('ner'))
+                        ?
+                            (filterPopup && tab != 2) 
+                            ? 
+                                <NERFilterPopup shortcuts={props.shortcuts} setPage={props.setPage} callFilter={callFilter} setCallFilter={setCallFilter} schema={props.schema} txt={txt} popup={filterPopup} setFiltering={props.setFiltering} setPopup={setFilterPopup} key={'yffp'}/> 
+                            : 
+                                <></>
+                        :
+                            (filterPopup && tab != 2)  
+                            ? 
+                                <FileFilterPopup shortcuts={props.shortcuts} setPage={props.setPage} callFilter={callFilter} setCallFilter={setCallFilter} schema={props.schema} txt={txt} popup={filterPopup} setFiltering={props.setFiltering} setPopup={setFilterPopup} key={'fffp'}/> 
+                            : 
+                                <></>
 
                 }
                 {
@@ -140,18 +151,22 @@ const TopBar = (props) => {
                         : 
                             <></>
                     :
-                            <></>
+                        (props.schema.includes('ner')) 
+                        ? 
+                            (tab == 1) 
+                            ? 
+                                <NERStatistics schema={props.schema} filtering={props.filtering} shortcuts={props.shortcuts}  /> 
+                            : 
+                                <></>
+                        :
+                                <></>
                 }
                 {
-                    (props.schema == 'yolo' || props.schema == 'labelbox') 
+                    (tab == 2) 
                     ? 
-                        (tab == 2) 
-                        ? 
-                            <YOLOExperiments schema={props.schema} shortcuts={props.shortcuts}  />
-                        : 
-                            <></>
-                    :
-                            <></>
+                        <Experiments schema={props.schema} shortcuts={props.shortcuts}  />
+                    : 
+                        <></>
                 }
             </div>
             { 

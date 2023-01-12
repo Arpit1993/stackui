@@ -2,9 +2,8 @@ import React, { useEffect, useState } from "react"
 import DropdownFile from "./DropdownFile"
 import FileTagPopup from "../Popups/FileTagPopup"
 import { Tooltip } from "@mui/material"
-import { useRef } from "react"
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import { color } from "@mui/system"
+import Highlighter from "react-highlight-words";
+import ErrorOutline from "@mui/icons-material/ErrorOutline";
 
 const stringToColour = (str: string) => {
     var hash = 0;
@@ -41,41 +40,15 @@ function get_tex_size(txt, font) {
     return {'width': context.measureText(txt).width, 'height':parseInt(context.font)};
 }
 
-const Entity = (props) => {
-    const canvasRef = useRef(null)
-
-    useEffect(() => {
-        const canvas: any = canvasRef.current
-        const context =  canvas.getContext('2d')
-        const color_hex = stringToColour(props.entity['type'])
-        const color = hexToRgb(color_hex)
-
-
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        context.lineWidth = 0.2;
-        context.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, 0.2)`
-        context.font = '12px sans-serif';
-        context.fillRect(0, 0, canvas.width, canvas.height)
-        context.strokeStyle = color_hex
-        context.strokeRect(0, 0, canvas.width, canvas.height)
-        context.fillStyle = '#000000';
-        context.fillText(props.entity['type'], 2, canvas.height-4);
-    },[props.entity])
-
-    return (
-        <div className="z-20">
-            <canvas key={`boxx${props.class_number}${props.label_idx}`} ref={canvasRef} {...props} width={get_tex_size(props.entity['type'],'12px sans-serif').width+4} height={get_tex_size(props.entity['type'],'12px sans-serif').height+4} /> 
-        </div>
-    )
-}
 
 const NERPreview = (props) => {
 
     const [labels, setLabels] = useState<any>([])
+    const [entities, setEntities] = useState<any>([])
     const [hover, setHover] = useState<Boolean>(false)
     const [popup, setPopup] = useState<Boolean>(false)
     const [nullStr, setNullStr] = useState<string>('')
-
+    const [text, setText] = useState([])
 
     const width: number = Math.ceil(750/Math.sqrt(props.max_view))
     const height: number = Math.ceil(450/Math.sqrt(props.max_view)) 
@@ -95,94 +68,124 @@ const NERPreview = (props) => {
         .then((res) => res.json())
         .then((res) => {
             var str_array = [];
+            var ent_array = [];
+            var tok_array = [];
             for(var i = 0; i < res.length; i++){
                 const entity = res[i]['type']
                 
+                // str_array.push(
+                //     <Entity entity={res[i]}/>
+                // )
+
                 str_array.push(
-                    <Entity entity={res[i]}/>
+                    <div className="px-1 w-fit h-min  text-ellipsis overflow-hidden max-w-1/2" style={{ backgroundColor: `${stringToColour(res[i]['type'])}44`, border: `solid ${stringToColour(res[i]['type'])}`}}>
+                        {res[i]['type']}
+                    </div>
+                )
+
+                ent_array.push(
+                        <div className="px-1 w-fit h-min  text-ellipsis overflow-hidden max-w-1/2" style={{ backgroundColor: `${stringToColour(res[i]['type'])}22`, border: `solid ${stringToColour(res[i]['type'])}`}}>
+                            {props.file['name'].substring(res[i]['start']-1,res[i]['end'])}
+                        </div>
+                )
+
+                tok_array.push(
+                    props.file['name'].substring(res[i]['start']-1,res[i]['end'])
                 )
             }
 
             setLabels(() => {
                 return str_array
             });
+
+            setEntities(() => {
+                return ent_array
+            });
+
+            setText(() => {
+                return tok_array
+            });
         })
     },[props.file])
 
     return (
-        <div onMouseEnter={()=>{setHover(true)}} onMouseLeave={()=>{setHover(false)}} className={`relative h-[${height}px] w-[${width}px]`}>
+        <>
             {
                 popup ? 
                     <FileTagPopup shortcuts={props.shortcuts} key={`tfpp ${props.file['name']}`} setPopup={setPopup} file={props.file}/>
-                 : <></>
-            }
-            <div className="absolute z-auto right-2">
-                <DropdownFile hover={hover} selected={props.selected[props.index]} shortcuts={props.shortcuts} setTagsPopup={props.setTagsPopup} setPopup={setPopup}/>
-            </div>
-            {
-                (props.file['tags'].length > 0) ? 
-                <Tooltip title={`${msg}`} placement="right">
-                    {
-                        anomaly ?
-                        <button key={`tags-${props.file['name']}`} className="absolute mt-1 ml-1 z-20" onClick={() => setPopup(true)}>
-                            <ErrorOutlineIcon className="w-1/10 h-1/10 shadow-sm fill-white rounded-full overflow-hidden bg-red-500 hover:bg-red-700"/>
-                        </button>
-                        :
-                        <button key={`tags-${props.file['name']}`} className="absolute border z-20 ml-1 mt-1 w-[15px] h-4 bg-red-500 rounded-full hover:bg-red-700" onClick={() => setPopup(true)}>
-                        </button>      
-                    }
-                </Tooltip>
-                
                 : <></>
             }
-            {
-                (props.selected[props.index]) ? 
-                <button key={`selected-${props.file['name']}`} className="absolute z-20 right-0 bottom-0 mr-2 mb-1 w-[20px] h-[20px] bg-white/50 border-black border hover:bg-white/30 flex justify-center items-center" onClick={() => {
-                    var arr = props.selected
-                    arr.splice(props.index,1,!props.selected[props.index])
-                    props.setSelected(arr)
-                    props.setPointer(props.index)
-                    setNullStr(nullStr.concat('x'))
-                }}>
-                    <div className="flex w-[20px] h-[20px] items-center justify-center">
-                        <div className="bg-blue-500 w-[15px] h-4"></div>
-                    </div>
-                </button>
-                :
-                <button key={`nselected-${props.file['name']}`} className={!hover ? "invisible absolute z-20 right-0 bottom-0 mr-2 mb-1 w-[20px] h-[20px]" :"absolute z-20 right-0 bottom-0 mr-2 mb-1 w-[20px] h-[20px] bg-white/50 border-black border hover:bg-white/30"} onClick={() => {
-                    var arr = props.selected
-                    if(props.selected.length > 0){
+            <div onMouseEnter={()=>{setHover(true)}} onMouseLeave={()=>{setHover(false)}} className={`relative h-full w-full`}>
+                
+                <div className="absolute z-auto right-2">
+                    <DropdownFile hover={hover} selected={props.selected[props.index]} shortcuts={props.shortcuts} setTagsPopup={props.setTagsPopup} setPopup={setPopup}/>
+                </div>
+                {
+                    (props.file['tags'].length > 0) ? 
+                    <Tooltip title={`${msg}`} placement="right">
+                        {
+                            anomaly ?
+                            <button key={`tags-${props.file['name']}`} className="absolute mt-1 ml-1 z-20" onClick={() => setPopup(true)}>
+                                <ErrorOutline className="w-1/10 h-1/10 shadow-sm fill-white rounded-full overflow-hidden bg-red-500 hover:bg-red-700"/>
+                            </button>
+                            :
+                            <button key={`tags-${props.file['name']}`} className="absolute border z-20 ml-1 mt-1 w-[15px] h-4 bg-red-500 rounded-full hover:bg-red-700" onClick={() => setPopup(true)}>
+                            </button>      
+                        }
+                    </Tooltip>
+                    
+                    : <></>
+                }
+                {
+                    (props.selected[props.index]) ? 
+                    <button key={`selected-${props.file['name']}`} className="absolute z-20 right-0 bottom-0 mr-2 mb-1 w-[20px] h-[20px] bg-white/50 border-black border hover:bg-white/30 flex justify-center items-center" onClick={() => {
+                        var arr = props.selected
                         arr.splice(props.index,1,!props.selected[props.index])
                         props.setSelected(arr)
                         props.setPointer(props.index)
                         setNullStr(nullStr.concat('x'))
-                    }
-                }}>
-                </button>
-            }
-            <div className={`w-full h-full flex z-10`}>
-                <button className={`justify-center flex flex-col z-10 rounded-lg h-full w-full bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 hover:dark:bg-black border-[0.5px] border-gray-400 text-left text-xs`} key={`${props.index.toString()}defg`} onClick={() => props.handleObjectClick(props.file['name'])}>
-                    {
-                        <button className={props.selected[props.index] ? `absolute z-[21] justify-center flex flex-col rounded-lg h-full w-full bg-blue-500/30 hover:bg-blue-500/50` : `absolute  z-[21] justify-center flex flex-col rounded-lg h-full w-full hover:bg-white/20`} key={`${props.index.toString()}defg2`} onClick={() => props.handleObjectClick(props.file['name'])}>
-                        </button>
-                    }
-                    <button className="w-full text-left"  key={`${props.index.toString()}abc`}  onClick={() => props.handleObjectClick(props.file['name'])}>
-                        <div className="grid grid-cols-2 gap-1 text-xs py-2 px-4 rounded-lg justify-between w-full">
-                            <div className="h-5 flex gap-2"> 
-                                {props.file['name']}
-                                {' | '}
-                                {
-                                    labels
-                                }
-                            </div>
-                            <div> 
-                                {new Date(props.file['last_modified'].concat(' GMT')).toLocaleString()}
-                            </div>
+                    }}>
+                        <div className="flex w-[20px] h-[20px] items-center justify-center">
+                            <div className="bg-blue-500 w-[15px] h-4"></div>
                         </div>
                     </button>
+                    :
+                    <button key={`nselected-${props.file['name']}`} className={!hover ? "invisible absolute z-20 right-0 bottom-0 mr-2 mb-1 w-[20px] h-[20px]" :"absolute z-20 right-0 bottom-0 mr-2 mb-1 w-[20px] h-[20px] bg-white/50 border-black border hover:bg-white/30"} onClick={() => {
+                        var arr = props.selected
+                        if(props.selected.length > 0){
+                            arr.splice(props.index,1,!props.selected[props.index])
+                            props.setSelected(arr)
+                            props.setPointer(props.index)
+                            setNullStr(nullStr.concat('x'))
+                        }
+                    }}>
+                    </button>
+                }
+                
+                <button className="bg-white z-[10] w-full h-full dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600" key={`${props.index.toString()}defg`} onClick={() => props.handleObjectClick(props.file['name'])}>
+                    {
+                        <button className={props.selected[props.index] ? `absolute top-0 z-[19] justify-center flex flex-col h-full w-full bg-blue-500/30 hover:bg-blue-500/50` : `absolute  top-0 z-[19] justify-center flex flex-col h-full w-full hover:bg-white/20`} key={`${props.index.toString()}defg2`} onClick={() => props.handleObjectClick(props.file['name'])}>
+                        </button>
+                    }
+                    <div className="flex bg-white z-[10] border-b w-full h-full dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600"  key={`${props.index.toString()}abc`}  onClick={() => props.handleObjectClick(props.file['name'])}>
+                        <div className="w-1/3 px-6 py-4 font-normal whitespace-nowrap text-ellipsis overflow-hidden text-gray-900 dark:text-white text-left">
+                            <Highlighter
+                                highlightClassName="p-1 bg-white border border-black dark:bg-gray-700 dark:text-white dark:border-gray-500"
+                                searchWords={text}
+                                autoEscape={true}
+                                textToHighlight={props.file['name']}
+                            />
+                        </div>
+                        <div className="w-1/3 px-6 py-4 flex gap-2 items-center">
+                            {entities}
+                        </div>
+                        <div className="w-1/3 px-6 py-4 flex gap-2 items-center">
+                            {labels}
+                        </div>
+                    </div>
                 </button>
             </div>
-        </div>
+        </>
     )
     
 }

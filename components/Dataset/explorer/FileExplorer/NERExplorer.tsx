@@ -31,7 +31,7 @@ const NERExplorer = (props) => {
         setKey(key_in)
     }
 
-    const max_files: number = 10;
+    const max_files: number = 7;
     const max_pages =  props.len / max_files;
 
     const handleKeyPress = useCallback((event) => {
@@ -47,7 +47,7 @@ const NERExplorer = (props) => {
                     props.setPage(0);
                 }
 
-                if (event.key == 'ArrowLeft') {
+                if (event.key == 'ArrowUp') {
                     event.preventDefault();
                     var surr = selected
                     const sol = selected.findIndex(element => element)
@@ -62,7 +62,7 @@ const NERExplorer = (props) => {
                         }
                         setPointer(Math.max(pointer-1,-1))
                     }
-                } else if (event.key == 'ArrowRight'){
+                } else if (event.key == 'ArrowDown'){
                     event.preventDefault();
                     var surr = selected
                     const sol = selected.findIndex(element => element)
@@ -77,49 +77,7 @@ const NERExplorer = (props) => {
                         }
                         setPointer(Math.min(pointer+1,props.files.length))
                     }
-                } else if (event.key == 'ArrowDown'){
-                    event.preventDefault();
-                    var surr = selected
-                    const sol = selected.findIndex(element => element)
-                    if(sol == -1){
-                        for(var i = 0; i < 6; i++){
-                            surr.splice(i,1,true)
-                        }
-                        setSelected(surr)
-                        setPointer(5)
-                    } else {
-                        if (pointer < props.files.length-1){
-                            for(var i = 0; i < 6; i++){
-                                surr.splice(Math.min(pointer+1+i,props.files.length-1),1,!surr[Math.min(pointer+1+i,props.files.length-1)])
-                            }
-                            setSelected(surr)   
-                        }
-                        setPointer(Math.min(pointer+7,props.files.length))
-                    }
-                } else if (event.key == 'ArrowUp'){
-                    event.preventDefault();
-                    var surr = selected;
-                    const sol = selected.findIndex(element => element)
-                    if(sol == -1){
-                        for(var i = 0; i < 6; i++){
-                            if (props.files.length-1-i >= 0){
-                                surr.splice(props.files.length-1-i,1,true)
-                            }
-                        }
-                        setSelected(surr)
-                        setPointer(Math.max(props.files.length-7,-1))
-                    } else {
-                        if(pointer >= 6){
-                            for(var i = 0; i < 6; i++){
-                                if (pointer-1-i >= 0){
-                                    surr.splice(pointer-1-i,1,!surr[Math.max(pointer-1-i,0)])
-                                }
-                            }
-                            setSelected(surr)
-                        }
-                        setPointer(Math.max(pointer-7,-1))
-                    }
-                } 
+                }
             } else {
                 if (event.key == 'ArrowLeft' && !props.waiting) {
                     event.preventDefault();
@@ -210,38 +168,30 @@ const NERExplorer = (props) => {
                         <ErrorOutlineIcon className="w-1/10 h-1/10 shadow-sm fill-white rounded-full overflow-hidden bg-red-500 hover:bg-red-700"/>
                         {'# anomalies detected'}
                     </div>
-                    <Tooltip title={'Explorer options'} placement="left">
-                        <div className="w-min">
-                            <ViewOptions setMaxView={props.setMaxView} setView={props.setView} 
-                                    setPage={props.setPage} max_view={props.max_view} view_label={view_label} view={props.view} 
-                                    switch_={switch_} setPointer={setPointer} setSwitch={setSwitch} setFiltering={props.setFiltering}
-                                    schema={props.schema} setThumbnailView={setThumbnailView} thumbnailView={thumbnailView}/>
-                        </div>
-                    </Tooltip>
+                    <div></div>
                 </div>
-                <div className="z-0 h-[480px] w-full flex justify-center p-1">
-                    <div key={'fctnr1'}>
-                        <div className='grid w-full gap-1'>
-                            <div className="grid grid-cols-2 gap-1">
-                                <div> 
-                                    Sentence
+                <div className="z-0 h-full w-full flex justify-center p-1">
+                    
+                    <div className="relative w-full overflow-x-auto shadow-md sm:rounded-lg">
+                        <div className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                            <div className="w-full flex text-xs font-medium text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                <div className="w-1/3 px-6 py-3">
+                                    Text
                                 </div>
-                                <div> 
-                                    Last change
+                                <div className="w-1/3 px-6 py-3">
+                                    Tokens
+                                </div>
+                                <div className="w-1/3 px-6 py-3">
+                                    Entities
                                 </div>
                             </div>
-
-                            <div className="flex py-1">
-                                <div className="flex-grow border-t border-gray-400"></div>
+                            <div className="w-full">
+                                {
+                                    files.filter((item, index) =>  index < idx_max && index >= idx_min ).map((file,index) =>
+                                        <NERPreview shortcuts={props.shortcuts} key={`thumb-${file['name']}`} setTagsPopup={setTagsPopup} selected={selected} setPointer={setPointer} setSelected={setSelected} dataset={props.dataset} thumbnailView={thumbnailView} max_view={props.max_view} file={file} index={index} waiting={props.waiting} handleObjectClick={handleObjectClick}/>
+                                    )
+                                }
                             </div>
-                        </div>
-
-                        <div className='grid grid-rows-20 gap-1'>
-                            {
-                                files.filter((item, index) =>  index < idx_max && index >= idx_min ).map((file,index) =>
-                                    <NERPreview shortcuts={props.shortcuts} key={`thumb-${file['name']}`} setTagsPopup={setTagsPopup} selected={selected} setPointer={setPointer} setSelected={setSelected} dataset={props.dataset} thumbnailView={thumbnailView} max_view={props.max_view} file={file} index={index} waiting={props.waiting} handleObjectClick={handleObjectClick}/>
-                                )
-                            }
                         </div>
                     </div>
                 </div>
