@@ -4,6 +4,7 @@ import FileTagPopup from "../Popups/FileTagPopup"
 import { Tooltip } from "@mui/material"
 import Highlighter from "react-highlight-words";
 import ErrorOutline from "@mui/icons-material/ErrorOutline";
+import FmdBadIcon from '@mui/icons-material/FmdBad';
 
 const stringToColour = (str: string) => {
     var hash = 0;
@@ -20,35 +21,14 @@ const stringToColour = (str: string) => {
     return colour;
 }
 
-const hexToRgb = (hex: string) => {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-      r: parseInt(result[1], 16),
-      g: parseInt(result[2], 16),
-      b: parseInt(result[3], 16)
-    } : {
-        r: 1,
-        g: 1,
-        b: 1
-      };
-}
-
-function get_tex_size(txt, font) {
-    const element: any = document.createElement('canvas');
-    const context = element.getContext("2d");
-    context.font = font;
-    return {'width': context.measureText(txt).width, 'height':parseInt(context.font)};
-}
-
-
 const NERPreview = (props) => {
 
-    const [labels, setLabels] = useState<any>([])
-    const [entities, setEntities] = useState<any>([])
+    const [labels, setLabels] = useState<Array<any>>([])
+    const [entities, setEntities] = useState<Array<any>>([])
     const [hover, setHover] = useState<Boolean>(false)
     const [popup, setPopup] = useState<Boolean>(false)
     const [nullStr, setNullStr] = useState<string>('')
-    const [text, setText] = useState([])
+    const [text, setText] = useState<Array<any>>([])
 
     const width: number = Math.ceil(750/Math.sqrt(props.max_view))
     const height: number = Math.ceil(450/Math.sqrt(props.max_view)) 
@@ -67,15 +47,11 @@ const NERPreview = (props) => {
         fetch(`http://localhost:8000/get_labels?filename=${props.file['name']}`)
         .then((res) => res.json())
         .then((res) => {
-            var str_array = [];
-            var ent_array = [];
-            var tok_array = [];
+            var str_array: Array<any> = [];
+            var ent_array: Array<any> = [];
+            var tok_array: Array<any> = [];
             for(var i = 0; i < res.length; i++){
                 const entity = res[i]['type']
-                
-                // str_array.push(
-                //     <Entity entity={res[i]}/>
-                // )
 
                 str_array.push(
                     <div className="px-1 w-fit h-min  text-ellipsis overflow-hidden max-w-1/2" style={{ backgroundColor: `${stringToColour(res[i]['type'])}44`, border: `solid ${stringToColour(res[i]['type'])}`}}>
@@ -84,9 +60,9 @@ const NERPreview = (props) => {
                 )
 
                 ent_array.push(
-                        <div className="px-1 w-fit h-min  text-ellipsis overflow-hidden max-w-1/2" style={{ backgroundColor: `${stringToColour(res[i]['type'])}22`, border: `solid ${stringToColour(res[i]['type'])}`}}>
-                            {props.file['name'].substring(res[i]['start']-1,res[i]['end'])}
-                        </div>
+                    <div className="px-1 w-fit h-6 text-ellipsis overflow-hidden max-w-1/2" style={{ backgroundColor: `${stringToColour(res[i]['type'])}22`, border: `solid ${stringToColour(res[i]['type'])}`}}>
+                        {props.file['name'].substring(res[i]['start']-1,res[i]['end'])}
+                    </div>
                 )
 
                 tok_array.push(
@@ -125,11 +101,15 @@ const NERPreview = (props) => {
                     <Tooltip title={`${msg}`} placement="right">
                         {
                             anomaly ?
-                            <button key={`tags-${props.file['name']}`} className="absolute mt-1 ml-1 z-20" onClick={() => setPopup(true)}>
+                            <button key={`tags-${props.file['name']}`} className="absolute mt-2 ml-1 z-20" onClick={() => setPopup(true)}>
                                 <ErrorOutline className="w-1/10 h-1/10 shadow-sm fill-white rounded-full overflow-hidden bg-red-500 hover:bg-red-700"/>
                             </button>
                             :
-                            <button key={`tags-${props.file['name']}`} className="absolute border z-20 ml-1 mt-1 w-[15px] h-4 bg-red-500 rounded-full hover:bg-red-700" onClick={() => setPopup(true)}>
+                            // <button key={`tags-${props.file['name']}`} className="absolute border z-20 ml-1 mt-1 w-[15px] h-4 bg-red-500 rounded-full hover:bg-red-700" onClick={() => setPopup(true)}>
+                            // </button>
+                            <button key={`tags-${props.file['name']}`} className="absolute mt-2 ml-1 z-20" onClick={() => setPopup(true)}>
+                                <FmdBadIcon className="w-7 h-7 shadow-sm fill-red-500 hover:fill-red-700 rounded-full overflow-hidden bg-white"/>
+                                
                             </button>      
                         }
                     </Tooltip>

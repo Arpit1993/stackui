@@ -14,6 +14,8 @@ const DatasetOptionsPopup = (props) => {
     const [uri , setURI ] = useState<string>(props.dataset.storage)
     const [name, setName] = useState<string>(props.dataset.name)
     
+    const [enableDVC, setEnableDVC] = useState<Boolean>(true)
+    
     const [loading, setLoading] = useState<Boolean>(false)
     const [schema, setSchema] = useState<string>('Loading...')
     const [accessKey, setAccessKey] = useState<string>('NoKey')
@@ -58,7 +60,7 @@ const DatasetOptionsPopup = (props) => {
     const handleSubmit = async () => {    
         if (uri.length > 0){
             setLoading(true)
-            const data = JSON.stringify({"uri": uri, "name": name,"key1": accessKey, "key2": secretKey, "key3": region, "schema": schema})
+            const data = JSON.stringify({"uri": uri, "name": name,"key1": accessKey, "key2": secretKey, "key3": region, "schema": schema, 'dvc': true})
             
             await fetch('http://localhost:8000/init_web/', {
                 method: 'POST',
@@ -159,6 +161,11 @@ const DatasetOptionsPopup = (props) => {
                                     </div>
                                 </label>
                             </form>
+                        </div>
+
+                        <div className="mb-5 w-full flex justify-center items-center">
+                            <input id="link-checkbox" type="checkbox" checked={enableDVC as boolean} onChange={()=>{setEnableDVC(!enableDVC)}} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                            <label className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">(Recommended) Enable version control.</label>
                         </div>
 
                         <div className="flex justify-center">

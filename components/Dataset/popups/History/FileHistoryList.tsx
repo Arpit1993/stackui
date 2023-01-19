@@ -14,7 +14,7 @@ const FileHistoryList = (props) => {
         }
 
         fetchVersions()
-    }, [])
+    }, [props])
 
     return (
         <>

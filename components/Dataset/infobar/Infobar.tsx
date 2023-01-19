@@ -36,15 +36,15 @@ const Infobar = (props) => {
     },[props.dataset])
 
     return (
-        <div className='p-2 w-full grow flex flex-col flew-col justify-between rounded-lg bg-white-50'>
+        <div className='w-full h-full grow flex flex-col flew-col justify-between'>
             {
                 popup ? <HistoryPopup setHistory={setPopup} history={popup} key={'hpp'}/> : <></>
             }
             {
                 readmePopup ? <ReadmePopup key={'rmpp'} readme={readme} setPopup={setReadmePopup}/> : <></>
             }
-            <div className="p-4 h-1/4">
-                    <h1 className='text-center text-lg p-4'> Description </h1>
+            <div className="h-1/4">
+                    <h1 className='text-center text-lg p-2'> Description </h1>
 
                 {
                     (readme == '') ? 
@@ -75,15 +75,15 @@ const Infobar = (props) => {
 
             <div>
                 
-                <h2 className='text-center text-lg p-4 text-bold under'>
+                <h2 className='text-center text-lg p-2 text-bold under'>
                     Recent Activity
                 </h2>
 
-                <ul className="text-xs font-body rounded-sm
-                text-gray-900 dark:text-gray-400">
+                <ul className="text-xs font-body rounded-sm text-gray-900 dark:text-gray-400">
                     {props.commits.map((cmit: { source: any; comment: any; date: any; }, index: { toString: () => any; }) => <ItemChange key={index.toString()} author={cmit.source} comment={cmit.comment} date={cmit.date}/>)}
-                    <button onClick={() => setPopup(true)} className="w-full py-3 px-5 text-base font-body text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        View All Versions
+                    
+                    <button className="flex justify-end mt-1 text-sm underline text-gray-600" onClick={() => setPopup(true)} >
+                        view more
                     </button>
                 </ul>
             </div>

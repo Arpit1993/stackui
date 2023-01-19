@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Curve from "./Items/Curve";
 
+
 const Experiments = (props) => {
     const [projects, setProjects] = useState<any>([])
     const [popup, setPopup] = useState<Boolean>(false)
@@ -17,10 +18,15 @@ const Experiments = (props) => {
                 <Project project={project} setPopup={setPopup}/>
                 : null   
             }
-            <div className="fixed z-[40] left-[20%] bottom-0 w-[60%] h-[80%] bg-gray-50 dark:bg-gray-900 flex justify-center">
-                <div className="p-2 grid grid-cols-2 justify-items-center gap-2 w-full h-full">
-                    {
-                        (Object.keys(projects).length > 0) ?
+            <div className="fixed overflow-scroll z-[40] left-0 bottom-0 w-[80%] h-[80%] bg-white dark:bg-black">
+                {
+                    (Object.keys(projects).length == 0) ?
+                    <div className="w-full h-full font-normal flex justify-center items-center"> 
+                        {'No experiments yet'}
+                    </div>
+                    :
+                    <div className="p-2 grid grid-cols-2 justify-items-center gap-2 w-full h-full">
+                        {
                             Object.keys(projects).map(
                             (proj) =>  
                             {
@@ -44,12 +50,10 @@ const Experiments = (props) => {
                                         {`${projects[proj]['date created']}`}
                                     </div>          
                                 </button>
-                            }
-                        )
-                        :
-                        'No experiments yet'
-                    }
-                </div>
+                            })
+                        }
+                    </div>
+                }
             </div>  
         </>      
     )

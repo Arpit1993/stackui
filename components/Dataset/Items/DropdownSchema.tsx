@@ -112,14 +112,21 @@ const DropdownSchema = (props) => {
                             className={'hover:bg-gray-100 hover:text-gray-900 text-gray-700 block px-4 py-2 text-sm w-full'}
                             onClick={()=>props.setSchema('spacy_ner')}
                           >
-                            Spacy (NER)
+                            Named Entity Recognition (Spacy)
                           </button>
                           <button
                             className={'hover:bg-gray-100 hover:cursor-not-allowed hover:text-gray-900 text-gray-700 block px-4 py-2 text-sm w-full'}
                             disabled={true}
                             onClick={()=>props.setSchema('files')}
                           >
-                            LabelBox (NER)
+                            Text Classification (Spacy)
+                          </button>
+                          <button
+                            className={'hover:bg-gray-100 hover:cursor-not-allowed hover:text-gray-900 text-gray-700 block px-4 py-2 text-sm w-full'}
+                            disabled={true}
+                            onClick={()=>props.setSchema('files')}
+                          >
+                            Text Summarization (Spacy)
                           </button>
                         </div>
                         : null

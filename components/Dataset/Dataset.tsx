@@ -1,9 +1,12 @@
 import React from "react";
 import { useEffect, useState, useRef } from "react";
-import Explorer from "./explorer/Explorer";
 import Infobar from "./infobar/Infobar";
 import { useRouter } from "next/router"
 import LoadingScreen from "../LoadingScreen";
+import TopBar from "./explorer/topbar/topbar";
+import FileExplorer from "./explorer/FileExplorer/FileExplorer";
+import NERExplorer from "./explorer/FileExplorer/NERExplorer";
+import YOLOExplorer from "./explorer/FileExplorer/YOLOExplorer";
 
 const Dataset = () => {
     // states for each json
@@ -36,116 +39,196 @@ const Dataset = () => {
                 for(var i = 0; i < cancelRequest.current.length; i++){
                     cancelRequest.current[i].abort()
                 }
+                cancelRequest.current = []
+            } else {
+                cancelRequest.current = []
             }
 
             if (first.current){
                 shortcuts.current = true
-                await fetch('http://localhost:8000/connect/?uri='.concat(dataset as string))
-                const schema_res = await fetch(`http://localhost:8000/schema`).then((response) => response.json())
-                setSchema(await schema_res.value);
-                if(await schema_res.value == 'yolo' || await schema_res.value == 'labelbox'){
-                    view_ex = false
-                    max_view_var = 36
-                    setView(false)
-                    setMaxView(36)
-                    setFiles( () => {
-                        return Array(1).fill({
-                            name: '',
-                            base_name: '',
-                            last_modified: '',
-                            thumbnail: '/Icons/icon-image-512.webp',
-                            tags: []
-                        })
-                    })
-                }
-                if(await schema_res.value.includes('ner')){
-                    view_ex = false
-                    max_view_var = 7
-                    setView(false)
-                    setMaxView(7)
-                }
-                first.current = false
-            }
-
-            const uri = await fetch(`http://localhost:8000/uri`).then((response) => response.json())
-            setURI(await uri);
-            const length = await uri.storage_dataset.length
-
-            const current = await fetch(`http://localhost:8000/current?page=${page}&max_pp=${max_view_var}`)
-            .then((response) => response.json());
-            setLen(await current.len)
-
-            var files_: Array<any> = [];
-            cancelRequest.current = [];
-            for(var i = 0; i < await current.keys.length; i++){
-                const isImage =  [current.keys[i].includes('.jpg'),current.keys[i].includes('.png'),current.keys[i].includes('.jpeg'),current.keys[i].includes('.tiff'),current.keys[i].includes('.bmp'),current.keys[i].includes('.eps')].includes(true)
-                if (isImage && !view_ex){
-                    setWaiting(true)
-                    const controller = new AbortController();
-                    const { signal } = controller;
-                    
-                    cancelRequest.current.push(controller)
-                    try {
-                        const thumbnail_  = 
-                        await fetch(`http://localhost:8000/get_thumbnail?file=${await current.keys[i]}`, { signal })
-                        .then((res) => res.body.getReader()).then((reader) =>
-                        new ReadableStream({
-                            start(controller) {
-                                return pump();
-                                function pump() {
-                                    return reader.read().then(({ done, value }) => {
-                                        if (done) {
-                                            controller.close();
-                                            return;
-                                        }
-                                        controller.enqueue(value);
-                                        return pump();
-                                    });
+                fetch('http://localhost:8000/connect/?uri='.concat(dataset as string)).then(
+                    () => {
+                        fetch(`http://localhost:8000/schema`).then((response) => response.json()).then(
+                            (res) => {
+                                setSchema(res.value);
+                                if(res.value == 'yolo' || res.value == 'labelbox'){
+                                    view_ex = false
+                                    max_view_var = 36
+                                    setView(false)
+                                    setMaxView(36)
+                                    setFiles( () => {
+                                        return Array(1).fill({
+                                            name: '',
+                                            base_name: '',
+                                            last_modified: '',
+                                            thumbnail: '/Icons/icon-image-512.webp',
+                                            tags: []
+                                        })
+                                    })
                                 }
+                                if(res.value.includes('ner')){
+                                    view_ex = false
+                                    max_view_var = 7
+                                    setView(false)
+                                    setMaxView(7)
+                                }
+                                first.current = false
+                
                             }
-                        }))
-                        .then((stream) => new Response(stream)).then((response) => response.blob())
-                        .then((blob) => URL.createObjectURL(blob))
-                        const tags = await fetch(`http://localhost:8000/get_tags?file=${await current.keys[i]}`, { signal })
-                        .then((res) => res.json())
-
-                        files_.push({
-                            name: await current.keys[i],
-                            base_name: await current.keys[i].substring(length),
-                            last_modified: current.lm[i],
-                            thumbnail: await thumbnail_,
-                            tags: await tags
-                        })
-                    } catch {
-                        return
-                    }
-                } else{
-                    const controller = new AbortController();
-                    const { signal } = controller;
-
-                    cancelRequest.current.push(controller)
+                        ).then(
+                            () => {
+                                var length = 0
                     
-                    try {
-                        const tags = await fetch(`http://localhost:8000/get_tags?file=${await current.keys[i]}`, { signal })
-                        .then((res) => res.json())
-                        
-                        files_.push({
-                            name: await current.keys[i],
-                            base_name: await current.keys[i].substring(length),
-                            last_modified: await current.lm[i],
-                            thumbnail: (await isImage) ? '/Icons/icon-image-512.webp' : '/Icons/file-icon.jpeg',
-                            tags: await tags
-                        })
-                    } catch {
-                        return
+                                fetch(`http://localhost:8000/uri`).then((response) => response.json()).then(
+                                    (res) => {
+                                        console.log(res)
+                                        setURI(res);
+                                        if (res.storage_dataset){
+                                            fetch('http://localhost:8000/connect/?uri='.concat(dataset as string))
+                                        }
+                                        length = res.storage_dataset.length;
+                    
+                                        fetch(`http://localhost:8000/current?page=${page}&max_pp=${max_view_var}`)
+                                        .then((response) => response.json()).then(
+                                            async (current) => {
+                    
+                                                setLen(current.len)
+                                    
+                                                var files_: Array<any> = [];
+                                                for(var i = 0; i < current.keys.length; i++){
+                                                    const isImage =  [current.keys[i].includes('.jpg'),current.keys[i].includes('.png'),current.keys[i].includes('.jpeg'),current.keys[i].includes('.tiff'),current.keys[i].includes('.bmp'),current.keys[i].includes('.eps')].includes(true)
+                                                    if (isImage && !view_ex){
+                                                        setWaiting(true)
+                                                        const controller = new AbortController();
+                                                        const { signal } = controller;
+                                                        
+                                                        cancelRequest.current.push(controller)
+                                                        try {
+                                                            const tags = await fetch(`http://localhost:8000/get_tags?file=${current.keys[i]}`, { signal })
+                                                            .then((res) => res.json())
+                                    
+                                                            files_.push({
+                                                                name: current.keys[i],
+                                                                base_name: current.keys[i].substring(length),
+                                                                last_modified: current.lm[i],
+                                                                // thumbnail: await thumbnail_,
+                                                                thumbnail: null,
+                                                                tags: await tags
+                                                            })
+                                                        } catch {
+                                                            return
+                                                        }
+                                                    } else{
+                                                        const controller = new AbortController();
+                                                        const { signal } = controller;
+                                    
+                                                        cancelRequest.current.push(controller)
+                                                        
+                                                        try {
+                                                            const tags = await fetch(`http://localhost:8000/get_tags?file=${current.keys[i]}`, { signal })
+                                                            .then((res) => res.json())
+                                                            
+                                                            files_.push({
+                                                                name: current.keys[i],
+                                                                base_name: current.keys[i].substring(length),
+                                                                last_modified: current.lm[i],
+                                                                thumbnail: (await isImage) ? '/Icons/icon-image-512.webp' : '/Icons/file-icon.jpeg',
+                                                                tags: await tags
+                                                            })
+                                                        } catch {
+                                                            return
+                                                        }
+                                                    }
+                                                }
+                                            
+                                                setWaiting(false)
+                                                setFiles([])
+                                                setFiles(() => {console.log(files_) ;return files_})
+                                                setLoading(false)
+                                            }
+                                        );
+                                    }
+                                )
+                            }
+                        )
                     }
-                }
+                )
+                
+
+            } else {
+
+                var length = 0
+    
+                fetch(`http://localhost:8000/uri`).then((response) => response.json()).then(
+                    (res) => {
+                        console.log(res)
+                        setURI(res);
+                        length = res.storage_dataset.length;
+    
+                        fetch(`http://localhost:8000/current?page=${page}&max_pp=${max_view_var}`)
+                        .then((response) => response.json()).then(
+                            async (current) => {
+    
+                                setLen(current.len)
+                    
+                                var files_: Array<any> = [];
+                                for(var i = 0; i < current.keys.length; i++){
+                                    const isImage =  [current.keys[i].includes('.jpg'),current.keys[i].includes('.png'),current.keys[i].includes('.jpeg'),current.keys[i].includes('.tiff'),current.keys[i].includes('.bmp'),current.keys[i].includes('.eps')].includes(true)
+                                    if (isImage && !view_ex){
+                                        setWaiting(true)
+                                        const controller = new AbortController();
+                                        const { signal } = controller;
+                                        
+                                        cancelRequest.current.push(controller)
+                                        try {
+                                            const tags = await fetch(`http://localhost:8000/get_tags?file=${current.keys[i]}`, { signal })
+                                            .then((res) => res.json())
+                    
+                                            files_.push({
+                                                name: current.keys[i],
+                                                base_name: current.keys[i].substring(length),
+                                                last_modified: current.lm[i],
+                                                // thumbnail: await thumbnail_,
+                                                thumbnail: null,
+                                                tags: await tags
+                                            })
+                                        } catch {
+                                            return
+                                        }
+                                    } else{
+                                        const controller = new AbortController();
+                                        const { signal } = controller;
+                    
+                                        cancelRequest.current.push(controller)
+                                        
+                                        try {
+                                            const tags = await fetch(`http://localhost:8000/get_tags?file=${current.keys[i]}`, { signal })
+                                            .then((res) => res.json())
+                                            
+                                            files_.push({
+                                                name: current.keys[i],
+                                                base_name: current.keys[i].substring(length),
+                                                last_modified: current.lm[i],
+                                                thumbnail: (await isImage) ? '/Icons/icon-image-512.webp' : '/Icons/file-icon.jpeg',
+                                                tags: await tags
+                                            })
+                                        } catch {
+                                            return
+                                        }
+                                    }
+                                }
+                            
+                                setWaiting(false)
+                                setFiles([])
+                                setFiles(() => {console.log(files_) ;return files_})
+                                setLoading(false)
+                            }
+                        );
+                    }
+                )
             }
-        
-            setWaiting(false)
-            setFiles([])
-            setFiles(() => {console.log(files_) ;return files_})
-            setLoading(false)
+
+
         }
         if(dataset){
             fetchFiles()
@@ -167,11 +250,28 @@ const Dataset = () => {
                 <LoadingScreen key={'loading_screen_dataset'}/>
                 : null
             }
-            <div className='w-4/5 h-full'> 
-                <Explorer shortcuts={shortcuts} props={props} page={page} setPage={setPage} max_view={max_view} setMaxView={setMaxView} view={view} setView={setView} len={len} waiting={waiting} filtering={filtering} setFiltering={setFiltering} schema={schema}/>
-            </div>
-            <div  className='w-1/5 h-full'>
-                <Infobar shortcuts={shortcuts} commits={commits} dataset={URI.storage_dataset}/>
+            <div className='w-full h-full'>
+                <div className="h-full bg-gray-100 dark:bg-gray-800">
+                    <div className="h-full">
+                        <TopBar shortcuts={shortcuts} props={props.dataprops} setFiltering={setFiltering} schema={schema} setPage={setPage} filtering={filtering}/>
+                    </div>
+                </div>
+                <div className="flex w-full h-full">
+                    <div className="px-5 w-[80%] h-[80%] mt-2">
+                        {
+                            schema.includes('ner') ? 
+                            <NERExplorer shortcuts={shortcuts} schema={schema} max_view={max_view} setFiltering={setFiltering} setMaxView={setMaxView} waiting={waiting} files={files} dataset={URI.dataset} page={page} setPage={setPage} view={view} setView={setView} len={len}/>
+                            :
+                            (schema == 'yolo' || schema == 'labelbox') ? 
+                            <YOLOExplorer cancelRequest={cancelRequest} shortcuts={shortcuts} schema={schema} max_view={max_view} setFiltering={setFiltering} setMaxView={setMaxView} waiting={waiting} files={files} dataset={URI.dataset} page={page} setPage={setPage} view={view} setView={setView} len={len}/>
+                            :
+                            <FileExplorer cancelRequest={cancelRequest} shortcuts={shortcuts} schema={schema} max_view={max_view} setFiltering={setFiltering} setMaxView={setMaxView} waiting={waiting} files={files} dataset={URI.dataset} page={page} setPage={setPage} view={view} setView={setView} len={len}/>
+                        }
+                    </div>
+                    <div className="px-5 w-[20%]">
+                        <Infobar shortcuts={shortcuts} commits={commits} dataset={URI.storage_dataset}/>
+                    </div>
+                </div>
             </div>
         </div>
     )

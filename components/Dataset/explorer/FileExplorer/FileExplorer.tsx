@@ -182,8 +182,6 @@ const FileExplorer = (props) => {
         </div>
     )
 
-    'py-2 px-3 ml-0 leading-tight text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
-
     listofButtons.push(
         <div key={`btn4${0}start`} className="flex">
             <button key={`subbtn4${0}start`} className="py-2 px-3 flex items-center leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" onClick={() => props.setPage(Math.max(props.page-1,0))}>
@@ -193,18 +191,18 @@ const FileExplorer = (props) => {
         </div>
     )
 
-    for (var i = props.page; i < props.page + 5; i++){
+    for (var i = props.page - 2; i < props.page + 5 + Math.max(0, 3 - props.page); i++){
         if(i > 0 && i < max_pages+1-0.0001){
             const x = i
             if ( (x | 0)  == props.page + 1){
                 listofButtons.push(
-                    <button key={`btn4${x}`} className="px-3 py-2 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white" onClick={() => props.setPage(x-1)}>
+                    <button key={`btn4${x}`} className="px-3 py-2 w-12 leading-tight text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white" onClick={() => props.setPage(x-1)}>
                         {x | 0}
                     </button>
                 )
             } else {
                 listofButtons.push(
-                    <button key={`btn4${x}`} className="py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" onClick={() => props.setPage(x-1)}>
+                    <button key={`btn4${x}`} className="py-2 px-3 w-12 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" onClick={() => props.setPage(x-1)}>
                         {x | 0}
                     </button>
                 )
@@ -303,11 +301,11 @@ const FileExplorer = (props) => {
         }
 
         container_var.push(
-            <div key={'fctnr2'}>
+            <div key={'fctnr2'} className="w-full h-full">
                 <div className={class_var}>
                     {
                         files.filter((data, idx) => idx < idx_max ).map( (file, index) =>
-                            <ImageThumbnail shortcuts={props.shortcuts} key={`thumb-${file['name']}`} setTagsPopup={setTagsPopup} selected={selected} setPointer={setPointer} setSelected={setSelected} dataset={props.dataset} thumbnailView={thumbnailView} max_view={props.max_view} file={file} index={index} waiting={props.waiting} handleObjectClick={handleObjectClick}/>
+                            <ImageThumbnail cancelRequest={props.cancelRequest} shortcuts={props.shortcuts} key={`thumb-${file['name']}`} setTagsPopup={setTagsPopup} selected={selected} setPointer={setPointer} setSelected={setSelected} dataset={props.dataset} thumbnailView={thumbnailView} max_view={props.max_view} file={file} index={index} waiting={props.waiting} handleObjectClick={handleObjectClick}/>
                         )
                     }
                 </div>
@@ -316,15 +314,15 @@ const FileExplorer = (props) => {
     }
 
     return (
-        <>
+        <div className="h-full w-full">
             {
                 tagsPopup  ? 
                 <SelectionTagPopup shortcuts={props.shortcuts} setMaxView={props.setMaxView} max_view={props.max_view} files={files} selected={selected} setSelected={setSelected} setPopup={setTagsPopup}/>
                 : 
                 <></>
             }
-            <div className="h-full">
-                <div className="z-10 flex text-xs w-full justify-between px-5">
+            <div className="h-full w-full">
+                <div className="z-10 flex text-xs w-full h-[10%] justify-between px-5">
                     <div className="w-min">
                         <SliceButton dataset={props.dataset} setFiltering={props.setFiltering}/>
                     </div>
@@ -341,10 +339,10 @@ const FileExplorer = (props) => {
                         </div>
                     </Tooltip>
                 </div>
-                <div className="z-0 h-[480px] w-full flex justify-center p-1">
+                <div className="z-0 w-full flex h-[50%] justify-center p-1 ">
                     {container_var}
                 </div>
-                <div className="z-10 flex justify-between items-center">
+                <div className="z-10 flex h-[10%] justify-between items-center">
                     <div className="flex justify-left text-xs mt-2 mb-2 rounded-sm">
                         {listofButtons}
                     </div>
@@ -356,7 +354,7 @@ const FileExplorer = (props) => {
                     popup ? <FilePopup shortcuts={props.shortcuts} schema={props.schema} popup={popup} setPopup={setPopup} setKeyId={setKey} keyId={keyVar} key={'fcp'}/> : <></>
                 }
             </div>
-        </>
+        </div>
     )
 };
 

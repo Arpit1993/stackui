@@ -130,7 +130,7 @@ const FileDiffPopup = (props) => {
     } else {
         if(isCSV){
             return (
-                <div className="text-sm absolute z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 rounded-lg bg-white dark:bg-gray-900 w-[1100px]  h-[700px]">
+                <div className="text-sm absolute z-[500] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 rounded-lg bg-white dark:bg-gray-900 w-[1100px]  h-[700px]">
                     <div className="w-full justify-between h-8 flex">
                         <div className="py-1 px-2">
                             <button onClick={() => {props.setPopup(false); props.enableLRshortcut.current = true}} className='text-xs px-1 w-[15px] h-4 flex-col bg-red-400 hover:bg-red-200 rounded-full'></button>
@@ -165,7 +165,7 @@ const FileDiffPopup = (props) => {
             )
         } else {
             return (
-                <div className="text-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 rounded-lg bg-white dark:bg-gray-400 w-[1100px]  h-[700px]">
+                <div className="text-sm z-[500] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 rounded-lg bg-white dark:bg-gray-400 w-[1100px]  h-[700px]">
                     <div className="w-full justify-between h-8 flex">
                         <button onClick={() => props.setPopup(false)} className= 'place-self-center justify-self-start w-[50px] h-8 flex-col bg-red-400 hover:bg-red-200 p-2 rounded-br-md'> x </button> 
                         <div className="place-self-center py-2 font-bold">
@@ -175,13 +175,13 @@ const FileDiffPopup = (props) => {
                     </div>
                     <div className="flex justify-center gap-2">
                         <div className="mt-2">
-                            <DropdownVersion label={'Image Version'} keyId={props.keyId} setV={setV1} len={props.len} v={v1} />
+                            <DropdownVersion label={'Version'} keyId={props.keyId} setV={setV1} len={props.len} v={v1} />
                             <div className="w-[500px] h-[500px] rounded-md dark:text-black text-center border-2 flex flex-col justify-center border-black bg-white">
                                 {d1}
                             </div>
                         </div>
                         <div className="mt-2">
-                            <DropdownVersion label={'Image Version'} keyId={props.keyId} setV={setV2} len={props.len} v={v2} />
+                            <DropdownVersion label={'Version'} keyId={props.keyId} setV={setV2} len={props.len} v={v2} />
                             <div className="w-[500px] h-[500px] rounded-md dark:text-black text-center border-2 flex flex-col justify-center border-black bg-white">
                                 {d2}
                             </div>

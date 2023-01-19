@@ -10,11 +10,11 @@ const ReadmePopup = (props) => {
     return (
     <>
         {
-            <button key={'ccrm'} onClick={() => props.setPopup(false)} className=" bg-black/50 z-0 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
+            <button key={'ccrm'} onClick={() => props.setPopup(false)} className=" bg-black/50 z-[100] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
                 click to close
             </button>
         }
-        <div className="text-sm absolute z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 rounded-lg bg-white dark:bg-gray-900 w-[1100px]  h-[700px]">
+        <div className="text-sm absolute z-[150] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 rounded-lg bg-white dark:bg-gray-900 w-[1100px]  h-[700px]">
             <div className="w-full justify-between flex h-[5%]">
                 <div className="py-1 px-2">
                     <button onClick={() => props.setPopup(false)} className='text-xs px-1 w-[15px] h-4 flex-col bg-red-400 hover:bg-red-200 rounded-full'></button>

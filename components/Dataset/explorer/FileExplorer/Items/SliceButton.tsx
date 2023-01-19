@@ -104,21 +104,21 @@ const SliceButton = (props) => {
                         <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
                             <ul className="flex flex-wrap -mb-px">
                                 <li className=":">
-                                    <Tooltip title={'Lists all the subsets of the dataset (slices)'} placement="right">
+                                    <Tooltip title={'Lists all the subsets of the dataset (slices)'} placement="top">
                                         <button onClick={()=>{setMode(0)}} className={mode == 0 ? "inline-block p-4 text-blue-600 rounded-t-lg border-b-2 border-blue-600 active dark:text-blue-500 dark:border-blue-500" : "inline-block p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"}>
                                             Slices
                                         </button>
                                     </Tooltip>
                                 </li>
                                 <li className="">
-                                    <Tooltip title={'Lists all the branches (or parents) of this dataset'} placement="right">
+                                    <Tooltip title={'Lists all the branches (or parents) of this dataset'} placement="top">
                                         <button onClick={()=>{setMode(1)}} className={mode == 1 ? "inline-block p-4 text-blue-600 rounded-t-lg border-b-2 border-blue-600 active dark:text-blue-500 dark:border-blue-500" : "inline-block p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"} aria-current="page">
                                             Branches
                                         </button>
                                     </Tooltip>
                                 </li>
                                 <li className="">
-                                    <Tooltip title={'Preview previous versions of the dataset'} placement="right">
+                                    <Tooltip title={'Preview previous versions of the dataset'} placement="top">
                                         <button onClick={()=>{setMode(2)}} className={mode == 2 ? "inline-block p-4 text-blue-600 rounded-t-lg border-b-2 border-blue-600 active dark:text-blue-500 dark:border-blue-500" : "inline-block p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"} aria-current="page">
                                             Checkpoints
                                         </button>

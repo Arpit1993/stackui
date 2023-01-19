@@ -2,7 +2,7 @@ import React from "react";
 import {  useState } from "react";
 import { Tooltip } from "@mui/material";
 import AddFilePopup from "../../popups/AddFilePopup";
-import Image from "next/image";
+import { posthog } from "posthog-js";
 import YOLOFilterPopup from "../../popups/YOLOFilterPopup";
 import FileFilterPopup from "../../popups/FileFilterPopup";
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -13,10 +13,19 @@ import YOLOStatistics from "../../tabs/statistics/YOLOStatistics";
 import NERFilterPopup from "../../popups/NERFilterPopup";
 import NERStatistics from "../../tabs/statistics/NERStatistics";
 import Experiments from "../../tabs/experiments/Experiments";
+import BugReportIcon from '@mui/icons-material/BugReport';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
 
 function commit(comment: string){
     fetch('http://localhost:8000/commit_req?comment='.concat(comment))
     window.location.reload();
+    return true
+}
+
+function diagnose(){
+    fetch('http://localhost:8000/diagnose').then(
+        () => {window.location.reload();}
+    )
     return true
 }
 
@@ -26,8 +35,6 @@ const TopBar = (props) => {
     const [addPopup, setAddPopup] = useState<Boolean>(false)
     const [txt, setText] = useState<String>('')
     const [callFilter, setCallFilter] = useState<Boolean>(false)
-    const [experimentsPopup,setExperimentsPopup] = useState<Boolean>(false)
-    const [statisticsPopup,setStatisticsPopup] = useState<Boolean>(false)
     const [tab, setTab] = useState<number>(0)
 
     const handleChange = (event: React.ChangeEvent<any>) => {
@@ -44,51 +51,18 @@ const TopBar = (props) => {
     return (    
         <>
             <div className="flex w-full h-full justify-between relative">
-               <div className="w-1/3 flex h-max py-7 px-5 justify-center flex-col">
+               <div className="w-[20%] flex h-max py-2 px-5 justify-center flex-col">
                     <div className="w-3/4 overflow-x-auto">
                         <h1 className="font-medium dark:text-white w-max"> {props.props.dataset} </h1>
                     </div>
                     <div className="w-3/4 overflow-x-auto">
-                        <h2 className="w-max underline text-ellipsis text-sm text-gray-500 dark:text-gray-400 hover:cursor-pointer"> 
+                        <h2 className="w-max underline text-ellipsis text-sm text-gray-500 dark:text-gray-400"> 
                             {props.props.URI}
                         </h2>
                     </div>
                </div>
-                <div className="flex w-2/3 text-ellipsis justify-end">
-                    <div className="flex gap-2 mt-6 w-full justify-end">
-                        <Tooltip title={'Refresh'} placement="top">
-                            <button onClick={()=>commit('')} className="h-min py-2.5 px-5 mr-2 mb-2 text-sm font-body text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"> 
-                                <div className="flex flex-col justify-center">
-                                    <div className="flex gap-2">
-                                        <RefreshIcon className="h-5 w-5"/>
-                                    </div>
-                                </div>
-                            </button>
-                        </Tooltip>
-
-                        <Tooltip title={'Upload'} placement="top">
-                            <button onClick={()=> {props.shortcuts.current = addPopup; setAddPopup(!addPopup)}} className="h-min text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700" > 
-                                <div className="flex gap-2">
-                                    <CloudUploadIcon className="h-5 w-5"/>
-                                </div>
-                            </button>
-                        </Tooltip>
-
-                        <Tooltip title={'Experiments and runs'} placement="top">
-                            <button onClick={()=>{props.shortcuts.current = (tab == 2) ? true : false; setTab((tab == 2) ? 0 : 2)}} className="w-[60px] h-[40px] flex flex-col justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" > 
-                                <div className="flex gap-2">
-                                    <ScienceIcon className="h-5 w-5"/>
-                                </div>
-                            </button>
-                        </Tooltip>
-                        
-                        <Tooltip title={'Statistics'} placement="top">
-                            <button onClick={()=>{props.shortcuts.current = (tab == 1) ? true : false; setTab((tab == 1) ? 0 : 1)}} className="w-[60px] h-[40px] flex flex-col justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" > 
-                                <div className="flex gap-2">
-                                    <BarChartIcon className="h-5 w-5"/>
-                                </div>
-                            </button>
-                        </Tooltip>
+                <div className="w-[80%] flex text-ellipsis justify-end  items-center">
+                    {/*
 
                         
 
@@ -98,8 +72,57 @@ const TopBar = (props) => {
                             </button>
                         </Tooltip>
                         
+                    </div> */}
+                    
+                    <div className="w-3/4 items-center">
+                        <ul className="w-full flex items-center flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
+                            <li className="mr-2">
+                                <button onClick={()=> {props.shortcuts.current = addPopup; setAddPopup(!addPopup)}} 
+                                    className={addPopup ? "inline-flex p-2 text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500 group" : "inline-flex p-2 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 group"}
+                                    aria-current="page">
+                                    <CloudUploadIcon className="h-5 w-5 mr-2"/>
+                                    Upload
+                                </button>
+                            </li>
+                            <li className="mr-2">
+                                <button onClick={()=>{if(tab != 2){props.shortcuts.current = filterPopup; setFilterPopup(!filterPopup)}}} 
+                                    className={filterPopup ? "inline-flex p-2 text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500 group" : "inline-flex p-2 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 group"}>
+                                    <FilterAltIcon className="h-5 w-5 mr-2"/>
+                                    Filter
+                                </button>
+                            </li>
+                            <li className="mr-2">
+                                <button onClick={()=>{props.shortcuts.current = (tab == 2) ? true : false; setTab((tab == 2) ? 0 : 2)}} 
+                                    className={(tab == 2) ? "inline-flex p-2 text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500 group" : "inline-flex p-2 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 group"}>
+                                    <ScienceIcon className="h-5 w-5 mr-2"/>
+                                    Experiments
+                                </button>
+                            </li>
+                            <li className="mr-2">
+                                <button onClick={()=>{props.shortcuts.current = (tab == 1) ? true : false; setTab((tab == 1) ? 0 : 1)}} 
+                                    className={(tab == 1) ? "inline-flex p-2 text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500 group" : "inline-flex p-2 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 group"}>
+                                    <BarChartIcon className="h-5 w-5 mr-2"/>
+                                    Statistics
+                                </button>
+                            </li>
+                            <li className="ml-2 mr-2">
+                                <button onClick={()=>commit('')} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                                    <RefreshIcon className="h-5 w-5 mr-2"/>
+                                    Refresh
+                                </button>
+                            </li>
+                            <li className="mr-2">
+                                <button onClick={()=>{posthog.capture('bug report button', { property: 'value' }); diagnose()}} 
+                                    className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                                    <BugReportIcon className="h-5 w-5 mr-2"/>
+                                    Diagnose
+                                </button>
+                            </li>
+                        </ul>
                     </div>
-                    <div className="w-full py-6 text-black inline-block align-middle">
+
+
+                    <div className="w-1/4 py-2 text-black inline-block align-middle">
                         <form className="px-3" onSubmit={handleSubmit}>
                             <label className="flex justify-end gap-2"> 
                                 <div className="dark:text-white">

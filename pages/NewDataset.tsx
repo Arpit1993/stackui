@@ -13,6 +13,7 @@ export default function NewDatasets() {
     const [uri , setURI ] = useState<String>('local')
     const [storage , setStorage ] = useState<String>('local')
     const [name, setName] = useState<String>('My Dataset')
+    const [enableDVC, setEnableDVC] = useState<Boolean>(true)
 
     const [file, setFile] = useState(null)
     const [schema, setSchema] = useState<String>('Select...')
@@ -71,9 +72,9 @@ export default function NewDatasets() {
                 tmp_schema = schema
             }
 
-            var data = JSON.stringify({"uri": uri, "name": name,"key1": accessKey, "key2": secretKey, "key3": region, "schema": tmp_schema})
+            var data = JSON.stringify({"uri": uri, "name": name,"key1": accessKey, "key2": secretKey, "key3": region, "schema": tmp_schema, 'dvc': true})
             
-            const response = await fetch('http://localhost:8000/init_web/', {
+            fetch('http://localhost:8000/init_web/', {
                 method: 'POST',
                 headers: { 
                     "Content-Type": "application/json" 
@@ -83,7 +84,7 @@ export default function NewDatasets() {
                 (res) => {
                     if (res.success) {
                         posthog.capture('Added a dataset and succeeded', { property: 'value' })
-                        window.location.href='/dataset/'.concat(encodeURIComponent(name.toString()));
+                        window.location.href='/dataset/'.concat(encodeURIComponent(uri.toString()));
                     } else {
                         posthog.capture('Added a dataset and failed', { property: 'value' })
                         setLoading(false)
@@ -100,7 +101,7 @@ export default function NewDatasets() {
 
     const awsKeys = (storage == 's3') ? [
         <div key={'awk'}>
-            <form className="shadow-md rounded w-[320px]">
+            <form className="shadow-md rounded w-full">
                 <label className="block text-gray-700 text-base mt-2"> 
                     <div className="">
                         <input onChange={handleKey1Change} onInput={handleKey1Change}
@@ -110,7 +111,7 @@ export default function NewDatasets() {
                 </label>
             </form>
 
-            <form className="shadow-md rounded w-[320px] mt-2">
+            <form className="shadow-md rounded w-full mt-2">
                 <label className="block text-gray-700 text-base"> 
                     <div className="">
                         <input onChange={handleKey2Change}  onInput={handleKey2Change}
@@ -120,7 +121,7 @@ export default function NewDatasets() {
                 </label>
             </form>
 
-            <form className="shadow-md rounded w-[320px] mt-2">
+            <form className="shadow-md rounded w-full mt-2">
                 <label className="block text-gray-700 text-base"> 
                     <div className="">
                         <input onChange={handleKey3Change} onInput={handleKey3Change}
@@ -179,7 +180,7 @@ export default function NewDatasets() {
     
     const InputForm = [
             <div className="flex"  key={'ip'}>
-                <div className="p-5 mt-5 mb-5 w-[1000px] h-[600px] justify-between flex flex-col">    
+                <div className="p-5 mt-5 mb-5 w-full h-[600px] justify-between flex flex-col">    
                     
                     <div>
 
@@ -213,6 +214,11 @@ export default function NewDatasets() {
                                     </div>
                                 </label>
                             </form>
+                        </div>
+
+                        <div className="mb-5 w-full flex justify-center items-center">
+                            <input id="link-checkbox" type="checkbox" checked={enableDVC as boolean} onChange={()=>{setEnableDVC(!enableDVC)}} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                            <label className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">(Recommended) Enable version control.</label>
                         </div>
 
                         <div className="flex justify-center mt-5" >

@@ -33,7 +33,7 @@ export default function Datasets() {
     var data_array = sortOrder ? [...datasets].sort(compare_fcn) : [...datasets].sort(compare_fcn).reverse() 
 
     return (
-        <div className="mt-5 h-full">
+        <div className="h-full p-10">
             <div className="w-full flex justify-between">
                 <Link href="/NewDataset" passHref>
                     <button className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"> 

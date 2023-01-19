@@ -13,7 +13,7 @@ import Datepicker from "react-tailwindcss-datepicker";
 import { Tooltip } from "@mui/material";
 
 
-const getbuttons = (variable, varFilter, setVarFilter, nullStr, setnullStr, n_var, name, n_buttons) => {
+const getbuttons = (variable, varFilter, setVarFilter, nullStr, setnullStr, n_var, name, n_buttons, labelMap) => {
     const var_buttons : Array<any> = []
 
     for(var i = 0; i < n_buttons; i++){
@@ -28,7 +28,7 @@ const getbuttons = (variable, varFilter, setVarFilter, nullStr, setnullStr, n_va
                         setVarFilter(cf)
                         setnullStr(nullStr+'a')
                     }} className="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
-                        {`${cl} (${n_var[cl]})`}
+                        {`${(Object.keys(labelMap).length) ? labelMap[cl]['label'] : cl} (${n_var[cl]})`}
                     </button>
                 </ul>
             )
@@ -41,7 +41,7 @@ const getbuttons = (variable, varFilter, setVarFilter, nullStr, setnullStr, n_va
                         setVarFilter(cf)
                         setnullStr(nullStr+'a')
                     }} className="bg-gray-100 text-gray-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">
-                        {`${cl} (${n_var[cl]})`}
+                        {`${(Object.keys(labelMap).length) ? labelMap[cl]['label'] : cl} (${n_var[cl]})`}
                     </button>
                 </ul>
             )
@@ -67,6 +67,7 @@ const YOLOFilterPopup = (props) => {
     const [classes, setClasses] = useState([])
     const [n_classes, setNClasses] = useState({})
     const [classesFilter, setClassFilter] = useState({})
+    const [labelMap, setLabelMap] = useState<any>({})
     
     const [n_res, setNResolutions] = useState({})
     const [resolutions, setResolutions] = useState([])
@@ -84,17 +85,6 @@ const YOLOFilterPopup = (props) => {
     // TODO
     const [nullStr, setnullStr] = useState('')
     const ref = useRef(null)
-
-    const toggleVariable = (toggle, filter, setFilter) => {
-        var cf = filter
-        
-        for(var i = 0; i < Object.keys(cf).length; i++){
-            cf[Object.keys(cf)[i]] = toggle
-        }
-
-        setFilter(cf)
-        setnullStr(nullStr+'x')
-    }
 
     const handleApplyFilter = async () => {
         setLoading(true)
@@ -269,6 +259,11 @@ const YOLOFilterPopup = (props) => {
                 await handleApplyFilter()
                 props.setCallFilter(false)
             }
+
+            fetch(`http://localhost:8000/get_class_map`)
+            .then((response) => response.json()).then((res) => {
+                setLabelMap(() => {return res});
+            });
         }
         getMetadata()
 
@@ -290,9 +285,9 @@ const YOLOFilterPopup = (props) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.callFilter, time])
 
-    var classes_buttons : Array<any> = getbuttons(classes, classesFilter, setClassFilter, nullStr, setnullStr, n_classes,'class', classes.length)
-    var res_buttons : Array<any> = getbuttons(resolutions, resFilter, setResFilter, nullStr, setnullStr, n_res,'res', resolutions.length)
-    var tag_buttons : Array<any> = getbuttons(tags, tagFilter, setTagFilter, nullStr, setnullStr, n_tags,'tag', tags.length)
+    var classes_buttons : Array<any> = getbuttons(classes, classesFilter, setClassFilter, nullStr, setnullStr, n_classes,'class', classes.length, labelMap)
+    var res_buttons : Array<any> = getbuttons(resolutions, resFilter, setResFilter, nullStr, setnullStr, n_res,'res', resolutions.length, {})
+    var tag_buttons : Array<any> = getbuttons(tags, tagFilter, setTagFilter, nullStr, setnullStr, n_tags,'tag', tags.length, {})
 
     return (
         <>
@@ -305,7 +300,7 @@ const YOLOFilterPopup = (props) => {
             {
                 slice ? <SlicePopup ref_={ref} key={'slicpp'} setPopup={setSlice}/> : <></>
             }
-            <div key={"flterpp"} ref={ref} className="bg-white absolute z-40 top-20 rounded-lg dark:bg-gray-900 w-full h-[250px] border-[0.5px] border-gray-500">
+            <div key={"flterpp"} ref={ref} className="bg-white absolute z-40 top-16 rounded-lg dark:bg-gray-900 w-[100%] h-[250px] border-[0.5px] border-gray-500">
                 <div className="w-full justify-between flex h-8">
                     <div className="px-2">
                         <button onClick={() => {
@@ -322,7 +317,7 @@ const YOLOFilterPopup = (props) => {
                 </div>
                 {
                     query ? 
-                    <div className="flex w-full h-[150px] justify-between gap-2 p-1">
+                    <div className="flex w-full h-[150px] justify-between gap-2 p-2">
                         <Editor
                             className="border border-gray-500 overflow-scroll rounded-md w-1/2 bg-white text-black dark:bg-gray-800 dark:text-yellow-400"
                             value={code}
@@ -346,7 +341,7 @@ const YOLOFilterPopup = (props) => {
                         </div>
                     </div>
                     :
-                    <div className="flex w-full overflow-x-scroll mb-[-400px] pb-[400px] justify-start gap-2 p-1">
+                    <div className="flex w-full overflow-x-scroll mb-[-400px] pb-[400px] justify-start gap-2 p-2">
                         <div> 
                             <div className="text-sm">
                                 Classes

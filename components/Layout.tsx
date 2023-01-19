@@ -5,13 +5,10 @@ import React from "react";
 const Layout = ({children}) => {
     
     return (
-        <div className="flex font-body gap-3 h-screen bg-white dark:bg-black text-black dark:text-white">
-            <Sidebar/>
-            <div className='p-2 w-[83%] flex-auto h-screen center overflow-y-scroll'>
-                <Navbar/>
-                <div>
-                    {children}
-                </div>
+        <div className=" gap-3 h-screen bg-white dark:bg-black text-black dark:text-white">
+            <Navbar/>
+            <div className="">
+                {children}
             </div>
         </div>
     )
