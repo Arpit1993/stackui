@@ -17,7 +17,7 @@ const Navbar = () => {
     return (
         <div className='flex w-full justify-between'>
             {
-                (login || user == '') ? <AuthModal setPopup={setLogin}/> : null
+                (login) ? <AuthModal setPopup={setLogin}/> : null
             }
             <nav className="w-full p-2 bg-neutral-800">
                 <div className="w-full container flex flex-wrap items-center justify-between mx-auto">
@@ -27,16 +27,20 @@ const Navbar = () => {
                     <div className="hidden w-full md:block md:w-auto" id="navbar-default">
                         <ul className="flex px-2 items-center rounded-lg flex-row space-x-8 text-sm font-medium">
                             <li>
-                                <a href="/Home" className="flex gap-2 pl-3 pr-4 text-white rounded hover:bg-gray-100 md:hover:bg-transparent border-0 hover:text-blue-700" aria-current="page">
-                                    <Image className="invert" src={'/../public/Icons/ExploreIcon.png'} width={'20'} height={'20'} objectFit={'contain'} alt=''/>
-                                    <div> Home </div>
-                                </a>
+                                <Link href="/Home">
+                                    <div className="flex gap-2 pl-3 pr-4 text-white rounded hover:bg-gray-100 md:hover:bg-transparent border-0 hover:text-blue-700">
+                                        <Image className="invert" src={'/../public/Icons/ExploreIcon.png'} width={'20'} height={'20'} objectFit={'contain'} alt=''/>
+                                        <div> Home </div>
+                                    </div>
+                                </Link>
                             </li>
                             <li>
-                                <a href="/Datasets" className="flex gap-2 pl-3 pr-4 text-white rounded hover:bg-gray-100 md:hover:bg-transparent border-0 hover:text-blue-700" aria-current="page">
-                                    <Image className="invert" src={'/../public/Icons/DatasetIcon.png'} width={'20'} height={'20'} objectFit={'contain'} alt=''/>
-                                    <div> Datasets </div>
-                                </a>
+                                <Link href="/Datasets">
+                                    <div className="flex gap-2 pl-3 pr-4 text-white rounded hover:bg-gray-100 md:hover:bg-transparent border-0 hover:text-blue-700">
+                                        <Image className="invert" src={'/../public/Icons/DatasetIcon.png'} width={'20'} height={'20'} objectFit={'contain'} alt=''/>
+                                        <div> Datasets </div>
+                                    </div>
+                                </Link>
                             </li>
                             <li>
                                 {

@@ -107,7 +107,7 @@ const Curve = (props) => {
                     <div className="flex flex-wrap items-center">
                         <div className="relative w-full max-w-full flex-grow flex-1">
                         <h6 className="uppercase text-blueGray-100 mb-1 text-xs font-semibold">
-                            Training curve
+                            Loss curve
                         </h6>
                         </div>
                     </div>

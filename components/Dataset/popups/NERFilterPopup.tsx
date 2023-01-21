@@ -79,11 +79,15 @@ const NERFilterPopup = (props) => {
     
     const [time, setTime] = useState(true)
     const [loading, setLoading] = useState(false)
+    const [downloading, setDownloading] = useState(false)
 
     // weird hack to make the checkboxes bg-color change when setState, otherwise state remains the same
     // TODO
     const [nullStr, setnullStr] = useState('')
     const ref = useRef(null)
+
+    const controller = new AbortController();
+    const { signal } = controller;
 
     const toggleVariable = (toggle, filter, setFilter) => {
         var cf = filter
@@ -305,7 +309,7 @@ const NERFilterPopup = (props) => {
             {
                 slice ? <SlicePopup ref_={ref} key={'slicpp'} setPopup={setSlice}/> : <></>
             }
-            <div key={"flterpp"} ref={ref} className="bg-white absolute z-40 top-20 rounded-lg dark:bg-gray-900 w-full h-[250px] border-[0.5px] border-gray-500">
+            <div key={"flterpp"} ref={ref} className="bg-white absolute z-40 top-16 rounded-lg dark:bg-gray-900 w-full h-[250px] border-[0.5px] border-gray-500">
                 <div className="w-full justify-between flex h-8">
                     <div className="px-2">
                         <button onClick={() => {
@@ -346,7 +350,7 @@ const NERFilterPopup = (props) => {
                         </div>
                     </div>
                     :
-                    <div className="flex w-full overflow-x-scroll mb-[-400px] pb-[400px] justify-start gap-2 p-1">
+                    <div className="flex w-full overflow-x-scroll mb-[-400px] pb-[400px] justify-center gap-2 p-1">
                         <div> 
                             <div className="text-sm">
                                 Entities
@@ -463,6 +467,25 @@ const NERFilterPopup = (props) => {
                         </Tooltip>
                         <button onClick={() => handleApplyFilter()} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
                             Apply
+                        </button>
+                        <button onClick={() => {
+                            if (downloading) {
+                                controller.abort()
+                                setDownloading(false)
+                            } else {
+                                setDownloading(true)
+                                fetch('http://localhost:8000/download_api', { signal })
+                                .then( res => res.blob() )
+                                .then( blob => {
+                                  var file = window.URL.createObjectURL(blob);
+                                  window.location.assign(file);
+                                  setDownloading(false)
+                                });
+                            }
+                        }} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                            {
+                                downloading ? 'Cancel' : 'download'
+                            }
                         </button>
                     </div>
                 </div>

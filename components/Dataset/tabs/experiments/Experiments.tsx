@@ -18,7 +18,7 @@ const Experiments = (props) => {
                 <Project project={project} setPopup={setPopup}/>
                 : null   
             }
-            <div className="fixed overflow-scroll z-[40] left-0 bottom-0 w-[80%] h-[80%] bg-white dark:bg-black">
+            <div className="fixed overflow-scroll z-[40] left-0 bottom-0 w-[80%] h-[77%] bg-white dark:bg-black">
                 {
                     (Object.keys(projects).length == 0) ?
                     <div className="w-full h-full font-normal flex justify-center items-center"> 
@@ -63,11 +63,11 @@ const Project = (props) => {
     const [runs, setRuns]= useState<any>([])
     
     useEffect(()=>{
-        fetch(`http://localhost:8000/get_logs_list?project=${props.project}`).then((res) => res.json()).then((res) => {setRuns(res); console.log(res)})
+        fetch(`http://localhost:8000/get_logs_list?project=${props.project}`).then((res) => res.json()).then((res) => {setRuns(res.reverse()); console.log(res)})
     },[props.project])
 
     return (
-        <div className="fixed overflow-scroll z-[45] left-[20%] bottom-0 w-[60%] h-[80%] bg-gray-50 dark:bg-gray-900 flex-col justify-center">
+        <div className="fixed overflow-scroll z-[50] p-4 left-0 bottom-0 w-[80%] h-[77%] bg-white dark:bg-black">
             <div className="w-full flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                     Experiments

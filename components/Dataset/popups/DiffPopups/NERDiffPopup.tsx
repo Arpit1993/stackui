@@ -18,40 +18,81 @@ const stringToColour = (str: string) => {
 }
 
 const fetchData = async (keyId, version, setD) => {
+    const text = await fetch(`http://localhost:8000/get_text?key=${keyId}&version=${version}`).then((res) => res.json())
+    
     fetch(`http://localhost:8000/get_labels?filename=${keyId}&version=${version}`)
         .then((res) => res.json())
-        .then((res) => {
-            var tok_array: Array<any> = [];
-            const tokens = keyId.match(/\s+|\S+/g);
-            var token_start_ = 1
+        .then(async (res) => {
+            const sentence = text['text']
+            var updated_labels = res
+            var order: Array<any> = []
+            var array_spans: Array<any> = []
 
-            for(var i = 0; i < tokens.length; i++){
-                const token_start = token_start_
-                const entity = res.filter( label => (label['start'] <= token_start && label['end'] >= token_start - 1 + tokens[i].length) )
+            updated_labels = updated_labels.sort((a, b) => {
+                if(a.start > b.start){
+                    return 1;
+                } else {
+                    return -1;
+                }
+            })
+            
+            var start = 0
+
+            var x = []
+            for (var j = 0; j < updated_labels.length; j++){
+                if (updated_labels[j].start <= 1 && updated_labels[j].end > 0){
+                    x.push(j)
+                }
+            }
+
+            var entities_per_index: Array<any> = [x]
+            var chars: Array<any> = [sentence[0]]
+    
+            for(var i = 1; i < sentence.length; i++){
+                if (updated_labels.map((val) => (val.end == i)).includes(true)) {
+                    order.push(sentence.slice(start, i).replace(/ /g,'\u00A0'));
+                    start = i;
+                } else if (updated_labels.map((val) => (val.start == i+1)).includes(true)){
+                    order.push(sentence.slice(start, i).replace(/ /g,'\u00A0'));
+                    start = i;
+                } else if (i == sentence.length - 1){
+                    order.push(sentence.slice(start, i+1).replace(/ /g,'\u00A0'));
+                }
+    
+                var x: Array<any> = []
+                for (var j = 0; j < updated_labels.length; j++){
+                    if (updated_labels[j].start <= i + 1 && updated_labels[j].end > i){
+                        x.push(j)
+                    }
+                }
+                entities_per_index.push(x)
+                chars.push(sentence[i])
+            }
+            
+            start = 0
+            for(var i = 0; i < order.length; i++){
+                const idx_1 = i
+                var child: any = [<span key={`child${idx_1}--1`} className="w-max flex justify-start items-center h-min text-base cursor-text"> {order[idx_1].replace(/ /g,'\u00A0')} </span>]
                 
-                tok_array.push(
-                    <div className="flex w-max relative" style={{ backgroundColor: entity[0] ? `${stringToColour(entity[0]['type'])}88` : '000000'}}>
-                        <div 
-                            className={"w-max items-center h-min text-base cursor-text"}>
-                            { tokens[i] === " " ? "\u00A0" : tokens[i] }
-                        </div>
-                        {
-                            (entity[0] && entity[0]['end'] == token_start - 1 + tokens[i].length) 
-                            ?   
-                            <div className="w-fit" style={{ userSelect: "none" }}>
-                                {entity[0]['type']}
-                            </div>
-                            : null
-                        }
-                    </div>
-                )
-                token_start_ = token_start + tokens[i].length
+                start = (start >= entities_per_index.length) ? entities_per_index.length - 1 : start
+    
+                for(var j = 0; j < entities_per_index[start].length; j++){
+                    const idx_0 = start
+                    const idx_2 = j
+                    const entity_type = updated_labels[entities_per_index[start][idx_2]]['type']
+    
+                    child = [
+                        <button key={`child${idx_1}-${idx_2}`}  className="w-max relative bg-white flex justify-start" style={{ backgroundColor: `${stringToColour(entity_type)}22`, border: `1px solid ${stringToColour(entity_type)}AA`}}>
+                            {child}
+                        </button>
+                    ]
+                }
+                start = start + order[i].length
+                array_spans.push(child)
             }
             setD(
-                <div className="border-gray-300 border bg-gray-50 dark:bg-gray-800 rounded-md p-2 h-fit overflow-scroll items-center justify-start flex w-full font-normal">
-                {
-                    tok_array
-                }
+                <div className="border-gray-300 flex-wrap border max-h-36 bg-gray-50 dark:bg-gray-800 rounded-md p-2 h-fit overflow-scroll items-center justify-start flex w-full font-normal">
+                    {array_spans}
                 </div>
             )
         })
@@ -93,16 +134,16 @@ const NERDiffPopup = (props) => {
                     <div className="p-2 h-[10%] items-center justify-start flex w-full font-semibold">
                         {'Sentence:'}
                     </div>
-                    <div className="w-[500px] h-[50px] rounded-md dark:text-black text-center flex flex-col justify-center bg-white">
+                    <div className="w-[500px] h-fit rounded-md dark:text-black text-center flex flex-col justify-center bg-white">
                         {d1}
                     </div>
                 </div>
-                <div className="mt-20">
+                <div className="mt-10">
                     <DropdownVersion label={'Version'} keyId={props.keyId} setV={setV2} len={props.len} v={v2} />
                     <div className="p-2 h-[10%] items-center justify-start flex w-full font-semibold">
                         {'Sentence:'}
                     </div>
-                    <div className="w-[500px] h-[50px] rounded-md dark:text-black text-center flex flex-col justify-center bg-white">
+                    <div className="w-[500px] h-fit rounded-md dark:text-black text-center flex flex-col justify-center bg-white">
                         {d2}
                     </div>
                 </div>

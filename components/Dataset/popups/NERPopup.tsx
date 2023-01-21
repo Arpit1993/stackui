@@ -3,28 +3,19 @@ import posthog from 'posthog-js'
 import { useState, useEffect, useCallback } from "react";
 import LoadingScreen from "../../LoadingScreen";
 import FileHistoryPopUp from "./History/FileHistoryPopUp";
-import YOLOHistoryPopUp from "./History/YOLOHistoryPopUp";
-import ImageViz from "../Visualizers/ImageViz";
-import YOLOViz from "../Visualizers/YOLOViz";
-import CsvViz from "../Visualizers/CSVViz";
-import FileDiffPopup from "./DiffPopups/FileDiffPopup";
-import YOLODiffPopup from "./DiffPopups/YOLODiffPopup";
 import DropdownFileOptions from "./Components/DropdownFileOptions";
 import FileHistoryList from "./History/FileHistoryList";
-import YOLOHistoryList from "./History/YOLOHistoryList";
 import path from 'path'
 import CloseIcon from '@mui/icons-material/Close';
 import NERViz from "../Visualizers/NERViz";
 import NERDiffPopup from "./DiffPopups/NERDiffPopup";
 import NERAnnotators from "./Annotators/NERAnnotators";
 
-const FilePopup = (props) => {
+const NERPopup = (props) => {
+
     const [popup, setPopup] = useState<Boolean>(false)
     const [admin, setAdmin] = useState<Boolean>(false)
     const [viewAnnotations, setViewAnnotations] = useState<Boolean>(false)
-
-    const [row, setRow] = useState<number>(0)
-    const [col, setCol] = useState<number>(0)
 
     const [approve, setApprove] = useState<Boolean>(false)
     const [compare, setCompare] = useState<Boolean>(false)
@@ -37,14 +28,6 @@ const FilePopup = (props) => {
     const enableLRshortcut = useRef(true)
     const [submit, setSubmit] = useState<Boolean>(false)
     const [newLabels, setnewLabels] = useState({keyid: props.keyId})
-    
-
-    const isImage = [props.keyId.includes('.jpg'),props.keyId.includes('.png'),props.keyId.includes('.jpeg'),props.keyId.includes('.tiff'),props.keyId.includes('.bmp'),props.keyId.includes('.eps')].includes(true)
-    const isNER = props.schema.includes('ner')
-   
-    const isCSV =['csv'].includes(props.keyId.split('.').pop())
-    const isText = ['txt'].includes(props.keyId.split('.').pop())
-    const isJSON = ['json'].includes(props.keyId.split('.').pop())
 
     const handleDelete = async () => {
         setLoading(true)
@@ -124,112 +107,7 @@ const FilePopup = (props) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            setDataComp(null)
-            if (isNER) {
-                setDataComp([<NERViz key={'nervz'} enableLRshortcut={enableLRshortcut} setKeyId={props.setKeyId} diff={false} loading={loading} label_version={'current'} keyId={props.keyId} ww={800} wh={500} ox={0} oy={0} setnewLabels={setnewLabels} setSubmit={setSubmit}/>])
-            }
-            else if (isImage) {
-                fetch('http://localhost:8000/pull_file_api?file='.concat(props.keyId)).
-                then((res) => res.body.getReader()).then((reader) =>
-                new ReadableStream({
-                    start(controller) {
-                        return pump();
-                        function pump() {
-                            return reader.read().then(({ done, value }) => {
-                                if (done) {
-                                controller.close();
-                                return;
-                                }
-                                
-                                controller.enqueue(value);
-                                return pump();
-                            });
-                        }
-                    }
-                })).then((stream) => new Response(stream)).then((response) => response.blob())
-                .then((blob) => URL.createObjectURL(blob)).then((img) => 
-                [<ImageViz key={'imgvz'} img={img} keyId={props.keyId} ww={800} wh={500} ox={0} oy={0} setnewLabels={setnewLabels} setSubmit={setSubmit}/>])
-                .then(setDataComp)
-            } 
-            else if (isCSV) {
-                const csv_metadata = await fetch('http://localhost:8000/pull_csv_metadata_api?file='.concat(props.keyId)).then((res) => res.json())
-                setDataComp('')
-                fetch('http://localhost:8000/pull_csv_api?file='.concat(props.keyId).concat('&row_p=').concat(row).concat('&col_p=').concat(col)).
-                then((res) => res.body.getReader()).then((reader) =>
-                new ReadableStream({
-                    start(controller) {
-                        return pump();
-                        function pump() {
-                            return reader.read().then(({ done, value }) => {
-                                if (done) {
-                                controller.close();
-                                return;
-                                }
-                                
-                                controller.enqueue(value);
-                                return pump();
-                            });
-                        }
-                    }
-                })).then((stream) => new Response(stream)).then((response) => response.blob())
-                .then((blob) => blob.text()).then((data) =>
-                [
-                    <CsvViz key={'csvvizzz'} data={data} setRow={setRow} setCol={setCol} row={row} col={col} csv_metadata={csv_metadata} />
-                ]).then(setDataComp)
-            } 
-            else if (isText) {
-                fetch('http://localhost:8000/pull_file_api?file='.concat(props.keyId)).
-                then((res) => res.body.getReader()).then((reader) =>
-                new ReadableStream({
-                    start(controller) {
-                        return pump();
-                        function pump() {
-                            return reader.read().then(({ done, value }) => {
-                                if (done) {
-                                controller.close();
-                                return;
-                                }
-                                
-                                controller.enqueue(value);
-                                return pump();
-                            });
-                        }
-                    }
-                })).then((stream) => new Response(stream)).then((response) => response.blob())
-                .then((blob) => blob.text()).then( (data) =>  [
-                    <div key="cmp3" className="flex justify-center font-thin dark:text-white overflow-scroll">
-                        {data}
-                    </div>]).then(setDataComp)
-            }
-            else if (isJSON) {
-                fetch('http://localhost:8000/pull_file_api?file='.concat(props.keyId)).
-                then((res) => res.body.getReader()).then((reader) =>
-                new ReadableStream({
-                    start(controller) {
-                        return pump();
-                        function pump() {
-                            return reader.read().then(({ done, value }) => {
-                                if (done) {
-                                controller.close();
-                                return;
-                                }
-                                
-                                controller.enqueue(value);
-                                return pump();
-                            });
-                        }
-                    }
-                })).then((stream) => new Response(stream)).then((response) => response.blob())
-                .then((blob) => blob.text()).then( (data) =>  [
-                    <div key="cmp3" className="flex font-thin w-full overflow-scroll">
-                        <pre className="w-[1px] break-all dark:text-white"> 
-                            <div className="w-[1px]">
-                                {data}
-                            </div>
-                        </pre>
-                    </div>]).then(setDataComp)
-            }
-            
+            setDataComp([<NERViz key={'nervz'}  admin={admin} enableLRshortcut={enableLRshortcut} setKeyId={props.setKeyId} diff={false} loading={loading} label_version={'current'} keyId={props.keyId} ww={800} wh={500} ox={0} oy={0} setnewLabels={setnewLabels} setSubmit={setSubmit}/>])            
         }
 
         const fetchVersions = () => {
@@ -266,7 +144,7 @@ const FilePopup = (props) => {
             document.removeEventListener('keydown', handleKeyPress);
         }
 
-    }, [props, props.keyId, row, col, isNER, isImage, isCSV, isText, isJSON, handleKeyPress, loading])
+    }, [props, props.keyId, handleKeyPress, loading, admin])
     
     const Versionspopup = popup ? [
         <>
@@ -275,13 +153,8 @@ const FilePopup = (props) => {
     ] : [<></>]
 
     const Diffpopup =  compare ? [
-        (isNER) ? 
         <>
-        <NERDiffPopup schema={props.schema} enableLRshortcut={enableLRshortcut} keyId={props.keyId} setPopup={setCompare} popup={compare} dates={version} len={Nversion}/>
-        </>
-        :
-        <>
-            <FileDiffPopup schema={props.schema} enableLRshortcut={enableLRshortcut} keyId={props.keyId} setPopup={setCompare} popup={compare} dates={version} len={Nversion}/>
+            <NERDiffPopup schema={props.schema} enableLRshortcut={enableLRshortcut} keyId={props.keyId} setPopup={setCompare} popup={compare} dates={version} len={Nversion}/>
         </>
     ] : [<></>]
 
@@ -307,7 +180,7 @@ const FilePopup = (props) => {
                     </div>
                      
                     <div className="place-self-center py-2 font-bold w-full h-8 text-clip overflow-hidden">
-                        {(isNER) ? 'Sentence' : 'File:'} {path.basename(props.keyId)}
+                        {'Sentence Id: '} {path.basename(props.keyId)}
                     </div>
                     <div></div>
                 </div>
@@ -340,7 +213,7 @@ const FilePopup = (props) => {
                             {
                                 (viewAnnotations && admin)
                                 ? 
-                                <button onClick={() => {setApprove(true); enableLRshortcut.current = false; posthog.capture('Viewed datapoint compare popup', { property: 'value' })}} className="h-min text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"> 
+                                <button onClick={() => {setApprove(true); enableLRshortcut.current = false; posthog.capture('Viewed review annotations popup', { property: 'value' })}} className="h-min text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"> 
                                     Review annotations
                                 </button>
                                 : null
@@ -354,11 +227,11 @@ const FilePopup = (props) => {
                             {
                                 submit ? 
                                 <button key={'cmit_button_1'} onClick={() => submitLabels()} className="z-10 focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-                                    Commit changes  
+                                    {(admin) ? 'Commit changes' : 'Submit changes'}  
                                 </button>
                                 : 
                                 <button key={'cmit_button_2'} className="z-10 text-white bg-gray-800 focus:ring-4 focus:ring-gray-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:border-gray-700 hover:cursor-not-allowed" disabled={true}>
-                                    Commit changes
+                                    {(admin) ? 'Commit changes' : 'Submit changes'}  
                                 </button>
                             }
                         </div>
@@ -368,7 +241,7 @@ const FilePopup = (props) => {
             {Versionspopup}
             {Diffpopup}
             {
-                (approve && isNER) ? 
+                (approve) ? 
                 <NERAnnotators schema={props.schema} setLoading={setLoading} enableLRshortcut={enableLRshortcut} keyId={props.keyId} setPopup={setApprove} popup={approve} dates={version} len={Nversion}/>
                 :
                 null
@@ -379,4 +252,4 @@ const FilePopup = (props) => {
         </>)
 }
 
-export default FilePopup;
+export default NERPopup;

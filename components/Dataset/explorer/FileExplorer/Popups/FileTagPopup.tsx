@@ -80,7 +80,7 @@ const FileTagPopup = (props) => {
                                 </div>
                             </label> 
                         </form> 
-                    </div>
+                </div>
             </div>
         </>
     )

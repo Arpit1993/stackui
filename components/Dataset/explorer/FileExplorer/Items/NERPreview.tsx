@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import DropdownFile from "./DropdownFile"
 import FileTagPopup from "../Popups/FileTagPopup"
 import { Tooltip } from "@mui/material"
-import Highlighter from "react-highlight-words";
 import ErrorOutline from "@mui/icons-material/ErrorOutline";
 import FmdBadIcon from '@mui/icons-material/FmdBad';
 
@@ -28,10 +27,8 @@ const NERPreview = (props) => {
     const [hover, setHover] = useState<Boolean>(false)
     const [popup, setPopup] = useState<Boolean>(false)
     const [nullStr, setNullStr] = useState<string>('')
-    const [text, setText] = useState<Array<any>>([])
-
-    const width: number = Math.ceil(750/Math.sqrt(props.max_view))
-    const height: number = Math.ceil(450/Math.sqrt(props.max_view)) 
+    const [preview, setPreview]  = useState<Array<any>>([])
+    const sentence = useRef<string>('')
 
     var anomaly: Boolean = false
     var msg: string = ''    
@@ -44,9 +41,83 @@ const NERPreview = (props) => {
     }
 
     useEffect(() => {
-        fetch(`http://localhost:8000/get_labels?filename=${props.file['name']}`)
+        fetch(`http://localhost:8000/get_text?key=${props.file['name']}`)
+        .then((res) => res.json())
+        .then((res) => {sentence.current = res['text']})
+        .then(() => fetch(`http://localhost:8000/get_labels?filename=${props.file['name']}`))
         .then((res) => res.json())
         .then((res) => {
+            var updated_labels = res
+            var order: Array<any> = []
+            var array_spans: Array<any> = []
+
+            updated_labels = updated_labels.sort((a, b) => {
+                if(a.start > b.start){
+                    return 1;
+                } else {
+                    return -1;
+                }
+            })
+            
+            var start = 0
+
+            var x = []
+            for (var j = 0; j < updated_labels.length; j++){
+                if (updated_labels[j].start <= 1 && updated_labels[j].end > 0){
+                    x.push(j)
+                }
+            }
+
+            var entities_per_index: Array<any> = [x]
+            var chars: Array<any> = [sentence.current[0]]
+    
+            for(var i = 1; i < sentence.current.length; i++){
+                if (updated_labels.map((val) => (val.end == i)).includes(true)) {
+                    order.push(sentence.current.slice(start, i).replace(/ /g,'\u00A0'));
+                    start = i;
+                } else if (updated_labels.map((val) => (val.start == i+1)).includes(true)){
+                    order.push(sentence.current.slice(start, i).replace(/ /g,'\u00A0'));
+                    start = i;
+                } else if (i == sentence.current.length - 1){
+                    order.push(sentence.current.slice(start, i+1).replace(/ /g,'\u00A0'));
+                }
+    
+                var x: Array<any> = []
+                for (var j = 0; j < updated_labels.length; j++){
+                    if (updated_labels[j].start <= i + 1 && updated_labels[j].end > i){
+                        x.push(j)
+                    }
+                }
+                entities_per_index.push(x)
+                chars.push(sentence.current[i])
+            }
+            
+            start = 0
+            for(var i = 0; i < order.length; i++){
+                const idx_1 = i
+                var child: any = [<span key={`child${idx_1}--1`} className="w-max flex justify-start items-center h-min text-base cursor-text"> {order[idx_1].replace(/ /g,'\u00A0')} </span>]
+                
+                start = (start >= entities_per_index.length) ? entities_per_index.length - 1 : start
+    
+                for(var j = 0; j < entities_per_index[start].length; j++){
+                    const idx_0 = start
+                    const idx_2 = j
+                    const entity_type = updated_labels[entities_per_index[start][idx_2]]['type']
+    
+                    child = [
+                        <button key={`child${idx_1}-${idx_2}`}  className="w-max relative bg-white flex justify-start" style={{ backgroundColor: `${stringToColour(entity_type)}22`, border: `1px solid ${stringToColour(entity_type)}AA`}}>
+                            {child}
+                        </button>
+                    ]
+                }
+                start = start + order[i].length
+                array_spans.push(child)
+            }
+
+            setPreview(() => {
+                return array_spans
+            })
+
             var str_array: Array<any> = [];
             var ent_array: Array<any> = [];
             var tok_array: Array<any> = [];
@@ -54,19 +125,19 @@ const NERPreview = (props) => {
                 const entity = res[i]['type']
 
                 str_array.push(
-                    <div className="px-1 w-fit h-min  text-ellipsis overflow-hidden max-w-1/2" style={{ backgroundColor: `${stringToColour(res[i]['type'])}44`, border: `solid ${stringToColour(res[i]['type'])}`}}>
+                    <div className="px-1 w-fit h-min text-ellipsis overflow-hidden max-w-1/3" style={{ backgroundColor: `${stringToColour(res[i]['type'])}44`, border: `solid ${stringToColour(res[i]['type'])}`}}>
                         {res[i]['type']}
                     </div>
                 )
 
                 ent_array.push(
-                    <div className="px-1 w-fit h-6 text-ellipsis overflow-hidden max-w-1/2" style={{ backgroundColor: `${stringToColour(res[i]['type'])}22`, border: `solid ${stringToColour(res[i]['type'])}`}}>
-                        {props.file['name'].substring(res[i]['start']-1,res[i]['end'])}
+                    <div className="px-1 w-fit h-6 text-ellipsis overflow-hidden max-w-1/3" style={{ backgroundColor: `${stringToColour(res[i]['type'])}22`, border: `solid ${stringToColour(res[i]['type'])}`}}>
+                        {sentence.current.substring(res[i]['start']-1,res[i]['end'])}
                     </div>
                 )
 
                 tok_array.push(
-                    props.file['name'].substring(res[i]['start']-1,res[i]['end'])
+                    sentence.current.substring(res[i]['start']-1,res[i]['end'])
                 )
             }
 
@@ -77,13 +148,10 @@ const NERPreview = (props) => {
             setEntities(() => {
                 return ent_array
             });
-
-            setText(() => {
-                return tok_array
-            });
         })
     },[props.file])
 
+    
     return (
         <>
             {
@@ -98,10 +166,10 @@ const NERPreview = (props) => {
                 </div>
                 {
                     (props.file['tags'].length > 0) ? 
-                    <Tooltip title={`${msg}`} placement="right">
+                    <Tooltip title={`${msg}`} placement="top">
                         {
                             anomaly ?
-                            <button key={`tags-${props.file['name']}`} className="absolute mt-2 ml-1 z-20" onClick={() => setPopup(true)}>
+                            <button key={`tags-${props.file['name']}`} className="absolute top-2 right-[70px] mt-2 ml-1 z-20" onClick={() => setPopup(true)}>
                                 <ErrorOutline className="w-1/10 h-1/10 shadow-sm fill-white rounded-full overflow-hidden bg-red-500 hover:bg-red-700"/>
                             </button>
                             :
@@ -147,20 +215,17 @@ const NERPreview = (props) => {
                         <button className={props.selected[props.index] ? `absolute top-0 z-[19] justify-center flex flex-col h-full w-full bg-blue-500/30 hover:bg-blue-500/50` : `absolute  top-0 z-[19] justify-center flex flex-col h-full w-full hover:bg-white/20`} key={`${props.index.toString()}defg2`} onClick={() => props.handleObjectClick(props.file['name'])}>
                         </button>
                     }
-                    <div className="flex bg-white z-[10] border-b w-full h-full dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600"  key={`${props.index.toString()}abc`}  onClick={() => props.handleObjectClick(props.file['name'])}>
-                        <div className="w-1/3 px-6 py-4 font-normal whitespace-nowrap text-ellipsis overflow-hidden text-gray-900 dark:text-white text-left">
-                            <Highlighter
-                                highlightClassName="p-1 bg-white border border-black dark:bg-gray-700 dark:text-white dark:border-gray-500"
-                                searchWords={text}
-                                autoEscape={true}
-                                textToHighlight={props.file['name']}
-                            />
+                    <div className="grid grid-cols-3 bg-white z-[10] border-b w-full h-full dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600"  key={`${props.index.toString()}abc`}  onClick={() => props.handleObjectClick(props.file['name'])}>
+                        <div className="w-full flex px-6 py-4 font-normal whitespace-nowrap text-ellipsis overflow-hidden text-gray-900 dark:text-white text-left">
+                            {
+                                preview
+                            }
                         </div>
-                        <div className="w-1/3 px-6 py-4 flex gap-2 items-center">
-                            {entities}
+                        <div className="w-full px-6 py-4 flex overflow-hidden gap-2 items-center">
+                            {entities.slice(0,5)}
                         </div>
-                        <div className="w-1/3 px-6 py-4 flex gap-2 items-center">
-                            {labels}
+                        <div className="w-full px-6 py-4 flex overflow-hidden gap-2 items-center">
+                            {labels.slice(0,5)}
                         </div>
                     </div>
                 </button>

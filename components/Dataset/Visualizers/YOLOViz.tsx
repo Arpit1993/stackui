@@ -11,6 +11,41 @@ import ColorPick from "./Items/ColorPick";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
 
+async function query(im) {
+    // const data = b64toBlob(im)
+    const response = await fetch(
+		"https://api-inference.huggingface.co/models/hustvl/yolos-tiny",
+		{
+			headers: { Authorization: `Bearer ${process.env.NEXT_PUBLIC_HF_KEY as string}` },
+			method: "POST",
+			body: new Blob([im]),
+		}
+	);
+	const result = await response.json();
+	return result;
+}
+
+const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
+    const byteCharacters = atob(b64Data);
+    const byteArrays: Array<any> = [];
+  
+    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+      const slice = byteCharacters.slice(offset, offset + sliceSize);
+  
+      const byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+  
+      const byteArray = new Uint8Array(byteNumbers);
+      byteArrays.push(byteArray);
+    }
+  
+    const blob = new Blob(byteArrays, {type: contentType});
+    return blob;
+  }
+  
+
 const YOLOViz = (props) => {
     
     const [usableStr, setUsableStr] = useState<string>('Id')
@@ -76,12 +111,14 @@ const YOLOViz = (props) => {
         var sel_arr = Array(arr_copy.length).fill(false)
         sel_arr[sel_arr.length-1] = true
         setSelectedLabel(() => {return sel_arr})
+        setNullStr(nullstr.concat('z'))
 
         setEditing(true)
         executeScroll()
         var arr_copy = active;  
         arr_copy.push(true);
         setActive(() => {return arr_copy});
+        setNullStr(nullstr.concat('z'))
     }
 
     const deleteLabel = (idx) => {
@@ -97,10 +134,9 @@ const YOLOViz = (props) => {
         updated_labels.current = dic_copy
         props.setnewLabels(() => {return updated_labels.current})
         props.setSubmit(true)
-        setUsableStr('?')
-        setLabels(() => {
-            return arr_copy
-        })
+        setUsableStr('Id')
+        setUsableStr2('name')
+        setLabels(() => {return arr_copy})
         setNullStr(nullstr.concat('z'))
     }
 
@@ -395,9 +431,9 @@ const YOLOViz = (props) => {
                                                                     <div className="flex items-center w-[30%]">
                                                                         <div className="flex flex-col justify-center h-full w-[50%]">
                                                                             {
-                                                                                (Object.keys(labelMap).length > 0) ? 
+                                                                                (Object.keys(labelMap).length > 0) ? (labelMap[label[0]]) ?
                                                                                 <ColorPick map={labelMap} setMap={setLabelMap} setStr={setNullStr} idx={label[0]}/> 
-                                                                                : null
+                                                                                : null : null
 
                                                                             }
                                                                         </div>

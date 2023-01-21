@@ -1,29 +1,22 @@
-import FilePopup from "../../popups/FilePopup";
-import ViewOptions from "./Items/ViewOptions";
+import NERPopup from "../../popups/NERPopup";
 import { useCallback, useEffect, useState } from "react";
 import NERPreview from "./Items/NERPreview";
 import React from "react";
 import SliceButton from "./Items/SliceButton";
 import SelectionTagPopup from "./Popups/SelectionTagPopup";
-import { Tooltip } from "@mui/material";
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
 const NERExplorer = (props) => {
     const [keyVar, setKey] = useState<String>('');
     const [popup, setPopup] = useState<Boolean>(false)
     const [anomalies, setAnomalies] = useState<Boolean>(false)
-    const [switch_, setSwitch] = useState<Boolean>(true)
     const [thumbnailView, setThumbnailView] = useState<Boolean>(true)
     const [selected, setSelected] = useState<Array<Boolean>>([])
     const [pointer, setPointer] = useState<number>(-1)
     const [tagsPopup, setTagsPopup] = useState<Boolean>(false)
 
     const files = props.files;
-
-    var idx_min: number = 0;
-    var idx_max: number = 0;
-
-    const view_label = 'List view';
+    console.log(files)
     
     const handleObjectClick = (key_in: String) => {
         props.shortcuts.current = false
@@ -37,16 +30,6 @@ const NERExplorer = (props) => {
     const handleKeyPress = useCallback((event) => {
         if (props.shortcuts.current == true){
             if (event.shiftKey){
-                if (event.key == '_'){
-                    event.preventDefault();
-                    props.setMaxView(Math.floor(Math.min(Math.pow((Math.sqrt(props.max_view)+1),2),36)));
-                    props.setPage(0);
-                } else if (event.key == '+'){
-                    event.preventDefault();
-                    props.setMaxView(Math.floor(Math.max(Math.pow((Math.sqrt(props.max_view)-1),2),1)));
-                    props.setPage(0);
-                }
-
                 if (event.key == 'ArrowUp') {
                     event.preventDefault();
                     var surr = selected
@@ -91,7 +74,7 @@ const NERExplorer = (props) => {
             if (event.ctrlKey){
                 if (event.key == 'a'){
                     event.preventDefault();
-                    setSelected(Array(props.files.length).fill(selected.includes(false)))
+                    setSelected(() => {return Array(props.files.length).fill(selected.includes(false))})
                     setPointer(selected.includes(false) ? props.files.length : -1)
                 }
 
@@ -175,9 +158,6 @@ const NERExplorer = (props) => {
         </div>
     )
 
-    idx_min = 0;
-    idx_max = max_files;
-
     return (
         <>
             {
@@ -193,7 +173,7 @@ const NERExplorer = (props) => {
                     </div>
                     <div className={!anomalies ? "invisible h-full w-full py-3" :"h-full w-full flex gap-2 justify-center text-sm py-3 items-center"}> 
                         <ErrorOutlineIcon className="w-1/10 h-1/10 shadow-sm fill-white rounded-full overflow-hidden bg-red-500 hover:bg-red-700"/>
-                        {'# anomalies detected'}
+                        {'3 anomalies detected'}
                     </div>
                     <div></div>
                 </div>
@@ -201,20 +181,20 @@ const NERExplorer = (props) => {
                     
                     <div className="relative w-full shadow-md sm:rounded-lg">
                         <div className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                            <div className="w-full flex text-xs font-medium text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                <div className="w-1/3 px-6 py-3">
+                            <div className="w-full grid grid-cols-3 text-xs font-medium text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                <div className="w-full px-6 py-3">
                                     Text
                                 </div>
-                                <div className="w-1/3 px-6 py-3">
+                                <div className="w-full px-6 py-3">
                                     Tokens
                                 </div>
-                                <div className="w-1/3 px-6 py-3">
+                                <div className="w-full px-6 py-3">
                                     Entities
                                 </div>
                             </div>
                             <div className="w-full">
                                 {
-                                    files.filter((item, index) =>  index < idx_max && index >= idx_min ).map((file,index) =>
+                                    files.map((file,index) =>
                                         <NERPreview shortcuts={props.shortcuts} key={`thumb-${file['name']}`} setTagsPopup={setTagsPopup} selected={selected} setPointer={setPointer} setSelected={setSelected} dataset={props.dataset} thumbnailView={thumbnailView} max_view={props.max_view} file={file} index={index} waiting={props.waiting} handleObjectClick={handleObjectClick}/>
                                     )
                                 }
@@ -231,7 +211,7 @@ const NERExplorer = (props) => {
                     </div>
                 </div>
                 {
-                    popup ? <FilePopup shortcuts={props.shortcuts} schema={props.schema} popup={popup} setPopup={setPopup} setKeyId={setKey} keyId={keyVar} key={'fcp'}/> : <></>
+                    popup ? <NERPopup shortcuts={props.shortcuts} schema={props.schema} popup={popup} setPopup={setPopup} setKeyId={setKey} keyId={keyVar} key={'fcp'}/> : <></>
                 }
             </div>
         </>
