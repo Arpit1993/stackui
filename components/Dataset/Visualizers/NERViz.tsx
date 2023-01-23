@@ -272,9 +272,10 @@ const NERViz = (props) => {
         }
         
         start = 0
+
         for(var i = 0; i < order.length; i++){
             const idx_1 = i
-            var child: any = [<span key={`child${idx_1}--1`} className="w-max break-all flex justify-start items-center h-min text-base cursor-text"> {order[idx_1].replace(/ /g,'\u00A0')} </span>]
+            var child: any = [<span key={`child${idx_1}--1`} style={{whiteSpace: 'pre-wrap', wordWrap: 'break-word', wordBreak: 'break-all'}} className="w-min h-min text-base cursor-text leading-loose"> {order[idx_1].replace(/ /g,'\u00A0')} </span>]
             
             start = (start >= entities_per_index.length) ? entities_per_index.length - 1 : start
 
@@ -284,11 +285,12 @@ const NERViz = (props) => {
                 const entity_type = updated_labels.current[entities_per_index[start][idx_2]]['type']
 
                 child = [
-                    <button key={`child${idx_1}-${idx_2}`}  className="w-max relative bg-white flex justify-start" onClick={()=>{selected_labels.current[entities_per_index[idx_0][idx_2] as number] = !selected_labels.current[entities_per_index[idx_0][idx_2] as number]; setNullStr(nullStr.concat('?'))}} style={{ backgroundColor: (selected_labels.current[entities_per_index[idx_0][idx_2]]) ? `${stringToColour(entity_type)}BF` : `${stringToColour(entity_type)}70`}}>
+                    <span key={`child${idx_1}-${idx_2}`} className="w-fit py-2 px-1 rounded-md relative bg-white text-justify" onClick={()=>{selected_labels.current[entities_per_index[idx_0][idx_2] as number] = !selected_labels.current[entities_per_index[idx_0][idx_2] as number]; setNullStr(nullStr.concat('?'))}}
+                     style={{ backgroundColor: (selected_labels.current[entities_per_index[idx_0][idx_2]]) ? `${stringToColour(entity_type)}BF` : `${stringToColour(entity_type)}70`}}>
                         {
                             (selected_labels.current[entities_per_index[idx_0][idx_2]] && (updated_labels.current[entities_per_index[idx_0][idx_2]]['end'] == idx_0 + order[idx_1].length))
                             ?
-                            <button onClick={() => handleRemove(entities_per_index[idx_0][idx_2])} className="absolute z-[10] w-max h-max top-[-10px] right-[-10px] text-gray-500">
+                            <button onClick={() => handleRemove(entities_per_index[idx_0][idx_2])} className="absolute z-[100] w-max h-max top-[-10px] text-gray-500">
                                 <DeleteIcon className="h-[20px] w-[20px]"/>
                             </button>
                             : null
@@ -297,12 +299,12 @@ const NERViz = (props) => {
                         {
                         (updated_labels.current[entities_per_index[idx_0][idx_2]]['end'] == idx_0 + order[idx_1].length)
                         ?   
-                        <div className="w-fit" style={{ userSelect: "none" }}>
+                        <span className="w-fit rounded-md bg-white/50 p-1">
                             {entity_type}
-                        </div>
+                        </span>
                         : null
                         }  
-                    </button>
+                    </span>
                 ]
             }
             start = start + order[i].length
@@ -312,10 +314,10 @@ const NERViz = (props) => {
 
     return (
         <div className="items-center flex flex-col gap-2 h-full w-full p-2 dark:bg-gray-900 dark:text-white">
-            <div className="p-2 h-[10%] items-center justify-start flex w-full font-semibold">
+            <div className="p-2 h-[5%] items-center justify-start flex w-full font-semibold">
                 {'Sentence:'}
             </div>
-            <div onMouseUp={()=>{
+            <span onMouseUp={()=>{
                 const select: any = window.getSelection()
                 const selected_string: String = select.toString()
                 const string_of_node = select?.anchorNode?.textContent.toString()
@@ -336,17 +338,19 @@ const NERViz = (props) => {
                     handleTag(start + 1, start + selected_string.length, tag)
                 }
                 setAdding(false)
-            }} className="flex-wrap overflow-y-scroll h-[30%] border-gray-300 border bg-gray-50 dark:bg-gray-800 rounded-md p-2 items-center justify-start flex w-full font-normal">
+            }} 
+            className="h-[30%] border-gray-300 overflow-y-scroll
+            border bg-gray-50 dark:bg-gray-800 rounded-md p-1 text-justify w-full font-normal">
                 {
                     (editing) ? 
                     <form className="w-full h-full">   
-                        <div onInput={(e) => {setSentence(e.currentTarget.textContent as string); setEdited(true)}} className="break-words h-full overflow-y-scroll text-start max-h-96 w-full text-base text-gray-900 rounded-lg bg-gray-50 focus:ring-blue-500 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500" contentEditable={true}>{sentence}</div>
+                        <textarea onInput={(e) => {setSentence(e.currentTarget.textContent as string); setEdited(true)}} className="break-words h-full overflow-y-scroll text-start max-h-96 w-full text-base text-gray-900 rounded-lg bg-gray-50 focus:ring-blue-500 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500" contentEditable={true}>{sentence}</textarea>
                     </form>
                     : 
                     (order.length) ? array_spans : null
                 }
-            </div>
-            <div className="p-2 h-[50%] items-start flex flex-col w-full font-normal gap-2">
+            </span>
+            <div className="p-2 h-[40%] items-start flex flex-col w-full font-normal gap-2">
                 {
                     (props.admin) ?
                     <button onClick={() => {handleEditor()}} className={editing ? 'text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800' : 'text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700'}>
@@ -358,7 +362,6 @@ const NERViz = (props) => {
                     {'Tags:'}
                 </div>
                 <div className="items-center justify-start flex-wrap flex h-[80%] overflow-scroll w-full font-normal gap-2 border border-gray-300 p-2 rounded-md">
-                    {labels}
                     {
                         tagEdit ?
                         <form onSubmit={(event) => {event.preventDefault(); addNewTag(newTag)}} className={"z-30 flex gap-1 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"}>
@@ -374,14 +377,15 @@ const NERViz = (props) => {
                         </button>
 
                     }
+                    {labels}
                     <button onClick={() => handleAutoLabel()} className={"z-30 flex gap-1 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"}>
                             <PsychologyIcon className="h-[20px] w-[20px]"/>
                             {'AutoLabel'}
                     </button>
                 </div>
             </div>
-            <div className="w-full">
-                <div className="p-2 h-[10%] mt-5 items-center justify-start flex w-full font-semibold">
+            <div className="w-full h-fit">
+                <div className="p-2 mt-5 items-center justify-start flex w-full font-semibold">
                     {'Comments:'}
                 </div>
                 <div className="flex-col justify-between">

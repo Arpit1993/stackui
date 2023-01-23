@@ -17,7 +17,7 @@ const Navbar = () => {
     return (
         <div className='flex w-full justify-between'>
             {
-                (login) ? <AuthModal setPopup={setLogin}/> : null
+                (false) ? <AuthModal setPopup={setLogin}/> : null
             }
             <nav className="w-full p-2 bg-neutral-800">
                 <div className="w-full container flex flex-wrap items-center justify-between mx-auto">
@@ -28,16 +28,16 @@ const Navbar = () => {
                         <ul className="flex px-2 items-center rounded-lg flex-row space-x-8 text-sm font-medium">
                             <li>
                                 <Link href="/Home">
-                                    <div className="flex gap-2 pl-3 pr-4 text-white rounded hover:bg-gray-100 md:hover:bg-transparent border-0 hover:text-blue-700">
-                                        <Image className="invert" src={'/../public/Icons/ExploreIcon.png'} width={'20'} height={'20'} objectFit={'contain'} alt=''/>
+                                    <div className="flex gap-2 pl-3 pr-4 hover:cursor-pointer text-white rounded hover:bg-gray-100 md:hover:bg-transparent border-0 hover:text-blue-700">
+                                        <Image className="invert" src={'/Icons/ExploreIcon.png'} width={'20'} height={'20'} objectFit={'contain'} alt=''/>
                                         <div> Home </div>
                                     </div>
                                 </Link>
                             </li>
                             <li>
                                 <Link href="/Datasets">
-                                    <div className="flex gap-2 pl-3 pr-4 text-white rounded hover:bg-gray-100 md:hover:bg-transparent border-0 hover:text-blue-700">
-                                        <Image className="invert" src={'/../public/Icons/DatasetIcon.png'} width={'20'} height={'20'} objectFit={'contain'} alt=''/>
+                                    <div className="flex gap-2 pl-3 pr-4 text-white  hover:cursor-pointer rounded hover:bg-gray-100 md:hover:bg-transparent border-0 hover:text-blue-700">
+                                        <Image className="invert" src={'/Icons/DatasetIcon.png'} width={'20'} height={'20'} objectFit={'contain'} alt=''/>
                                         <div> Datasets </div>
                                     </div>
                                 </Link>

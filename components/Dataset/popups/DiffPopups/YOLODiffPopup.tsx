@@ -1,9 +1,7 @@
 import React, { useRef } from "react";
 import { useState, useEffect } from "react";
-import DropdownVersion from "../Components/DropdownVersion";
 import YOLOViz from "../../Visualizers/YOLOViz";
 import DropdownVersionCoupled from "../Components/DropdownVersionCoupled";
-import { timeLog } from "console";
 
 const fetchData = async (keyId, version, setD, label_v) => {
 
@@ -37,7 +35,6 @@ const YOLODiffPopup = (props) => {
     const [d2, setD2] = useState(null)
 
     const [first, setFirst] = useState<Boolean>(true)
-
     const [timeLabels, setTimeLabels] = useState<Array<string>>([])
     
     const [l1, setL1] = useState<number>(-1)
@@ -50,21 +47,21 @@ const YOLODiffPopup = (props) => {
             await fetchData(keyId,v1,setD1,l1)
             await fetchData(keyId,v2,setD2,l2)
         }
-        if(props.popup == 1){ 
-            if (first){
-                fetch('http://localhost:8000/label_versions?key='.concat(props.keyId).concat('&l=10&page=0'))
-                .then((data) => data.json()).then((res) => {
-                    if(first){
+        if (first) {
+            fetch('http://localhost:8000/label_versions?key='.concat(props.keyId).concat('&l=10&page=0'))
+            .then((data) => data.json()).then((res) => {
+                if(first) {
+                    if (res.commits){
                         setTimeLabels(Object.values(res.commits).map( (cm) => cm.date))
                         setL1(res.len)
                         setL2(Math.max(res.len-1,1))
                         setFirst(false)
                         fetchStuff(props.keyId, setD1, setD2, v1, v2, res.len, Math.max(res.len-1,1))
                     }
-                })
-            } else { 
-                fetchStuff(props.keyId, setD1, setD2, v1, v2, l1, l2)
-            }
+                }
+            })
+        } else { 
+            fetchStuff(props.keyId, setD1, setD2, v1, v2, l1, l2)
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[props.keyId, v1, v2, l1, l2])
@@ -83,13 +80,13 @@ const YOLODiffPopup = (props) => {
             <div className="flex justify-center gap-2">
                 <div className="mt-2 gap-2">
                     <DropdownVersionCoupled className="z-10" label={'Datapoint Version'} setD={setV1} setL={setL1} vD={v1} vL={l1} imageDate={props.dates} labelDate={timeLabels} />
-                    <div className="z-auto w-[500px] h-[505px] rounded-md dark:text-black text-center border-2 flex flex-col justify-center border-black bg-white dark:bg-black">
+                    <div className="z-auto w-[500px] h-[500px] rounded-md dark:text-black text-center border flex flex-col justify-center border-gray-300 bg-white dark:bg-black">
                         {d1}
                     </div>
                 </div>
                 <div className="mt-2  gap-2">
                     <DropdownVersionCoupled className="z-10" label={'Datapoint Version'} setD={setV2} setL={setL2} vD={v2} vL={l2} imageDate={props.dates} labelDate={timeLabels} />
-                    <div className="z-auto w-[500px] h-[506px] rounded-md dark:text-black text-center border-2 flex flex-col justify-center border-black bg-white dark:bg-black">
+                    <div className="z-auto w-[500px] h-[500px] rounded-md dark:text-black text-center border flex flex-col justify-center border-gray-300 bg-white dark:bg-black">
                         {d2}
                     </div>
                 </div>

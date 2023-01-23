@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 
-const FileTagPopup = (props) => {
+const CommentsModal = (props) => {
 
-    const [tags, setTags] = useState(props.file['tags'])
+    const [tags, setTags] = useState([])
     const [newtag, setNewtag] = useState('')
 
     const handleChange = (e) => {
@@ -10,39 +10,35 @@ const FileTagPopup = (props) => {
     }
 
     const handleDelete = async (tag) => {
-        await fetch(`http://localhost:8000/remove_tag?file=${props.file['name']}&tag=${tag}`)
-        props.file['tags'] = await fetch(`http://localhost:8000/get_tags?file=${props.file['name']}`).then((res) => res.json())
-        setTags(await props.file['tags'])
-        if(props.file['tags'].length == 0){
-            props.shortcuts.current = true
-            props.setPopup(false)
-        }
+        await fetch(`http://localhost:8000/remove_tag?file=${props.keyId}&tag=${tag}`)
+        fetch(`http://localhost:8000/get_tags?file=${props.keyId}`).then((res) => res.json()).then(setTags)
     }
 
     const handleAdd = async (event) => {
         event.preventDefault();
-        await fetch(`http://localhost:8000/add_tag?file=${props.file['name']}&tag=${newtag}`)
-        props.file['tags'] = await fetch(`http://localhost:8000/get_tags?file=${props.file['name']}`).then((res) => res.json())
-        setTags(await props.file['tags'])
-        props.shortcuts.current = true
-        props.setPopup(false)
+        fetch(`http://localhost:8000/add_tag?file=${props.keyId}&tag=${newtag}`)
+        .then(() => {
+            fetch(`http://localhost:8000/get_tags?file=${props.keyId}`).then((res) => res.json()).then(setTags)
+        })
     }
+
+    useEffect(() => {
+        fetch(`http://localhost:8000/get_tags?file=${props.keyId}`).then((res) => res.json()).then(setTags)
+    }, [])
 
     return (
         <>
             {
                 <button onClick={() => {
-                    props.shortcuts.current = true
                     props.setPopup(false)
-                    }} key={'ctp1'} className="z-40 bg-white/20 backdrop-blur-sm  fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
+                    }} key={'ctp1'} className="z-[1000] bg-white/20 backdrop-blur-sm  fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
                     click to close
                 </button>
             }
-            <div className="z-50 p-2 text-sm rounded-md fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-300 bg-white dark:bg-gray-900 w-1/3 h-1/3">
+            <div className="z-[1100] p-2 text-sm rounded-md fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-300 bg-white dark:bg-gray-900 w-1/3 h-1/4">
                 <div className="flex-col justify-between">
                     <div className="w-full justify-between flex">
                         <button onClick={() => {
-                            props.shortcuts.current = true
                             props.setPopup(false)
                             }} className='text-xs px-1 w-[15px] h-4 flex-col bg-red-400 hover:bg-red-200 rounded-full'> 
                         </button> 
@@ -87,4 +83,4 @@ const FileTagPopup = (props) => {
 
 }
 
-export default FileTagPopup;
+export default CommentsModal;

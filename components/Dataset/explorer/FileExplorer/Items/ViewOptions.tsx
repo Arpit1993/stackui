@@ -12,9 +12,9 @@ import ViewListIcon from '@mui/icons-material/ViewList';
 const ViewOptions = (props) => {
     return (
         <Popover className="relative z-[30]">
-            <Popover.Button className='w-[50px] h-[50px]'>
-                <div className="w-[50px] h-[50px] p-1 flex justify-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
-                    <TuneIcon className="fill-black dark:fill-white"></TuneIcon>
+            <Popover.Button className='w-fit h-fit'>
+                <div className="w-fit h-fit p-2 items-center flex justify-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                    <TuneIcon className="fill-black h-5 w-5 dark:fill-white"></TuneIcon>
                 </div>
             </Popover.Button>
 

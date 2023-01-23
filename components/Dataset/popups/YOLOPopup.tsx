@@ -5,15 +5,15 @@ import LoadingScreen from "../../LoadingScreen";
 import YOLOHistoryPopUp from "./History/YOLOHistoryPopUp";
 import YOLOViz from "../Visualizers/YOLOViz";
 import YOLODiffPopup from "./DiffPopups/YOLODiffPopup";
-import DropdownFileOptions from "./Components/DropdownFileOptions";
-import YOLOHistoryList from "./History/YOLOHistoryList";
 import path from 'path'
 import CloseIcon from '@mui/icons-material/Close';
+import CommentsModal from "../Visualizers/CommentsModal";
 
 const YOLOPopup = (props) => {
     
     const [popup, setPopup] = useState<Boolean>(false)
 
+    const [comments, setComments] = useState<Boolean>(false)
     const [compare, setCompare] = useState<Boolean>(false)
     const [loading, setLoading] = useState<Boolean>(false)
     const [version, setVersions] = useState([{version: 'loading...', date: 'loading...',commit: 'loading...'}])
@@ -101,7 +101,7 @@ const YOLOPopup = (props) => {
                     }
                 })).then((stream) => new Response(stream)).then((response) => response.blob())
                 .then((blob) => URL.createObjectURL(blob)).then((img) => 
-                [<YOLOViz key={'imgvz'}  diff={false} loading={loading} label_version={'current'} img={img} keyId={props.keyId} ww={800} wh={500} ox={0} oy={0} setnewLabels={setnewLabels} setSubmit={setSubmit}/>])
+                [<YOLOViz key={'imgvz'}  setLoading={setLoading} diff={false} loading={loading} label_version={'current'} img={img} keyId={props.keyId} ww={800} wh={500} ox={0} oy={0} setnewLabels={setnewLabels} setSubmit={setSubmit}/>])
                 .then(setDataComp)
         }
 
@@ -188,6 +188,9 @@ const YOLOPopup = (props) => {
                             <button onClick={() => {setCompare(true); enableLRshortcut.current = false; posthog.capture('Viewed datapoint compare popup', { property: 'value' })}} className="h-min text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"> 
                                 Compare versions
                             </button>
+                            <button onClick={() => {setComments(true); enableLRshortcut.current = false; posthog.capture('Viewed datapoint comments popup', { property: 'value' })}} className="h-min text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"> 
+                                Comments
+                            </button>
                         </div>
                         <div className="w-[300px] flex justify-center mt-4"> 
                             {
@@ -206,6 +209,9 @@ const YOLOPopup = (props) => {
             </div>
             {Versionspopup}
             {Diffpopup}
+            {
+                comments ? <CommentsModal  keyId={props.keyId} setPopup={setComments}/> : null
+            }
             {
                 loading ? <LoadingScreen  key={'lscpp'}/> : null
             }

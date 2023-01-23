@@ -15,13 +15,13 @@ const DropdownVersionCoupled = (props) => {
     const renderButton = (version, len) => {
       if (version == len){
         return (
-          <Menu.Button className="z-50 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+          <Menu.Button className="z-50 text-white h-10 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
             {props.label} {version}
           </Menu.Button>
         )
       } else {
         return (
-          <Menu.Button className="z-50 py-2.5 px-5 mr-2 mb-2 text-sm font-body text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+          <Menu.Button className="z-50 py-2.5 px-5 mr-2 mb-2 h-10 text-sm font-body text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
             {props.label} {version}
           </Menu.Button>
         )
@@ -36,8 +36,6 @@ const DropdownVersionCoupled = (props) => {
     const labelDate = props.labelDate.map((el,idx)=>{return {type: 'label', v: props.labelDate.length-idx, date: new Date(el)}})
 
     const versions = Array().concat(imageDate, labelDate).sort(function(a,b){return b.date - a.date});
-
-    console.log(versions)
 
     function getAllIndexes(arr, condition) {
         var indexes: Array<number> = [];
@@ -87,18 +85,17 @@ const DropdownVersionCoupled = (props) => {
             <Tooltip placement="right" title={`${versions[x].type} version ${versions[x].v}`}>
               <button
                 className={classNames(
-                  active ? 'z-50 bg-gray-100 text-gray-900  w-full' : 'z-50 text-gray-700',
+                  active ? 'z-50 bg-gray-100 text-gray-900' : 'z-50 text-gray-700',
                   'z-50 block px-4 py-2 text-sm w-full'
                 )}
                 onClick={()=>{
-                  for (var j = 0; j < x; j++){
-                    const y = j
-                    versions[y].type == 'image' ? handleClick(versions[y].v,props.setD) : handleClick(versions[y].v,props.setL)
-                  } 
-                  
-                  for (var j = versions.length; j > x; j--){
-                    const y = j - 1
-                    versions[y].type == 'image' ? handleClick(versions[y].v,props.setD) : handleClick(versions[y].v,props.setL)
+                  if((x < versions.length -1)){
+                    for (var j = versions.length; j > x; j--){
+                      const y = j - 1
+                      versions[y].type == 'image' ? handleClick(versions[y].v,props.setD) : handleClick(versions[y].v,props.setL)
+                    }
+                  } else if (versions.length == 1) {
+                    versions[0].type == 'image' ? handleClick(versions[0].v,props.setD) : null
                   }
                 }}
               >
@@ -111,7 +108,7 @@ const DropdownVersionCoupled = (props) => {
     }
 
     return (
-        <Menu as="div" className="z-50 relative inline-block text-left mb-2">
+        <Menu as="div" className="z-50 relative inline-block text-left">
           <div>
             {renderButton(version, versions.length)}
           </div>

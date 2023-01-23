@@ -21,7 +21,6 @@ const AddFilePopup = (props) => {
         setLoading(true)
         
         const res1 = await fetch('http://localhost:8000/add_multifiles/',reqOptions)
-        const res2 = await fetch('http://localhost:8000/commit_req/')
         posthog.capture('Addded a file', { property: 'value' })
         props.shortcuts.current = true
         window.location.reload();

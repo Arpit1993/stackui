@@ -5,6 +5,22 @@ import React from "react";
 import SliceButton from "./Items/SliceButton";
 import SelectionTagPopup from "./Popups/SelectionTagPopup";
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import BugReportIcon from '@mui/icons-material/BugReport';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import { posthog } from "posthog-js";
+
+function commit(comment: string){
+    fetch('http://localhost:8000/commit_req?comment='.concat(comment))
+    window.location.reload();
+    return true
+}
+
+function diagnose(){
+    fetch('http://localhost:8000/diagnose').then(
+        () => {window.location.reload();}
+    )
+    return true
+}
 
 const NERExplorer = (props) => {
     const [keyVar, setKey] = useState<String>('');
@@ -175,7 +191,17 @@ const NERExplorer = (props) => {
                         <ErrorOutlineIcon className="w-1/10 h-1/10 shadow-sm fill-white rounded-full overflow-hidden bg-red-500 hover:bg-red-700"/>
                         {'3 anomalies detected'}
                     </div>
-                    <div></div>
+                    <button onClick={()=>commit('')} className=" flex h-fit items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                        <RefreshIcon className="h-5 w-5 mr-2"/>
+                        Refresh
+                    </button>
+                    
+                    <button onClick={()=>{posthog.capture('bug report button', { property: 'value' }); diagnose()}} 
+                        className="text-white flex h-fit items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                        <BugReportIcon className="h-5 w-5 mr-2"/>
+                        Diagnose
+                    </button>
+                    
                 </div>
                 <div className="z-0 h-fit w-full flex justify-center p-1">
                     

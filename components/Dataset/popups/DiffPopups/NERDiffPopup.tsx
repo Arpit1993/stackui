@@ -72,7 +72,7 @@ const fetchData = async (keyId, version, setD) => {
             start = 0
             for(var i = 0; i < order.length; i++){
                 const idx_1 = i
-                var child: any = [<span key={`child${idx_1}--1`} className="w-max flex justify-start items-center h-min text-base cursor-text"> {order[idx_1].replace(/ /g,'\u00A0')} </span>]
+                var child: any = [<span key={`child${idx_1}--1`} style={{whiteSpace: 'pre-wrap', wordWrap: 'break-word', wordBreak: 'break-all'}} className="w-fit text-justify h-min text-base cursor-text"> {order[idx_1].replace(/ /g,'\u00A0')} </span>]
                 
                 start = (start >= entities_per_index.length) ? entities_per_index.length - 1 : start
     
@@ -82,7 +82,7 @@ const fetchData = async (keyId, version, setD) => {
                     const entity_type = updated_labels[entities_per_index[start][idx_2]]['type']
     
                     child = [
-                        <button key={`child${idx_1}-${idx_2}`}  className="w-max relative bg-white flex justify-start" style={{ backgroundColor: `${stringToColour(entity_type)}22`, border: `1px solid ${stringToColour(entity_type)}AA`}}>
+                        <button key={`child${idx_1}-${idx_2}`}  className="w-max text-justify relative bg-white" style={{ backgroundColor: `${stringToColour(entity_type)}22`, border: `1px solid ${stringToColour(entity_type)}AA`}}>
                             {child}
                         </button>
                     ]
@@ -91,7 +91,7 @@ const fetchData = async (keyId, version, setD) => {
                 array_spans.push(child)
             }
             setD(
-                <div className="border-gray-300 flex-wrap border max-h-36 bg-gray-50 dark:bg-gray-800 rounded-md p-2 h-fit overflow-scroll items-center justify-start flex w-full font-normal">
+                <div className="border-gray-300 border h-36 bg-gray-50 dark:bg-gray-800 rounded-md p-2 overflow-scroll text-justify  w-full font-normal">
                     {array_spans}
                 </div>
             )
@@ -128,13 +128,13 @@ const NERDiffPopup = (props) => {
                 </div>
                 <div></div>
             </div>
-            <div className="justify-center items-center w-full h-full flex flex-col gap-2">
-                <div className="">
+            <div className="justify-start items-center w-full h-full flex flex-col gap-2">
+                <div className="mt-8">
                     <DropdownVersion label={'Version'} keyId={props.keyId} setV={setV1} len={props.len} v={v1} />
                     <div className="p-2 h-[10%] items-center justify-start flex w-full font-semibold">
                         {'Sentence:'}
                     </div>
-                    <div className="w-[500px] h-fit rounded-md dark:text-black text-center flex flex-col justify-center bg-white">
+                    <div className="w-[600px] h-fit rounded-md dark:text-black text-center flex flex-col justify-center bg-white">
                         {d1}
                     </div>
                 </div>
@@ -143,7 +143,7 @@ const NERDiffPopup = (props) => {
                     <div className="p-2 h-[10%] items-center justify-start flex w-full font-semibold">
                         {'Sentence:'}
                     </div>
-                    <div className="w-[500px] h-fit rounded-md dark:text-black text-center flex flex-col justify-center bg-white">
+                    <div className="w-[600px] h-fit rounded-md dark:text-black text-center flex flex-col justify-center bg-white">
                         {d2}
                     </div>
                 </div>

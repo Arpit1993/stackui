@@ -28,14 +28,23 @@ const stringToColour = (str: string) => {
     return colour;
 }
 
+function drawImageScaled(img, ctx) {
+    var canvas = ctx.canvas ;
+    var hRatio = canvas.width  / img.width    ;
+    var vRatio =  canvas.height / img.height  ;
+    var ratio  = Math.min ( hRatio, vRatio );
+    var centerShift_x = ( canvas.width - img.width*ratio ) / 2;
+    var centerShift_y = ( canvas.height - img.height*ratio ) / 2;  
+    ctx.clearRect(0,0,canvas.width, canvas.height);
+    ctx.drawImage(img, 0,0, img.width, img.height,
+                       centerShift_x,centerShift_y,img.width*ratio, img.height*ratio);  
+ }
+
 const BoundingBoxes = (props) => {
     
     const [cursor, setCursor] = useState<number>(0)
     const [mouseInsideBB, setMouseInsideBB] = useState<Array<Boolean>>(Array(props.rect.length).fill(false))
     const canvasRef = useRef(null)
-
-    const offset_x = -4
-    const offset_y = 0
 
     const dragTL = useRef(Array(props.rect.length).fill(false))
     const dragBL = useRef(Array(props.rect.length).fill(false))
@@ -66,8 +75,8 @@ const BoundingBoxes = (props) => {
         // context.scale(dpr, dpr);
 
         const mouseDown = (e) => {
-            mouseX.current = e.pageX - client_rect.left - offset_x;
-            mouseY.current = e.pageY - client_rect.top - offset_y;
+            mouseX.current = e.pageX - client_rect.left;
+            mouseY.current = e.pageY - client_rect.top;
 
             var in_box = false
 
@@ -87,7 +96,11 @@ const BoundingBoxes = (props) => {
                                 arr[i] = true
                                 props.setEdit(() => {return arr})
                                 props.setUsableStr(props.rect[i].class)
-                                props.setUsableStr2(props.labelMap[props.rect[i].class].label)
+                                if(props.labelMap[props.rect[i].class]){
+                                    props.setUsableStr2(props.labelMap[props.rect[i].class].label)
+                                } else {
+                                    props.setUsableStr2('')
+                                }
                                 setCursor(1)
                                 in_box = true
                             break;
@@ -98,7 +111,11 @@ const BoundingBoxes = (props) => {
                                 arr[i] = true
                                 props.setEdit(() => {return arr})
                                 props.setUsableStr(props.rect[i].class)
-                                props.setUsableStr2(props.labelMap[props.rect[i].class].label)
+                                if(props.labelMap[props.rect[i].class]){
+                                    props.setUsableStr2(props.labelMap[props.rect[i].class].label)
+                                } else {
+                                    props.setUsableStr2('')
+                                }
                                 setCursor(2)
                                 in_box = true
                             break;
@@ -109,7 +126,11 @@ const BoundingBoxes = (props) => {
                                 arr[i] = true
                                 props.setEdit(() => {return arr})
                                 props.setUsableStr(props.rect[i].class)
-                                props.setUsableStr2(props.labelMap[props.rect[i].class].label)
+                                if(props.labelMap[props.rect[i].class]){
+                                    props.setUsableStr2(props.labelMap[props.rect[i].class].label)
+                                } else {
+                                    props.setUsableStr2('')
+                                }
                                 setCursor(3)
                                 in_box = true
                             break;
@@ -120,7 +141,11 @@ const BoundingBoxes = (props) => {
                                 arr[i] = true
                                 props.setEdit(() => {return arr})
                                 props.setUsableStr(props.rect[i].class)
-                                props.setUsableStr2(props.labelMap[props.rect[i].class].label)
+                                if(props.labelMap[props.rect[i].class]){
+                                    props.setUsableStr2(props.labelMap[props.rect[i].class].label)
+                                } else {
+                                    props.setUsableStr2('')
+                                }
                                 setCursor(4)
                                 in_box = true
                                 break;
@@ -218,10 +243,11 @@ const BoundingBoxes = (props) => {
         }
     
         const mouseMove = (e) => {
-            mouseX.current = e.pageX - client_rect.left  - offset_x;
-            mouseY.current = e.pageY - client_rect.top  - offset_y;
+            mouseX.current = e.pageX - client_rect.left;
+            mouseY.current = e.pageY - client_rect.top;
             if(dragBL.current.includes(true) || dragBR.current.includes(true) || dragTL.current.includes(true) || dragTR.current.includes(true) || dragAll.current.includes(true)){
                 context.clearRect(0, 0, canvas.width, canvas.height);
+                drawImageScaled(props.img, context)
             }
                         
             for(var i = 0; i < props.rect.length; i++){
@@ -276,9 +302,9 @@ const BoundingBoxes = (props) => {
 
                             context.lineWidth = 2;
                             context.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, 0.4)`
-                            context.fillRect(props.rect[i].x+offset_x, props.rect[i].y+offset_y, props.rect[i].w, props.rect[i].h)
+                            context.fillRect(props.rect[i].x, props.rect[i].y, props.rect[i].w, props.rect[i].h)
                             context.strokeStyle = (props.labelMap[props.rect[i].class]) ? props.labelMap[props.rect[i].class].color : '#000000'
-                            context.strokeRect(props.rect[i].x+offset_x, props.rect[i].y+offset_y, props.rect[i].w, props.rect[i].h)
+                            context.strokeRect(props.rect[i].x, props.rect[i].y, props.rect[i].w, props.rect[i].h)
             
                             context.font = '12px sans-serif';
                             context.fillStyle = '#ffff'
@@ -286,20 +312,20 @@ const BoundingBoxes = (props) => {
 
                             if((props.selected[i]) ){
                                 context.fillStyle = `1.0, 1.0, 1.0, 1.0)`
-                                context.fillRect(props.rect[i].x+offset_x-5, props.rect[i].y+offset_y-5, 10, 10) 
-                                context.strokeRect(props.rect[i].x+offset_x-5, props.rect[i].y+offset_y-5, 10, 10) 
+                                context.fillRect(props.rect[i].x-5, props.rect[i].y-5, 10, 10) 
+                                context.strokeRect(props.rect[i].x-5, props.rect[i].y-5, 10, 10) 
                                 
                                 context.fillStyle = `1.0, 1.0, 1.0, 1.0)`
-                                context.fillRect(props.rect[i].x+offset_x-5, props.rect[i].y + props.rect[i].h +offset_y-5, 10, 10) 
-                                context.strokeRect(props.rect[i].x+offset_x-5, props.rect[i].y + props.rect[i].h +offset_y-5, 10, 10)
+                                context.fillRect(props.rect[i].x-5, props.rect[i].y + props.rect[i].h -5, 10, 10) 
+                                context.strokeRect(props.rect[i].x-5, props.rect[i].y + props.rect[i].h -5, 10, 10)
             
                                 context.fillStyle = `1.0, 1.0, 1.0, 1.0)`
-                                context.fillRect(props.rect[i].x+ props.rect[i].w +offset_x-5, props.rect[i].y + props.rect[i].h +offset_y-5, 10, 10) 
-                                context.strokeRect(props.rect[i].x+ props.rect[i].w +offset_x-5, props.rect[i].y + props.rect[i].h +offset_y-5, 10, 10)
+                                context.fillRect(props.rect[i].x+ props.rect[i].w -5, props.rect[i].y + props.rect[i].h -5, 10, 10) 
+                                context.strokeRect(props.rect[i].x+ props.rect[i].w -5, props.rect[i].y + props.rect[i].h -5, 10, 10)
             
                                 context.fillStyle = `1.0, 1.0, 1.0, 1.0)`
-                                context.fillRect(props.rect[i].x+ props.rect[i].w +offset_x-5, props.rect[i].y +offset_y-5, 10, 10) 
-                                context.strokeRect(props.rect[i].x+ props.rect[i].w +offset_x-5, props.rect[i].y +offset_y-5, 10, 10)
+                                context.fillRect(props.rect[i].x+ props.rect[i].w -5, props.rect[i].y -5, 10, 10) 
+                                context.strokeRect(props.rect[i].x+ props.rect[i].w -5, props.rect[i].y -5, 10, 10)
                             }
 
             
@@ -329,9 +355,9 @@ const BoundingBoxes = (props) => {
                             props.rect[i].h = (props.rect[i].h < 0) ? 0.1 : props.rect[i].h
                             context.lineWidth = 2;
                             context.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, 0.05)`
-                            context.fillRect(props.rect[i].x+offset_x, props.rect[i].y+offset_y, props.rect[i].w, props.rect[i].h)
+                            context.fillRect(props.rect[i].x, props.rect[i].y, props.rect[i].w, props.rect[i].h)
                             context.strokeStyle = `${color_hex}AA`
-                            context.strokeRect(props.rect[i].x+offset_x, props.rect[i].y+offset_y, props.rect[i].w, props.rect[i].h)
+                            context.strokeRect(props.rect[i].x, props.rect[i].y, props.rect[i].w, props.rect[i].h)
             
                             context.font = '12px sans-serif';
                             context.fillStyle = '#ffff'
@@ -409,15 +435,17 @@ const BoundingBoxes = (props) => {
 
         context.clearRect(0, 0, canvas.width, canvas.height);
 
+        drawImageScaled(props.img, context)
+
         for(var i = 0; i < props.rect.length; i++){
             if(props.active[i]){
                 const color = hexToRgb((props.labelMap[props.rect[i].class]) ? props.labelMap[props.rect[i].class].color : '#000000')
                 context.lineWidth = 2;
                 context.fillStyle = (props.selected[i]) ? `rgba(${color.r}, ${color.g}, ${color.b}, 0.4)` : `rgba(${color.r}, ${color.g}, ${color.b}, 0.1)`
-                context.fillRect(props.rect[i].x+offset_x, props.rect[i].y+offset_y, props.rect[i].w, props.rect[i].h)
+                context.fillRect(props.rect[i].x, props.rect[i].y, props.rect[i].w, props.rect[i].h)
 
                 context.strokeStyle = (props.labelMap[props.rect[i].class]) ? props.labelMap[props.rect[i].class].color : '#000000'
-                context.strokeRect(props.rect[i].x+offset_x, props.rect[i].y+offset_y, props.rect[i].w, props.rect[i].h)
+                context.strokeRect(props.rect[i].x, props.rect[i].y, props.rect[i].w, props.rect[i].h)
                 if (!props.new.current[i]){
                     context.font = '12px sans-serif';
                     context.fillStyle = '#ffff';
@@ -427,20 +455,20 @@ const BoundingBoxes = (props) => {
 
                 if((props.selected[i]) ){
                     context.fillStyle = `1.0, 1.0, 1.0, 1.0)`
-                    context.fillRect(props.rect[i].x+offset_x-5, props.rect[i].y+offset_y-5, 10, 10) 
-                    context.strokeRect(props.rect[i].x+offset_x-5, props.rect[i].y+offset_y-5, 10, 10) 
+                    context.fillRect(props.rect[i].x-5, props.rect[i].y-5, 10, 10) 
+                    context.strokeRect(props.rect[i].x-5, props.rect[i].y-5, 10, 10) 
                     
                     context.fillStyle = `1.0, 1.0, 1.0, 1.0)`
-                    context.fillRect(props.rect[i].x+offset_x-5, props.rect[i].y + props.rect[i].h +offset_y-5, 10, 10) 
-                    context.strokeRect(props.rect[i].x+offset_x-5, props.rect[i].y + props.rect[i].h +offset_y-5, 10, 10)
+                    context.fillRect(props.rect[i].x-5, props.rect[i].y + props.rect[i].h -5, 10, 10) 
+                    context.strokeRect(props.rect[i].x-5, props.rect[i].y + props.rect[i].h -5, 10, 10)
 
                     context.fillStyle = `1.0, 1.0, 1.0, 1.0)`
-                    context.fillRect(props.rect[i].x+ props.rect[i].w +offset_x-5, props.rect[i].y + props.rect[i].h +offset_y-5, 10, 10) 
-                    context.strokeRect(props.rect[i].x+ props.rect[i].w +offset_x-5, props.rect[i].y + props.rect[i].h +offset_y-5, 10, 10)
+                    context.fillRect(props.rect[i].x+ props.rect[i].w -5, props.rect[i].y + props.rect[i].h -5, 10, 10) 
+                    context.strokeRect(props.rect[i].x+ props.rect[i].w -5, props.rect[i].y + props.rect[i].h -5, 10, 10)
 
                     context.fillStyle = `1.0, 1.0, 1.0, 1.0)`
-                    context.fillRect(props.rect[i].x+ props.rect[i].w +offset_x-5, props.rect[i].y +offset_y-5, 10, 10) 
-                    context.strokeRect(props.rect[i].x+ props.rect[i].w +offset_x-5, props.rect[i].y +offset_y-5, 10, 10)
+                    context.fillRect(props.rect[i].x+ props.rect[i].w -5, props.rect[i].y -5, 10, 10) 
+                    context.strokeRect(props.rect[i].x+ props.rect[i].w -5, props.rect[i].y -5, 10, 10)
                 }
             }
         }
@@ -456,7 +484,7 @@ const BoundingBoxes = (props) => {
     
     return(
         <div className={`z-20 absolute ${(props.new.current.includes(true)) ? '' : (cursor == 0) ? mouseInsideBB.includes(true) ? 'cursor-pointer' : '' : (cursor == 1) ? 'cursor-nw-resize' : (cursor == 2) ? 'cursor-ne-resize' : (cursor == 3) ? 'cursor-sw-resize' : (cursor == 4) ? 'cursor-se-resize' : (cursor == 5) ? 'cursor-move' : '' }`}>
-            <canvas key={`boxes canvas`} ref={canvasRef} {...props} width={800} height={500} /> 
+            <canvas key={`boxes canvas`} ref={canvasRef} {...props} width={props.diff ? 500 :  800} height={500} /> 
         </div>
     )
 }

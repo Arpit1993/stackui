@@ -7,6 +7,22 @@ import SliceButton from "./Items/SliceButton";
 import SelectionTagPopup from "./Popups/SelectionTagPopup";
 import { Tooltip } from "@mui/material";
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import BugReportIcon from '@mui/icons-material/BugReport';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import { posthog } from "posthog-js";
+
+function commit(comment: string){
+    fetch('http://localhost:8000/commit_req?comment='.concat(comment))
+    window.location.reload();
+    return true
+}
+
+function diagnose(){
+    fetch('http://localhost:8000/diagnose').then(
+        () => {window.location.reload();}
+    )
+    return true
+}
 
 const YOLOExplorer = (props) => {
     const [keyVar, setKey] = useState<String>('');
@@ -32,7 +48,7 @@ const YOLOExplorer = (props) => {
 
     const max_files: number = 10;
     const max_images: number = props.max_view;
-    const max_pages =  props.view ? props.len / max_files : props.len / max_images;
+    const max_pages =  props.len / max_images;
 
     var idx_max = max_images;
 
@@ -286,8 +302,20 @@ const YOLOExplorer = (props) => {
                         <ErrorOutlineIcon className="w-1/10 h-1/10 shadow-sm fill-white rounded-full overflow-hidden bg-red-500 hover:bg-red-700"/>
                         {'15 anomalies detected'}
                     </div>
+
+                    <button onClick={()=>commit('')} className=" flex h-fit items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                        <RefreshIcon className="h-5 w-5 mr-2"/>
+                        Refresh
+                    </button>
+                    
+                    <button onClick={()=>{posthog.capture('bug report button', { property: 'value' }); diagnose()}} 
+                        className="text-white flex h-fit items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                        <BugReportIcon className="h-5 w-5 mr-2"/>
+                        Diagnose
+                    </button>
+
                     <Tooltip title={'Explorer options'} placement="left">
-                        <div className="w-min">
+                        <div className="w-min h-fit">
                             <ViewOptions setMaxView={props.setMaxView} setView={() => {}} 
                                     setPage={props.setPage} max_view={props.max_view} view_label={view_label} view={false} 
                                     switch_={switch_} setPointer={setPointer} setSwitch={setSwitch} setFiltering={props.setFiltering}

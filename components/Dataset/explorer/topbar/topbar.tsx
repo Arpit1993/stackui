@@ -2,32 +2,18 @@ import React from "react";
 import {  useState } from "react";
 import { Tooltip } from "@mui/material";
 import AddFilePopup from "../../popups/AddFilePopup";
-import { posthog } from "posthog-js";
 import YOLOFilterPopup from "../../popups/YOLOFilterPopup";
 import FileFilterPopup from "../../popups/FileFilterPopup";
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import RefreshIcon from '@mui/icons-material/Refresh';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ScienceIcon from '@mui/icons-material/Science';
 import YOLOStatistics from "../../tabs/statistics/YOLOStatistics";
 import NERFilterPopup from "../../popups/NERFilterPopup";
 import NERStatistics from "../../tabs/statistics/NERStatistics";
 import Experiments from "../../tabs/experiments/Experiments";
-import BugReportIcon from '@mui/icons-material/BugReport';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 
-function commit(comment: string){
-    fetch('http://localhost:8000/commit_req?comment='.concat(comment))
-    window.location.reload();
-    return true
-}
-
-function diagnose(){
-    fetch('http://localhost:8000/diagnose').then(
-        () => {window.location.reload();}
-    )
-    return true
-}
 
 const TopBar = (props) => {
 
@@ -74,8 +60,8 @@ const TopBar = (props) => {
                         
                     </div> */}
                     
-                    <div className="w-3/4 items-center">
-                        <ul className="w-full flex items-center flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
+                    <div className="w-3/4 items-end">
+                        <ul className="w-full flex items-end flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
                             <li className="mr-2">
                                 <button onClick={()=> {props.shortcuts.current = addPopup; setAddPopup(!addPopup)}} 
                                     className={addPopup ? "inline-flex p-2 text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500 group" : "inline-flex p-2 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 group"}
@@ -92,6 +78,13 @@ const TopBar = (props) => {
                                 </button>
                             </li>
                             <li className="mr-2">
+                                <button onClick={()=>{props.shortcuts.current = true; setTab(0)}} 
+                                    className={(tab == 0) ? "inline-flex p-2 text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500 group" : "inline-flex p-2 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 group"}>
+                                    <DashboardIcon className="h-5 w-5 mr-2"/>
+                                    Explorer
+                                </button>
+                            </li>
+                            <li className="mr-2">
                                 <button onClick={()=>{props.shortcuts.current = (tab == 2) ? true : false; setTab((tab == 2) ? 0 : 2)}} 
                                     className={(tab == 2) ? "inline-flex p-2 text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500 group" : "inline-flex p-2 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 group"}>
                                     <ScienceIcon className="h-5 w-5 mr-2"/>
@@ -103,19 +96,6 @@ const TopBar = (props) => {
                                     className={(tab == 1) ? "inline-flex p-2 text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500 group" : "inline-flex p-2 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 group"}>
                                     <BarChartIcon className="h-5 w-5 mr-2"/>
                                     Statistics
-                                </button>
-                            </li>
-                            <li className="ml-2 mr-2">
-                                <button onClick={()=>commit('')} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-                                    <RefreshIcon className="h-5 w-5 mr-2"/>
-                                    Refresh
-                                </button>
-                            </li>
-                            <li className="mr-2">
-                                <button onClick={()=>{posthog.capture('bug report button', { property: 'value' }); diagnose()}} 
-                                    className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-                                    <BugReportIcon className="h-5 w-5 mr-2"/>
-                                    Diagnose
                                 </button>
                             </li>
                         </ul>

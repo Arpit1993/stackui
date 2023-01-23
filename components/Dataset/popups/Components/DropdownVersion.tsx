@@ -19,7 +19,7 @@ const DropdownVersion = (props) => {
         )
       } else {
         return (
-          <Menu.Button className="z-[50] py-2.5 px-5 mr-2 mb-2 text-sm font-body text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+          <Menu.Button className="z-[50] py-2.5 px-5 mr-2 text-sm font-body text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
             {props.label} {props.v}
           </Menu.Button>
         )
@@ -48,7 +48,7 @@ const DropdownVersion = (props) => {
     }
 
     return (
-        <Menu as="div" className="z-[50] relative inline-block text-left mb-2">
+        <Menu as="div" className="z-[50] relative inline-block text-left">
           <div className="z-[50]">
             {renderButton()}
           </div>
@@ -62,7 +62,7 @@ const DropdownVersion = (props) => {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Menu.Items className="absolute right-0 z-[100] mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            <Menu.Items className="absolute right-0 z-[100] w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
               <div className="py-1 z-[100] h-[150px] overflow-scroll">
                     {options}
               </div>

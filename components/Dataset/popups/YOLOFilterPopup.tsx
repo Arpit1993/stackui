@@ -469,13 +469,15 @@ const YOLOFilterPopup = (props) => {
                                 controller.abort()
                                 setDownloading(false)
                             } else {
+                                setLoading(true)
                                 setDownloading(true)
                                 fetch('http://localhost:8000/download_api', { signal })
                                 .then( res => res.blob() )
                                 .then( blob => {
                                   var file = window.URL.createObjectURL(blob);
                                   window.location.assign(file);
-                                  setDownloading(false)
+                                  setDownloading(false);
+                                  setLoading(false)
                                 });
                             }
                         }} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
