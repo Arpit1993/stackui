@@ -20,7 +20,7 @@ export default function Datasets() {
         const POSTHOG_KEY: string = process.env.NEXT_PUBLIC_POSTHOG_KEY as string;
         posthog.init(POSTHOG_KEY, { api_host: 'https://app.posthog.com' })
         fetch(`http://localhost:8000/get_hierarchies/`)
-        .then((response) => response.json()).then((res) => {setHierarchy(() => {return res})}).then(
+        .then((response) => response.json()).then((res) => {setHierarchy(() => {return res}); console.log(res)}).then(
         () => {
             fetch(`http://localhost:8000/get_datasets/`)
              .then((response) => response.json()).then((data) => {setDatasets(() => {return Object.values(data)}); setDatasetsDict(() => {return data})})   
@@ -43,7 +43,7 @@ export default function Datasets() {
 
     return (
         <>
-            <nav className="flex p-2" aria-label="Breadcrumb">
+            <nav className="flex p-2 h-10" aria-label="Breadcrumb">
                 <ol className="inline-flex items-center space-x-1 md:space-x-3">
                     <li className="inline-flex items-center">
                         <Link href="/">
@@ -90,7 +90,7 @@ export default function Datasets() {
                     <div className="grid grid-cols-1 w-full">
                         {
                             (data_array) ?
-                            data_array.filter((dataset) => (hierarchy[dataset.storage]) ? (hierarchy[dataset.storage]['parent'] == '') : false ).map( 
+                            data_array.filter((dataset) => (hierarchy[dataset.storage]) ? (hierarchy[dataset.storage]['parent'] == '') : true ).map( 
                                 (dataset) => 
                                     (dataset && dataset.name)
                                     ? 
@@ -103,7 +103,7 @@ export default function Datasets() {
                                             hierarchy[dataset.storage]['children'].map(
                                                 (dataset1) => 
                                                 (datasetsDict && datasetsDict[dataset1]) ?
-                                                <BranchComponent datasets={datasets} key={`dataset${datasetsDict[dataset1].name}`} dataset={datasetsDict[dataset1]} setLoading={setLoading}/>
+                                                <BranchComponent datasets={datasets} key={`dataset${datasetsDict[dataset1].name}`} dataset={datasetsDict[dataset1]} datasetsDict={datasetsDict}  hierarchy={hierarchy} setLoading={setLoading}/>
                                                 :
                                                 null
                                             )

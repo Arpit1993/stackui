@@ -245,7 +245,7 @@ const Dataset = () => {
 
     return (
         <>
-            <nav className="flex p-2" aria-label="Breadcrumb">
+            <nav className="flex p-2 h-10" aria-label="Breadcrumb">
                 <ol className="inline-flex items-center space-x-1 md:space-x-3">
                     <li className="inline-flex items-center">
                         <Link href="/Datasets">

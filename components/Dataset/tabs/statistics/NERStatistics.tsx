@@ -11,7 +11,7 @@ const NERStatistics = (props) => {
     },[props.filtering])
 
     return (
-        <div className="fixed overflow-scroll z-[30] left-0 bottom-0 w-[80%] h-[78%] bg-white dark:bg-black">
+        <div className="fixed overflow-scroll z-[30] left-0 bottom-0 w-[80%] h-[80%] bg-white dark:bg-black">
             <div className="w-full h-full mt-12 px-5 justify-between flex flex-col items-center">
                 {
                     (metadata) ?

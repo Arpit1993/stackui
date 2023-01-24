@@ -155,8 +155,8 @@ const YOLOPopup = (props) => {
                         <button onClick={() => {
                             props.shortcuts.current = true
                             props.setPopup(false)
-                            }} className='text-xs items-center flex justify-center text-gray-800 w-4 h-4 flex-col bg-red-400 hover:bg-red-200 rounded-full'>
-                            <CloseIcon className="invisible hover:visible w-3 h-3"/>
+                            }} className='text-xs items-center flex justify-center text-gray-800 w-4 h-4 flex-col bg-red-500 rounded-full'>
+                            <CloseIcon className="text-red-500 hover:text-black w-3 h-3"/>
                         </button>
                     </div>
                      

@@ -12,7 +12,7 @@ const BranchComponent = (props) => {
     const [disconnect, setDisconnect] = useState(false)
 
     const handleClick = async () => {
-        props.setLoading(1)
+        props.setLoading(true)
         const POSTHOG_KEY: string = process.env.NEXT_PUBLIC_POSTHOG_KEY as string;
         posthog.init(POSTHOG_KEY, { api_host: 'https://app.posthog.com' })
         posthog.capture('Opened a dataset', { property: 'value' })
@@ -23,7 +23,7 @@ const BranchComponent = (props) => {
         <>
             {
                 disconnect ? 
-                <DisconnectModal uri = {props.dataset.storage} setPopup={setDisconnect}/>
+                <DisconnectModal uri = {props.dataset.storage} setPopup={setDisconnect} setLoading={props.setLoading}/>
                 : null        
             }
             <div className='w-full flex justify-end'>
@@ -64,6 +64,25 @@ const BranchComponent = (props) => {
                     </div>
                 </div>
             </div>
+            <div className='w-full flex justify-end'>
+                <div className='w-[90%]'>    
+                    {
+                        (props.hierarchy && props.hierarchy[props.dataset.storage]) ? 
+                        (props.hierarchy[props.dataset.storage]['children'].length > 0) 
+                        ?
+                        props.hierarchy[props.dataset.storage]['children'].map(
+                            (dataset1) => 
+                            (props.datasetsDict && props.datasetsDict[dataset1]) ?
+                            <BranchComponent datasets={props.datasets} key={`dataset${props.datasetsDict[dataset1].name}`} datasetsDict={props.datasetsDict} dataset={props.datasetsDict[dataset1]} hierarchy={props.hierarchy} setLoading={props.setLoading}/>
+                            :
+                            null
+                        )
+                        : null
+                        : null
+
+                    }
+                </div>
+            </div>
              
             {
                 popup 
@@ -80,8 +99,10 @@ export default BranchComponent
 
 const DisconnectModal = (props) => {
     const handleDisconnect = async () => {
+        props.setLoading(true)
         fetch('http://localhost:8000/disconnect?uri='.concat(encodeURIComponent(props.uri))).then(
             () => {
+                props.setLoading(false)
                 posthog.capture('Disconneced a dataset', { property: 'value' })
                 window.location.reload();   
             }

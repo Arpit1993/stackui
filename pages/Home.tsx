@@ -4,7 +4,7 @@ import React from "react"
 export default function Main () {    
     return (
         <>
-            <nav className="flex p-2" aria-label="Breadcrumb">
+            <nav className="flex p-2 h-10" aria-label="Breadcrumb">
                 <ol className="inline-flex items-center space-x-1 md:space-x-3">
                     <li className="inline-flex items-center">
                         <div className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
@@ -15,7 +15,7 @@ export default function Main () {
                 </ol>
             </nav>
             <div className="h-full flex flex-col justify-center">
-                <div className='p-10 text-5xl flex flex-col justify-center items-center font-bold h-max text-center'>
+                <div className='p-8 text-5xl flex flex-col justify-center items-center font-bold h-max text-center'>
                     <h1 className="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">Welcome to stack</h1>
                     <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
                     <span className="block xl:inline bg-gradient-to-r bg-clip-text text-transparent from-blue-400 to-blue-800 via-blue-400 animate-text">Supercharge </span>{' '}

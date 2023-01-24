@@ -12,16 +12,16 @@ import Link from "next/link";
 export default function NewDatasets() {        
 
     const [loading , setLoading ] = useState<Boolean>(false)
-    const [uri , setURI ] = useState<String>('local')
+    const [uri , setURI ] = useState<String>('')
     const [storage , setStorage ] = useState<String>('local')
-    const [name, setName] = useState<String>('My Dataset')
+    const [name, setName] = useState<String>('')
     const [enableDVC, setEnableDVC] = useState<Boolean>(true)
 
     const [file, setFile] = useState(null)
     const [schema, setSchema] = useState<String>('Select...')
     const [accessKey, setAccessKey] = useState<String>('')
     const [secretKey, setsecretKey] = useState<String>('')
-    const [region, setRegion] = useState<String>('us-east-1')
+    const [region, setRegion] = useState<String>('us-west-1')
     const [failed, setFailed] = useState<Boolean>(false)
 
     const handleKey1Change = (event) => {
@@ -184,7 +184,7 @@ export default function NewDatasets() {
 
     return (
         <>
-            <nav className="flex p-2" aria-label="Breadcrumb">
+            <nav className="flex p-2 h-10" aria-label="Breadcrumb">
                 <ol className="inline-flex items-center space-x-1 md:space-x-3">
                     <li className="inline-flex items-center">
                         <Link href="/">
@@ -325,7 +325,7 @@ export default function NewDatasets() {
                                     </div>
                                     <label className="block text-gray-700 text-sm w-[400px]"> 
                                         <div className="">
-                                            <input onChange={handleNameChange} onInput={handleNameChange}
+                                            <input onChange={handleNameChange} onInput={handleNameChange} value={name as string}
                                             className= "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                                             placeholder="e.g. My Dataset" type="text" />   
                                         </div>
@@ -341,7 +341,7 @@ export default function NewDatasets() {
                                     <label className="block text-gray-700 text-sm w-[400px]"> 
                                         <div className="">
                                         <Tooltip title={tooltip_msg} placement="bottom">
-                                            <input  onChange={handleURIChange} onInput={handleURIChange}
+                                            <input  onChange={handleURIChange} onInput={handleURIChange} value={uri as string}
                                             className= "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                                             placeholder={placehoder} type="text" />   
                                         </Tooltip>

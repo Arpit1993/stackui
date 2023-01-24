@@ -11,7 +11,6 @@ import ColorPick from "./Items/ColorPick";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import LoadingScreen from "../../LoadingScreen";
 
 const YOLOViz = (props) => {
     
@@ -36,7 +35,7 @@ const YOLOViz = (props) => {
 
     var boxes: Array<any> = []
 
-    let im =  document.createElement('img');
+    var im =  document.createElement('img');
     im.src = props.img
     const [width, setWidth] = useState<number>(props.ww)
     const [height, setHeight] = useState<number>(props.wh)
@@ -62,6 +61,7 @@ const YOLOViz = (props) => {
         if (idx1 > -1){
             arr_copy.splice(idx1,1)
         }
+        setLabels(() => {return arr_copy})
         var dic_copy = Object.assign({},arr_copy)
         dic_copy['keyId'] = props.keyId
         updated_labels.current = dic_copy
@@ -74,7 +74,6 @@ const YOLOViz = (props) => {
         newRef.current[newRef.current.length-1] = true
         setUsableStr('Id')
         setUsableStr2('Name')
-        setLabels(() => {return arr_copy})
         setNullStr(nullstr.concat('z'))
 
         var sel_arr = Array(arr_copy.length).fill(false)
@@ -209,18 +208,18 @@ const YOLOViz = (props) => {
                                 </button> */}
                                 <ul className="absolute right-[-287px] top-0 text-sm font-medium text-center text-gray-500 divide-x divide-gray-200 rounded-lg shadow sm:flex dark:divide-gray-700 dark:text-gray-400">
                                     <li className="w-full">
-                                        <button onClick={() => {setOptions(true); setShortcuts(false)}} className={(options || selectedLabel.includes(true) && !shortcuts) ? "flex w-full p-2 text-gray-900 bg-gray-100 rounded-l-lg focus:ring-4 focus:ring-blue-300 active focus:outline-none dark:bg-gray-700 dark:text-white" : "flex w-full p-2 bg-white hover:text-gray-700 rounded-l-lg  hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"} aria-current="page">
+                                        <button onClick={() => {setOptions(true); setShortcuts(false)}} className={(options || selectedLabel.includes(true) && !shortcuts) ? "flex w-full p-2 text-gray-900 bg-gray-100 rounded-l-lg  active focus:outline-none dark:bg-gray-700 dark:text-white" : "flex w-full p-2 bg-white hover:text-gray-700 rounded-l-lg  hover:bg-gray-50 focus:outline-none dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"} aria-current="page">
                                             <FormatListBulletedIcon className="w-[20px] h-[20px] mr-2"/>
                                             {'Labels'}
                                         </button>
                                     </li>
                                     <li className="w-full">
-                                        <button onClick={() => {setOptions(false); setShortcuts(false); setSelectedLabel(() => {return Array(selectedLabel.length).fill(false)})}} className={(!(options || selectedLabel.includes(true)) && !shortcuts) ? "inline-block w-full p-2 text-gray-900 bg-gray-100 focus:ring-4 focus:ring-blue-300 active focus:outline-none dark:bg-gray-700 dark:text-white" : "inline-block w-full p-2 bg-white hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"}>
-                                            Activity
+                                        <button onClick={() => {setOptions(false); setShortcuts(false); setSelectedLabel(() => {return Array(selectedLabel.length).fill(false)})}} className={(!(options || selectedLabel.includes(true)) && !shortcuts) ? "inline-block w-full p-2 text-gray-900 bg-gray-100 active focus:outline-none dark:bg-gray-700 dark:text-white" : "inline-block w-full p-2 bg-white hover:text-gray-700 hover:bg-gray-50 focus:outline-none dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"}>
+                                            {'History'}
                                         </button>
                                     </li>
                                     <li className="w-full">
-                                        <button onClick={()=>{setShortcuts(true); setOptions(false)}} className={shortcuts ? "w-full flex p-2 text-gray-900 bg-gray-100 rounded-r-lg focus:ring-4 focus:ring-blue-300 active focus:outline-none dark:bg-gray-700 dark:text-white" : "w-full flex p-2 bg-white rounded-r-lg hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"}>
+                                        <button onClick={()=>{setShortcuts(true); setOptions(false)}} className={shortcuts ? "w-full flex p-2 text-gray-900 bg-gray-100 rounded-r-lg active focus:outline-none dark:bg-gray-700 dark:text-white" : "w-full flex p-2 bg-white rounded-r-lg hover:text-gray-700 hover:bg-gray-50 focus:outline-none dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"}>
                                             <KeyboardIcon className="w-[20px] h-[20px] mr-2"/>
                                             {'Shortcuts'}
                                         </button>
@@ -234,200 +233,195 @@ const YOLOViz = (props) => {
                                     :
                                     <div className="z-50 absolute right-[-300px] justify-between flex flex-col gap-1 top-20 w-[37%] h-[80%] p-1 rounded-md bg-white dark:bg-gray-900">
                                         <div className="relative items-center flex flex-col h-[80%] rounded-md">
-                                            <div className="w-full h-fit flex py-2 mb-4 rounded-md border border-gray-300 dark:border-gray-600 items-center">
-                                                <h3 className="w-[10%] h-full font-semibold text-gray-900 dark:text-white justify-start items-center">
-                                                    <VisibilityIcon className="ml-4 w-[20px] h-[20px]"/>
-                                                </h3>
-                                                <h3 className="w-[27%] h-full font-semibold text-gray-900 dark:text-white justify-start items-center">
-                                                    {'Id'}
-                                                </h3>
-                                                <h3 className="w-[27%] h-full font-semibold text-gray-900 dark:text-white justify-start items-center">
-                                                    {'Label'}
-                                                </h3>
-                                                <h3 className="w-[27%] h-full font-semibold text-gray-900 dark:text-white justify-start items-center">
-                                                    {'Color'}
-                                                </h3>
-                                                <h3 className="w-[19%] h-full font-semibold text-gray-900 dark:text-white justify-start items-center">
-                                                    <DeleteIcon className="mr-4 w-[20px] h-[20px]"/>
-                                                </h3>
-                                            </div>
-                                            <div className="flex justify-center w-full h-full text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-900 dark:border-gray-600 dark:text-white overflow-scroll">
-                                                <ul className="w-full h-full">
+                                            <div className="w-full h-12 items-center grid grid-cols-5 mb-4 rounded-md border border-gray-300 dark:border-gray-600">
+                                                <button 
+                                                    onClick={()=>{
+                                                    var arr_copy = Array(active.length).fill(active.includes(false));
+                                                    setActive(() => {return arr_copy});
+                                                    setNullStr(nullstr.concat('z'));
+                                                    }}
+                                                >
                                                     {
-                                                        labels.map(
-                                                            (label, idx) =>
-                                                                <li key={`checkbox-labels-${idx}`} className={`${selectedLabel[idx] ? 'bg-gray-100 dark:bg-gray-700' : ''} w-full h-max rounded-t-lg border-b border-gray-200 dark:border-gray-600`}>
-                                                                    <div className="flex items-center h-10 pl-3">
-                                                                        <div className="w-[10%]">
-                                                                            <button className="w-[10%] flex justify-start" 
-                                                                                onClick={()=>{
-                                                                                var arr_copy = active;
-                                                                                arr_copy.splice(idx,1,!active[idx]);
-                                                                                setActive(() => {return arr_copy});
-                                                                                setNullStr(nullstr.concat('z'));
-                                                                                }}
-                                                                            >
-                                                                                {
-                                                                                    active[idx] ?
-                                                                                <Visibility className="w-5 h-5"/>
-                                                                                :
-                                                                                <VisibilityOff className="w-5 h-5"/> 
-                                                                                }
-                                                                            </button>
-                                                                        </div>
-
-                                                                        <div className="w-[90%] flex items-center justify-between mr-2 gap-1 py-3 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                                                                            {
-                                                                                selectedLabel[idx] ? 
-                                                                                <form className="w-[30%]" onSubmit={(event)=>{
-                                                                                    event.preventDefault();
+                                                    active.includes(true) ?
+                                                    <Visibility className="w-5 h-5"/>
+                                                    :
+                                                    <VisibilityOff className="w-5 h-5"/> 
+                                                    }
+                                                </button>
+                                                <div className="font-semibold text-justify text-gray-900 dark:text-white">
+                                                    {'Id'}
+                                                </div>
+                                                <div className="font-semibold text-justify text-gray-900 dark:text-white">
+                                                    {'Label'}
+                                                </div>
+                                                <div className="font-semibold  text-gray-900 dark:text-white">
+                                                    {'Color'}
+                                                </div>
+                                                <DeleteIcon className="w-5 h-5 ml-5"/>
+                                            </div>
+                                            <div className="w-full h-full text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-900 dark:border-gray-600 dark:text-white overflow-scroll">
+                                                {
+                                                    labels.map(
+                                                        (label, idx) =>
+                                                            <div key={`checkbox-labels-${idx}`} className={`${selectedLabel[idx] ? 'bg-gray-100 dark:bg-gray-700' : ''} w-full h-max rounded-t-lg border-b border-gray-200 dark:border-gray-600`}>
+                                                                <div className="w-full items-center h-10 grid grid-cols-5">
+                                                                    <button 
+                                                                        onClick={()=>{
+                                                                        var arr_copy = active;
+                                                                        arr_copy.splice(idx,1,!active[idx]);
+                                                                        setActive(() => {return arr_copy});
+                                                                        setNullStr(nullstr.concat('z'));
+                                                                        }}
+                                                                    >
+                                                                        {
+                                                                            active[idx] ?
+                                                                        <Visibility className="w-5 h-5"/>
+                                                                        :
+                                                                        <VisibilityOff className="w-5 h-5"/> 
+                                                                        }
+                                                                    </button>
+                                                                    {
+                                                                        selectedLabel[idx] ? 
+                                                                        <form onSubmit={(event)=>{
+                                                                            event.preventDefault();
+                                                                            var arr_copy1: Array<Array<any>> = Object.values(updated_labels.current)
+                                                                            const idx1 = arr_copy1.indexOf(props.keyId)
+                                                                            if (idx1 > -1){
+                                                                                arr_copy1.splice(idx1,1)
+                                                                            }
+                                                                            arr_copy1[idx][0] = usableStr
+                                                                            var dic_copy = Object.assign({},arr_copy1)
+                                                                            dic_copy['keyId'] = props.keyId
+                                                                            updated_labels.current = dic_copy
+                                                                            props.setnewLabels(() => {return updated_labels.current})
+                                                                            props.setSubmit(true)
+                                                                            setLabels(arr_copy1)
+                                                                            
+                                                                            var arr_copy = Array(selectedLabel.length).fill(false)
+                                                                            setSelectedLabel(() => {return arr_copy})
+                                                                            setNullStr(nullstr.concat('ds'))
+                                                                        }}>
+                                                                            <label>
+                                                                                <input className="w-full h-max text-black dark:bg-gray-900 dark:text-white text-xs" type="text" value={usableStr} 
+                                                                                onChange={(e) => {
+                                                                                    props.setSubmit(true)
                                                                                     var arr_copy1: Array<Array<any>> = Object.values(updated_labels.current)
                                                                                     const idx1 = arr_copy1.indexOf(props.keyId)
                                                                                     if (idx1 > -1){
                                                                                         arr_copy1.splice(idx1,1)
                                                                                     }
-                                                                                    arr_copy1[idx][0] = usableStr
+                                                                                    arr_copy1[idx][0] = e.target.value
                                                                                     var dic_copy = Object.assign({},arr_copy1)
                                                                                     dic_copy['keyId'] = props.keyId
                                                                                     updated_labels.current = dic_copy
                                                                                     props.setnewLabels(() => {return updated_labels.current})
-                                                                                    props.setSubmit(true)
-                                                                                    setLabels(arr_copy1)
-                                                                                    
-                                                                                    var arr_copy = Array(selectedLabel.length).fill(false)
-                                                                                    setSelectedLabel(() => {return arr_copy})
-                                                                                    setNullStr(nullstr.concat('ds'))
-                                                                                }}>
-                                                                                    <label>
-                                                                                        <input className="w-full h-max text-black dark:bg-gray-900 dark:text-white text-xs" type="text" value={usableStr} 
-                                                                                        onChange={(e) => {
-                                                                                            props.setSubmit(true)
-                                                                                            var arr_copy1: Array<Array<any>> = Object.values(updated_labels.current)
-                                                                                            const idx1 = arr_copy1.indexOf(props.keyId)
-                                                                                            if (idx1 > -1){
-                                                                                                arr_copy1.splice(idx1,1)
-                                                                                            }
-                                                                                            arr_copy1[idx][0] = e.target.value
-                                                                                            var dic_copy = Object.assign({},arr_copy1)
-                                                                                            dic_copy['keyId'] = props.keyId
-                                                                                            updated_labels.current = dic_copy
-                                                                                            props.setnewLabels(() => {return updated_labels.current})
-                                                                                            setLabels((arr_copy1) => {return arr_copy1})
-                                                                                            setUsableStr(e.target.value)
-                                                                                            }} />
-                                                                                    </label>
-                                                                                </form>
-                                                                                :
-                                                                                <button className="cursor-text flex justify-start w-[30%]" onClick={() => {
-                                                                                    setNullStr(nullstr.concat('as'))
-                                                                                    var arr_copy1 = Array(selectedLabel.length).fill(false)
-                                                                                    arr_copy1[idx] = !selectedLabel[idx]
+                                                                                    setLabels((arr_copy1) => {return arr_copy1})
+                                                                                    setUsableStr(e.target.value)
+                                                                                    }} />
+                                                                            </label>
+                                                                        </form>
+                                                                        :
+                                                                        <button className="cursor-text text-center" onClick={() => {
+                                                                            setNullStr(nullstr.concat('as'))
+                                                                            var arr_copy1 = Array(selectedLabel.length).fill(false)
+                                                                            arr_copy1[idx] = !selectedLabel[idx]
 
-                                                                                    setSelectedLabel(() => {return arr_copy1})
-                                                                                    setNullStr(nullstr.concat('as'))
-                                                                                    setUsableStr(label[0])
-                                                                                    setUsableStr2(labelMap[label[0]] ? labelMap[label[0]].label : '')
-                                                                                }}>
-                                                                                    {label[0]}
-                                                                                </button>   
+                                                                            setSelectedLabel(() => {return arr_copy1})
+                                                                            setNullStr(nullstr.concat('as'))
+                                                                            setUsableStr(label[0])
+                                                                            setUsableStr2(labelMap[label[0]] ? labelMap[label[0]].label : '')
+                                                                        }}>
+                                                                            {label[0]}
+                                                                        </button>   
+                                                                    }
+                                                                    
+                                                                    {
+                                                                        selectedLabel[idx] ? 
+                                                                        <form onSubmit={(event)=>{
+                                                                            event.preventDefault();
+                                                                            var arr_copy2 = labelMap
+
+                                                                            var idx2 = Object.keys(arr_copy2).findIndex(el => arr_copy2[el]['label'] == usableStr2)
+                                                                            if (idx2 >= 0){
+                                                                                var arr_copy1: Array<Array<any>> = Object.values(updated_labels.current)
+                                                                                const idx1 = arr_copy1.indexOf(props.keyId)
+                                                                                if (idx1 > -1){
+                                                                                    arr_copy1.splice(idx1,1)
+                                                                                }
+                                                                                arr_copy1[idx][0] = arr_copy2[Object.keys(arr_copy2)[idx2]]['class']
+                                                                                var dic_copy = Object.assign({},arr_copy1)
+                                                                                dic_copy['keyId'] = props.keyId
+                                                                                updated_labels.current = dic_copy
+                                                                                props.setnewLabels(() => {return updated_labels.current})
+                                                                                setLabels((arr_copy1) => {return arr_copy1})
+                                                                                
+                                                                            } else {
+                                                                                if (arr_copy2[label[0]]){
+                                                                                    arr_copy2[label[0]].label = usableStr2
+                                                                                } else {
+                                                                                    arr_copy2[label[0]] = {}
+                                                                                    arr_copy2[label[0]].label = usableStr2
+                                                                                    arr_copy2[label[0]].class = label[0]
+                                                                                }
                                                                             }
                                                                             
+                                                                            setLabelMap(arr_copy2)
+                                                                            var data = JSON.stringify(arr_copy2)
+                                                                            fetch('http://localhost:8000/set_class_map/', {
+                                                                                method: 'POST',
+                                                                                headers: { 
+                                                                                    "Content-Type": "application/json" 
+                                                                                }, 
+                                                                                body: data}
+                                                                            )
+                                                                            
+                                                                            var arr_copy = Array(selectedLabel.length).fill(false)
+                                                                            setSelectedLabel(() => {return arr_copy})
+                                                                            setNullStr(nullstr.concat('ds'))
+                                                                        }}>
+                                                                            <label>
+                                                                                <input className="w-full h-max text-black dark:bg-gray-900 dark:text-white text-xs" type="text" value={usableStr2} 
+                                                                                onChange={(e) => {                                                                                
+                                                                                    setUsableStr2(e.target.value)
+                                                                                    }} />
+                                                                            </label>
+                                                                        </form>
+                                                                        :
+                                                                        <button className="cursor-text flex justify-start" onClick={() => {
+                                                                            setNullStr(nullstr.concat('as'))
+                                                                            var arr_copy1 = Array(selectedLabel.length).fill(false)
+                                                                            arr_copy1[idx] = !selectedLabel[idx]
+
+                                                                            setSelectedLabel(() => {return arr_copy1})
+                                                                            setNullStr(nullstr.concat('as'))
+                                                                            setUsableStr(label[0])
+                                                                            setUsableStr2((labelMap[label[0]]) ? labelMap[label[0]].label : '')
+                                                                        }}>
                                                                             {
-                                                                                selectedLabel[idx] ? 
-                                                                                <form className="w-[30%]" onSubmit={(event)=>{
-                                                                                    event.preventDefault();
-                                                                                    var arr_copy2 = labelMap
-
-                                                                                    var idx2 = Object.keys(arr_copy2).findIndex(el => arr_copy2[el]['label'] == usableStr2)
-                                                                                    if (idx2 >= 0){
-                                                                                        var arr_copy1: Array<Array<any>> = Object.values(updated_labels.current)
-                                                                                        const idx1 = arr_copy1.indexOf(props.keyId)
-                                                                                        if (idx1 > -1){
-                                                                                            arr_copy1.splice(idx1,1)
-                                                                                        }
-                                                                                        arr_copy1[idx][0] = arr_copy2[Object.keys(arr_copy2)[idx2]]['class']
-                                                                                        var dic_copy = Object.assign({},arr_copy1)
-                                                                                        dic_copy['keyId'] = props.keyId
-                                                                                        updated_labels.current = dic_copy
-                                                                                        props.setnewLabels(() => {return updated_labels.current})
-                                                                                        setLabels((arr_copy1) => {return arr_copy1})
-                                                                                        
-                                                                                    } else {
-                                                                                        if (arr_copy2[label[0]]){
-                                                                                            arr_copy2[label[0]].label = usableStr2
-                                                                                        } else {
-                                                                                            arr_copy2[label[0]] = {}
-                                                                                            arr_copy2[label[0]].label = usableStr2
-                                                                                            arr_copy2[label[0]].class = label[0]
-                                                                                        }
-                                                                                    }
-                                                                                    
-                                                                                    setLabelMap(arr_copy2)
-                                                                                    var data = JSON.stringify(arr_copy2)
-                                                                                    fetch('http://localhost:8000/set_class_map/', {
-                                                                                        method: 'POST',
-                                                                                        headers: { 
-                                                                                            "Content-Type": "application/json" 
-                                                                                        }, 
-                                                                                        body: data}
-                                                                                    )
-                                                                                    
-                                                                                    var arr_copy = Array(selectedLabel.length).fill(false)
-                                                                                    setSelectedLabel(() => {return arr_copy})
-                                                                                    setNullStr(nullstr.concat('ds'))
-                                                                                }}>
-                                                                                    <label>
-                                                                                        <input className="w-full h-max text-black dark:bg-gray-900 dark:text-white text-xs" type="text" value={usableStr2} 
-                                                                                        onChange={(e) => {                                                                                
-                                                                                            setUsableStr2(e.target.value)
-                                                                                            }} />
-                                                                                    </label>
-                                                                                </form>
+                                                                                labelMap[label[0]] 
+                                                                                ? 
+                                                                                labelMap[label[0]]['label']
                                                                                 :
-                                                                                <button className="cursor-text flex justify-start w-[30%]" onClick={() => {
-                                                                                    setNullStr(nullstr.concat('as'))
-                                                                                    var arr_copy1 = Array(selectedLabel.length).fill(false)
-                                                                                    arr_copy1[idx] = !selectedLabel[idx]
-
-                                                                                    setSelectedLabel(() => {return arr_copy1})
-                                                                                    setNullStr(nullstr.concat('as'))
-                                                                                    setUsableStr(label[0])
-                                                                                    setUsableStr2((labelMap[label[0]]) ? labelMap[label[0]].label : '')
-                                                                                }}>
-                                                                                    {
-                                                                                        labelMap[label[0]] 
-                                                                                        ? 
-                                                                                        labelMap[label[0]]['label']
-                                                                                        :
-                                                                                        'loading...'
-                                                                                    }
-                                                                                </button>   
+                                                                                'No name'
                                                                             }
-                                                                            
-                                                                            <div className="flex items-center w-[30%]">
-                                                                                <div className="flex flex-col justify-center h-full w-[50%]">
-                                                                                    {
-                                                                                        (Object.keys(labelMap).length > 0) ? (labelMap[label[0]]) ?
-                                                                                        <ColorPick map={labelMap} setMap={setLabelMap} setStr={setNullStr} idx={label[0]}/> 
-                                                                                        : null : null
+                                                                        </button>   
+                                                                    }
+                                                                    
+                                                                    {
+                                                                        (Object.keys(labelMap).length > 0) ? (labelMap[label[0]]) ?
+                                                                        <ColorPick map={labelMap} setMap={setLabelMap} setStr={setNullStr} idx={label[0]}/> 
+                                                                        : null : null
 
-                                                                                    }
-                                                                                </div>
-                                                                                <div className="items-center h-full mr-5">
-                                                                                    <button
-                                                                                        className="h-4 w-[50%]"
-                                                                                        onClick={()=>{deleteLabel(idx)}}>
-                                                                                        <ClearIcon className="h-4 w-[15px]"/>
-                                                                                    </button>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </li>
-                                                        )
-                                                    }
-                                                    <div ref={myRef} className='mt-10'></div>
-                                                </ul>
+                                                                    }
+
+                                                                    <button onClick={()=>{deleteLabel(idx)}}>
+                                                                        <ClearIcon className="h-5 w-5"/>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                    )
+                                                }
+                                                <div ref={myRef} className='mt-10'></div>
                                             </div>
                                         </div>
                                         <div className="mb-5 mt-2 flex justify-center w-full">
@@ -446,7 +440,7 @@ const YOLOViz = (props) => {
                             null
                             :
                             <>  
-                                <div className={shortcuts ? "dark:text-white z-50 absolute right-[-300px] justify-start flex flex-col gap-1 top-20 w-[37%] h-[80%] p-1 bg-white dark:bg-gray-900" : 'invisible z-50 absolute right-[-160px] justify-between flex flex-col gap-1 top-14 w-1/5 h-3/4'}>
+                                <div className={shortcuts ? "dark:text-white px-7 z-50 absolute right-[-300px] justify-start flex flex-col gap-1 top-20 w-[37%] h-[80%] p-1 bg-white dark:bg-gray-900" : 'invisible z-50 absolute right-[-160px] justify-between flex flex-col gap-1 top-14 w-1/5 h-3/4'}>
                                     <div className="flex mt-5 gap-1 justify-between px-2 items-center font-medium">
                                         {'Previous:'}
                                         <kbd className="px-2 py-1.5 text-xs font-semibold text-gray-800 bg-gray-100 border border-gray-200 rounded-lg dark:bg-gray-600 dark:text-gray-100 dark:border-gray-500">

@@ -93,23 +93,36 @@ const DatasetOptionsPopup = (props) => {
     }
 
     const handleDeleteChild = (child) => {
+        setLoading(true)
         fetch(`http://localhost:8000/current_remove_child?uri=${child}`).then(() => {
             fetch('http://localhost:8000/get_current_hierarchy').then((res) => res.json()).then(setHierarchy)
-        })
+        }).then(
+            () => {
+                setLoading(false)
+            }
+        )
     }
 
     const handleAddParent = (parent) => {
+        setLoading(true)
         fetch(`http://localhost:8000/add_parent_to_current?parent=${parent}`).then(() => {
             fetch('http://localhost:8000/get_current_hierarchy').then((res) => res.json()).then(setHierarchy)
+        }).then(() => {
+            setSelecting1(false)
+            setLoading(false)
         })
-        setSelecting1(false)
     }
     
     const handleAddChild = (child) => {
+        setLoading(true)
         fetch(`http://localhost:8000/add_child_to_current?child=${child}`).then(() => {
             fetch('http://localhost:8000/get_current_hierarchy').then((res) => res.json()).then(setHierarchy)
-        })
-        setSelecting(false)
+        }).then(
+            () => {
+                setSelecting(false)
+                setLoading(false)
+            }
+        )
     }
 
     return (
@@ -131,7 +144,7 @@ const DatasetOptionsPopup = (props) => {
                 </div>
                 
                 <div className="flex justify-center "  key={'ip'}>
-                    <div className="p-5 mt-5 mb-5 w-[80%] h-[70%] justify-start flex flex-col">    
+                    <div className="p-5 mt-5 mb-2 w-[80%] h-[70%] justify-start flex flex-col">    
 
                         <div className="mb-2 flex justify-center w-full">
                             <form className="flex justify-center w-[560px]">
@@ -148,7 +161,7 @@ const DatasetOptionsPopup = (props) => {
                             </form>
                         </div>
 
-                        <div className="mb-5 flex justify-center">
+                        <div className="mb-2 flex justify-center">
                             <form className="flex justify-self-center w-[560px]">
                                 <div className="block mb-2 w-[160px] text-sm p-3 font-body text-gray-900 dark:text-gray-300">
                                     Dataset path or URI: 
@@ -163,7 +176,7 @@ const DatasetOptionsPopup = (props) => {
                             </form>
                         </div>
 
-                        <div className="mb-5 w-full flex justify-center items-center">
+                        <div className="w-full flex justify-center items-center">
                             <input id="link-checkbox" type="checkbox" checked={enableDVC as boolean} onChange={()=>{setEnableDVC(!enableDVC)}} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
                             <label className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">(Recommended) Enable version control.</label>
                         </div>
@@ -187,34 +200,40 @@ const DatasetOptionsPopup = (props) => {
                             {
                                 (props.dataset.storage.includes('s3://')) ? 
                                     <div key={'awk'}>
-                                        <form className="shadow-md rounded w-[320px]">
-                                            <label className="block text-gray-700 text-base mt-2"> 
-                                                <div className="">
-                                                    AWS Access Key Id
+                                        <form className="w-[500px]">
+                                            <label className="block text-gray-700 text-sm mt-2"> 
+                                                <div className="flex">
+                                                    <span className="w-[30%] flex items-center">
+                                                        AWS Access Key Id
+                                                    </span>
                                                     <input onChange={handleKey1Change} onInput={handleKey1Change}
-                                                    className= "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                                                    className= "bg-gray-50 w-[60%] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                                                     placeholder="***************" type="password" />   
                                                 </div>
                                             </label>
                                         </form>
                             
-                                        <form className="shadow-md rounded w-[320px] mt-2">
-                                            <label className="block text-gray-700 text-base"> 
-                                                <div className="">
-                                                    AWS Secret Access Key
+                                        <form className="w-[500px] mt-2">
+                                            <label className="block text-gray-700 text-sm"> 
+                                                <div className="flex">
+                                                    <span className="w-[30%]  flex items-center">
+                                                        AWS Secret Access Key
+                                                    </span>
                                                     <input onChange={handleKey2Change}  onInput={handleKey2Change}
-                                                    className= "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                                                    className= "bg-gray-50 w-[60%] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                                                     placeholder="***************" type="password" />   
                                                 </div>
                                             </label>
                                         </form>
                             
-                                        <form className="shadow-md rounded w-[320px] mt-2">
-                                            <label className="block text-gray-700 text-base"> 
-                                                <div className="">
-                                                    AWS Region
+                                        <form className="w-[500px] mt-2">
+                                            <label className="block text-gray-700 text-sm"> 
+                                                <div className="flex">
+                                                    <span className="w-[30%] flex items-center">
+                                                        AWS Region
+                                                    </span>
                                                     <input onChange={handleKey3Change} onInput={handleKey3Change}
-                                                    className= "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                                                    className= "bg-gray-50 w-[60%] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                                                     placeholder="***************" type="password" />   
                                                 </div>
                                             </label>
@@ -229,10 +248,10 @@ const DatasetOptionsPopup = (props) => {
                                 <div className="flex justify-center">
                                     <DropdownSchema schema={schema} setSchema={setSchema} />
                                 </div>
-                                <ol className="flex gap-0 justify-center w-full h-24">
+                                <ol className="flex gap-0 justify-center w-full h-32">
                                     <li className="relative mb-0">
                                         <div className="mt-3">
-                                            <ul className="w-56 text-sm h-24 font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                            <ul className="w-56 text-sm h-32 font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                                 <li className="py-2 px-4 w-full rounded-t-lg border-b border-gray-200 dark:border-gray-600">
                                                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                                                         Parent dataset
@@ -246,7 +265,7 @@ const DatasetOptionsPopup = (props) => {
                                                         {hierarchy['parent']['uri'] == '' ? 'None' : hierarchy['parent']['name']}
                                                     </button>
                                                     <div className={selecting1 ? 'absolute' : 'invisible absolute'}>
-                                                        <ul className="w-56 h-60 overflow-y-scroll text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                                        <ul className="w-56 h-32 overflow-y-scroll text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                                             <li className="py-2 px-4 w-full overflow-clip text-center rounded-t-lg font-medium border-b border-gray-200 dark:border-gray-600">Datasets</li>
                                                             {
                                                                 props.datasets.map(
@@ -273,8 +292,8 @@ const DatasetOptionsPopup = (props) => {
                                     </div>
                                     <li className="relative mb-0">
                                         <div className="mt-3">             
-                                            <ul className="w-56 h-24 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                                <li className="py-2 flex gap-2 px-4 w-full rounded-t-lg border-b border-gray-200 dark:border-gray-600">
+                                            <ul className="w-56 h-32 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                                <li className="py-2 h-12 flex gap-2 px-4 w-full rounded-t-lg border-b border-gray-200 dark:border-gray-600">
                                                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                                                         Branches
                                                     </h3>
@@ -284,7 +303,7 @@ const DatasetOptionsPopup = (props) => {
                                                             {'Add'}
                                                         </button>
                                                         <div className={selecting ? 'absolute' : 'invisible absolute'}>
-                                                            <ul className="w-56 h-48 overflow-y-scroll text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                                            <ul className="w-56 h-60 overflow-y-scroll text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                                                 <li className="py-2 px-4 w-full text-center font-medium rounded-t-lg border-b border-gray-200 dark:border-gray-600">Datasets</li>
                                                                 {
                                                                     props.datasets.map(
@@ -304,7 +323,7 @@ const DatasetOptionsPopup = (props) => {
                                                         </div>
                                                     </div>
                                                 </li>
-                                                <div className="overflow-x-scroll h-12">
+                                                <div className="overflow-x-scroll h-20">
                                                     {
                                                         hierarchy.children.map(
                                                             (child, idx) => {
