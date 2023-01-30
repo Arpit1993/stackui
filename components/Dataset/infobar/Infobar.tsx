@@ -1,8 +1,8 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import ItemChange from "../Items/ItemChange";
-import HistoryPopup from "../popups/HistoryPopup";
-import ReadmePopup from "../popups/ReadmePopup";
+import HistoryPopup from "../Modals/HistoryPopup";
+import ReadmePopup from "../Modals/ReadmePopup";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm'
 

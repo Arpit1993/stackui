@@ -28,7 +28,7 @@ const DatasetComponent = (props) => {
             <div className="relative w-full flex gap-2 z-0" key={'cp'}>
                 <button onClick={() => handleClick()} className='w-full'>
                     <div className="text-start font-body text-sm">
-                        <div className="text-gray-900 bg-white border-b border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-body text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                        <div className="text-gray-900 bg-white border-b border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-body text-sm px-5 py-2.5 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
                             <div className="w-full flex truncate">
                                 <div className="w-[100px]"> Dataset: </div>
                                 <div className="w-full truncate"> {props.dataset.name} </div>

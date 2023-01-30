@@ -62,7 +62,7 @@ const Histogram = (props) => {
               }
             },
           };
-          const ctx = document.getElementById(`bar-chart ${props.title}`).getContext("2d");
+          const ctx = document.getElementById(`bar-chart ${(props.docid) ? (props.docid) : (props.title)}`).getContext("2d");
           var myChart = new Chart(ctx, config);
           window.myBar = myChart;
       
@@ -73,7 +73,7 @@ const Histogram = (props) => {
   }, [props.data, props.title]);
   return (
     <>
-      <div className="relative flex flex-col min-w-0 break-words dark:bg-gray-800 bg-white w-full mb-6 shadow-lg rounded">
+      <div className="relative flex flex-col min-w-0 break-words dark:bg-gray-800 bg-white w-full mb-6 rounded">
         <div className="rounded-t mb-0 px-4 py-3 bg-transparent">
           <div className="flex flex-wrap items-center">
             <div className="relative w-full max-w-full flex-grow flex-1">
@@ -85,7 +85,7 @@ const Histogram = (props) => {
         </div>
         <div className="p-2 flex-auto">
           <div className="relative overflow-scroll h-350-px">
-            <canvas id={`bar-chart ${props.title}`}/>
+            <canvas id={`bar-chart ${(props.docid) ? (props.docid) : props.title}`}/>
           </div>
         </div>
       </div>

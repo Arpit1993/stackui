@@ -1,4 +1,4 @@
-import FilePopup from "../../popups/FilePopup";
+import FilePopup from "../../Visualizers/FilePopup";
 import ViewOptions from "./Items/ViewOptions";
 import { SetStateAction, useCallback, useEffect, useState } from "react";
 import ImageThumbnail from "./Items/ImageThumbnail";

@@ -42,7 +42,10 @@ export default function Datasets() {
     var data_array = ((datasets.length > 0) && datasetsDict && hierarchy) ? sortOrder ? [...datasets].sort(compare_fcn) : [...datasets].sort(compare_fcn).reverse() : null
 
     return (
-        <>
+        <div className="h-full">
+            {
+                loading ? <LoadingScreen msg={'Connecting...'}  key={'ld'}/> : <></>
+            }
             <nav className="flex p-2 h-10" aria-label="Breadcrumb">
                 <ol className="inline-flex items-center space-x-1 md:space-x-3">
                     <li className="inline-flex items-center">
@@ -63,8 +66,8 @@ export default function Datasets() {
                     </li>
                 </ol>
             </nav>
-            <div className="h-full p-2 flex flex-col items-center">
-                <div className="w-3/4">
+            <div className="p-2 flex flex-col items-center">
+                <div className="w-3/4 h-full">
                     <div className="w-full flex justify-between">
                         <Link href="/NewDataset" passHref>
                             <button className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"> 
@@ -87,7 +90,7 @@ export default function Datasets() {
                             </button>
                         </div>
                     </div>
-                    <div className="grid grid-cols-1 w-full">
+                    <div className="h-[550px] mt-2 border border-gray-300 dark:border-gray-700 rounded-md overflow-y-scroll flex flex-col w-full overflow-clip">
                         {
                             (data_array) ?
                             data_array.filter((dataset) => (hierarchy[dataset.storage]) ? (hierarchy[dataset.storage]['parent'] == '') : true ).map( 
@@ -120,10 +123,7 @@ export default function Datasets() {
                         }
                     </div>
                 </div>
-                {
-                    loading ? <LoadingScreen msg={'Connecting...'}  key={'ld'}/> : <></>
-                }
             </div>
-        </>
+        </div>
     )
 }

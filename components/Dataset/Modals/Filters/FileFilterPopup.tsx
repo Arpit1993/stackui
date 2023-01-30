@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react"
-import BranchPopup from "./BranchPopup"
+import BranchPopup from "../BranchPopup"
 import posthog from 'posthog-js'
-import LoadingScreen from "../../LoadingScreen"
+import LoadingScreen from "../../../LoadingScreen"
 
 const FileFilterPopup = (props) => {
 

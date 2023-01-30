@@ -7,10 +7,17 @@ import TopBar from "./explorer/topbar/topbar";
 import FileExplorer from "./explorer/FileExplorer/FileExplorer";
 import NERExplorer from "./explorer/FileExplorer/NERExplorer";
 import YOLOExplorer from "./explorer/FileExplorer/YOLOExplorer";
+import QAExplorer from "./explorer/FileExplorer/QAExplorer";
+import NERStatistics from './tabs/statistics/NERStatistics'
+import YOLOStatistics from './tabs/statistics/YOLOStatistics'
+import QAStatistics from './tabs/statistics/QAStatistics'
+import Experiments from './tabs/experiments/Experiments'
+
 import Link from "next/link";
 
 const Dataset = () => {
     // states for each json
+    const [tab, setTab] = useState<number>(0)
     const [files, setFiles] = useState<Array<any>>([])
     const [URI, setURI] = useState({schema: '', storage: '', dataset: '', storage_dataset: ''});
     const [commits, setCommits] = useState<Array<any>>([]);
@@ -65,7 +72,7 @@ const Dataset = () => {
                                         })
                                     })
                                 }
-                                if(res.value.includes('ner')){
+                                if(res.value.includes('ner') || res.value.includes('qa')){
                                     view_ex = false
                                     max_view_var = 7
                                     setView(false)
@@ -244,7 +251,7 @@ const Dataset = () => {
     let props = {files: files, dataprops: dataprops, dataset: URI.storage_dataset};
 
     return (
-        <>
+        <div className="flex flex-col">
             <nav className="flex p-2 h-10" aria-label="Breadcrumb">
                 <ol className="inline-flex items-center space-x-1 md:space-x-3">
                     <li className="inline-flex items-center">
@@ -276,37 +283,60 @@ const Dataset = () => {
                     </li>
                 </ol>
             </nav>
-            <div className='flex justify-between h-full w-full'>
+            <div className='flex justify-between w-full'>
                 {
                     loading ?
                     <LoadingScreen key={'loading_screen_dataset'}/>
                     : null
                 }
-                <div className='w-full h-full'>
-                    <div className="h-full bg-gray-100 dark:bg-gray-800">
-                        <div className="h-full">
-                            <TopBar shortcuts={shortcuts} props={props.dataprops} setFiltering={setFiltering} schema={schema} setPage={setPage} filtering={filtering}/>
+                <div className='w-full h-fit'>
+                    <div className="h-fit bg-gray-100 dark:bg-gray-800">
+                        <div className="h-fit">
+                            <TopBar tab={tab} setTab={setTab} shortcuts={shortcuts} props={props.dataprops} setFiltering={setFiltering} schema={schema} setPage={setPage} filtering={filtering}/>
                         </div>
                     </div>
-                    <div className="flex w-full h-full">
-                        <div className="px-5 w-[80%] h-[80%] mt-2">
+                    <div className="flex w-full h-[80%]">
+                        <div className="px-5 relative w-[80%] h-[80%] mt-2">
                             {
-                                schema.includes('ner') ? 
-                                <NERExplorer shortcuts={shortcuts} schema={schema} max_view={max_view} setFiltering={setFiltering} setMaxView={setMaxView} waiting={waiting} files={files} dataset={URI.dataset} page={page} setPage={setPage} view={view} setView={setView} len={len}/>
+                                (tab == 0) ?
+                                    schema.includes('qa') ? 
+                                    <QAExplorer shortcuts={shortcuts} schema={schema} max_view={max_view} setFiltering={setFiltering} setMaxView={setMaxView} waiting={waiting} files={files} dataset={URI.dataset} page={page} setPage={setPage} view={view} setView={setView} len={len}/>
+                                    :
+                                    schema.includes('ner') ? 
+                                    <NERExplorer shortcuts={shortcuts} schema={schema} max_view={max_view} setFiltering={setFiltering} setMaxView={setMaxView} waiting={waiting} files={files} dataset={URI.dataset} page={page} setPage={setPage} view={view} setView={setView} len={len}/>
+                                    :
+                                    (schema == 'yolo' || schema == 'labelbox') ? 
+                                    <YOLOExplorer cancelRequest={cancelRequest} shortcuts={shortcuts} schema={schema} max_view={max_view} setFiltering={setFiltering} setMaxView={setMaxView} waiting={waiting} files={files} dataset={URI.dataset} page={page} setPage={setPage} view={view} setView={setView} len={len}/>
+                                    :
+                                    <FileExplorer cancelRequest={cancelRequest} shortcuts={shortcuts} schema={schema} max_view={max_view} setFiltering={setFiltering} setMaxView={setMaxView} waiting={waiting} files={files} dataset={URI.dataset} page={page} setPage={setPage} view={view} setView={setView} len={len}/> 
                                 :
-                                (schema == 'yolo' || schema == 'labelbox') ? 
-                                <YOLOExplorer cancelRequest={cancelRequest} shortcuts={shortcuts} schema={schema} max_view={max_view} setFiltering={setFiltering} setMaxView={setMaxView} waiting={waiting} files={files} dataset={URI.dataset} page={page} setPage={setPage} view={view} setView={setView} len={len}/>
+                                (tab == 1)  ?
+                                    (schema == 'yolo' || schema == 'labelbox') ? 
+                                        <YOLOStatistics schema={schema} filtering={filtering} shortcuts={shortcuts}  /> 
+                                        : 
+                                    (schema.includes('ner')) 
+                                        ?  
+                                        <NERStatistics schema={schema} filtering={filtering} shortcuts={shortcuts}  /> 
+                                        : 
+                                    (schema.includes('qa')) 
+                                        ?
+                                        <QAStatistics schema={schema} filtering={filtering} shortcuts={shortcuts}  /> 
+                                        : 
+                                        <></>
                                 :
-                                <FileExplorer cancelRequest={cancelRequest} shortcuts={shortcuts} schema={schema} max_view={max_view} setFiltering={setFiltering} setMaxView={setMaxView} waiting={waiting} files={files} dataset={URI.dataset} page={page} setPage={setPage} view={view} setView={setView} len={len}/>
+                                (tab == 2) ? 
+                                    <Experiments schema={schema} shortcuts={shortcuts}  />
+                                    : 
+                                    <></>
                             }
                         </div>
-                        <div className="px-5 w-[20%]">
+                        <div className="px-5 w-[20%] h-[80%]">
                             <Infobar shortcuts={shortcuts} commits={commits} dataset={URI.storage_dataset}/>
                         </div>
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 

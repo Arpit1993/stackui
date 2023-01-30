@@ -1,4 +1,4 @@
-import NERPopup from "../../popups/NERPopup";
+import NERPopup from "../../Visualizers/NERPopup";
 import { useCallback, useEffect, useState } from "react";
 import NERPreview from "./Items/NERPreview";
 import React from "react";
@@ -8,6 +8,9 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import BugReportIcon from '@mui/icons-material/BugReport';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { posthog } from "posthog-js";
+import ModelTrainingIcon from '@mui/icons-material/ModelTraining';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+import ExportModal from "../../Modals/ExportModal";
 
 function commit(comment: string){
     fetch('http://localhost:8000/commit_req?comment='.concat(comment))
@@ -25,10 +28,11 @@ function diagnose(){
 const NERExplorer = (props) => {
     const [keyVar, setKey] = useState<String>('');
     const [popup, setPopup] = useState<Boolean>(false)
+    const [addDP, setAddDP] = useState<Boolean>(false)
     const [anomalies, setAnomalies] = useState<Boolean>(false)
-    const [thumbnailView, setThumbnailView] = useState<Boolean>(true)
     const [selected, setSelected] = useState<Array<Boolean>>([])
     const [pointer, setPointer] = useState<number>(-1)
+    const [export_, setExport] = useState<Boolean>(false)
     const [tagsPopup, setTagsPopup] = useState<Boolean>(false)
 
     const files = props.files;
@@ -191,15 +195,21 @@ const NERExplorer = (props) => {
                         <ErrorOutlineIcon className="w-1/10 h-1/10 shadow-sm fill-white rounded-full overflow-hidden bg-red-500 hover:bg-red-700"/>
                         {'3 anomalies detected'}
                     </div>
-                    <button onClick={()=>commit('')} className=" flex h-fit items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                    <button onClick={()=>commit('')} className=" flex h-fit items-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
                         <RefreshIcon className="h-5 w-5 mr-2"/>
                         Refresh
                     </button>
                     
                     <button onClick={()=>{posthog.capture('bug report button', { property: 'value' }); diagnose()}} 
-                        className="text-white flex h-fit items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                        className="text-white flex h-fit text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
                         <BugReportIcon className="h-5 w-5 mr-2"/>
                         Diagnose
+                    </button>
+
+                    <button onClick={()=>{setExport(true); posthog.capture('train button', { property: 'value' }); }} //TODO 
+                        className="flex h-fit items-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                        <ModelTrainingIcon className="h-5 w-5 mr-2"/>
+                        Train
                     </button>
                     
                 </div>
@@ -221,7 +231,7 @@ const NERExplorer = (props) => {
                             <div className="w-full">
                                 {
                                     files.map((file,index) =>
-                                        <NERPreview shortcuts={props.shortcuts} key={`thumb-${file['name']}`} setTagsPopup={setTagsPopup} selected={selected} setPointer={setPointer} setSelected={setSelected} dataset={props.dataset} thumbnailView={thumbnailView} max_view={props.max_view} file={file} index={index} waiting={props.waiting} handleObjectClick={handleObjectClick}/>
+                                        <NERPreview shortcuts={props.shortcuts} key={`thumb-${file['name']}`} setTagsPopup={setTagsPopup} selected={selected} setPointer={setPointer} setSelected={setSelected} dataset={props.dataset} max_view={props.max_view} file={file} index={index} waiting={props.waiting} handleObjectClick={handleObjectClick}/>
                                     )
                                 }
                             </div>
@@ -229,15 +239,24 @@ const NERExplorer = (props) => {
                     </div>
                 </div>
                 <div className="z-10 flex justify-between items-center">
-                    <div className="flex justify-left text-xs mt-2 mb-2 rounded-sm">
+                    <div className="flex justify-left text-xs py-2 rounded-sm">
                         {listofButtons}
                     </div>
                     <div className="z-10 w-1/6 flex flex-col justify-center h-max text-sm py-2"> 
                         Page {props.page+1 | 0} of {max_pages-0.001+1 | 0}
                     </div>
+                    <button onClick={() => {setAddDP(true)}} className="mt-2 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                            {'Add Datapoint'}
+                    </button>
                 </div>
                 {
+                    addDP ? <AddDatapointModal setPopup={setAddDP} /> : null
+                }
+                {
                     popup ? <NERPopup shortcuts={props.shortcuts} schema={props.schema} popup={popup} setPopup={setPopup} setKeyId={setKey} keyId={keyVar} key={'fcp'}/> : <></>
+                }
+                {
+                    export_ ? <ExportModal setPopup={setExport}/> : <></>
                 }
             </div>
         </>
@@ -245,3 +264,59 @@ const NERExplorer = (props) => {
 };
 
 export default NERExplorer;
+
+const AddDatapointModal = (props) => {
+    const [key, setKey] = useState('')
+
+    const handleSubmit = () => {
+        if (key.length > 0){
+            fetch(`http://localhost:8000/add_datapoint?key=${key}`).then(
+                () => {
+                    window.location.reload()
+                }
+            )
+        }
+    }
+
+    return (
+        <>
+            {
+                <button key={'ccb'} onClick={() => {
+                    props.setPopup(false)
+                    }} className=" bg-black/50 z-[48] fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
+                    click to close
+                </button>
+            }
+            <div key={"brnchpp"} ref={props.ref_} className="fixed top-1/2 left-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2">
+                    <div className="relative bg-white w-[700px] rounded-lg shadow dark:bg-gray-900">
+                        <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
+                            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                                Add new datapoint
+                            </h3>
+                            <button onClick={() => {props.setPopup(false)}} className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="defaultModal">
+                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
+                                <span className="sr-only">Close modal</span>
+                            </button>
+                        </div>
+
+                        <div className="mb-6 mt-6 w-full flex justify-center">
+                            <div className="w-[60%]">
+                                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">New Sentence</label>
+                                <input onChange={(e) => {setKey(e.target.value)}} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="sentence to add" value={key} required/>
+                            </div>
+                        </div>
+                        
+                        <div className="flex justify-center items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
+                            <button onClick={() => {handleSubmit()}}  className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                                Submit
+                            </button>
+
+                            <button onClick={() => {props.setPopup(false)}}  className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+        </>
+    )
+}

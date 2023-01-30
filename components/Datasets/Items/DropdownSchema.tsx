@@ -116,6 +116,12 @@ const DropdownSchema = (props) => {
                             Named Entity Recognition (Spacy)
                           </button>
                           <button
+                            className={'hover:bg-gray-100 hover:text-gray-900 text-gray-700 block px-4 py-2 text-sm w-full'}
+                            onClick={()=>props.setSchema('squad_qa')}
+                          >
+                            Question Answering (SQUAD2)
+                          </button>
+                          <button
                             className={'hover:bg-gray-100 hover:cursor-not-allowed hover:text-gray-900 text-gray-700 block px-4 py-2 text-sm w-full'}
                             disabled={true}
                             onClick={()=>props.setSchema('files')}

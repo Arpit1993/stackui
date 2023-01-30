@@ -1,16 +1,21 @@
 /* eslint-disable @next/next/no-img-element */
 // import Image from "next/image"
 import React, { useEffect, useState, useRef, useCallback} from "react"
-import YOLOHistoryList from "../popups/History/YOLOHistoryList";
+import YOLOHistoryList from "./History/YOLOHistoryList";
 import KeyboardIcon from '@mui/icons-material/Keyboard';
 import ClearIcon from '@mui/icons-material/Clear';
 import AddIcon from '@mui/icons-material/Add';
-import BoundingBoxes from "./Items/BoundingBoxes";
+import CanvasBoundingBoxes from "./Items/CanvasBoundingBoxes";
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import ColorPick from "./Items/ColorPick";
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import EmojiObjectsIcon from '@mui/icons-material/EmojiObjects';
+
+async function dataURItoBlob(dataURI) {    
+    const blob =  await fetch(dataURI).then((res) => res.blob())
+    return blob
+}
 
 const YOLOViz = (props) => {
     
@@ -32,15 +37,19 @@ const YOLOViz = (props) => {
     
     const myRef = useRef<any>(null)
     const executeScroll = () => myRef.current.scrollIntoView()    
-
+    
     var boxes: Array<any> = []
-
+    
     var im =  document.createElement('img');
     im.src = props.img
+    const [imWidth, setImWidth] = useState<number>(props.ww)
+    const [imHeight, setImHeight] = useState<number>(props.wh)
     const [width, setWidth] = useState<number>(props.ww)
     const [height, setHeight] = useState<number>(props.wh)
-
+    
     im.onload = () => {   
+        setImWidth(im.width)
+        setImHeight(im.height)
         if(props.wh/im.height*im.width < props.ww){
             setWidth(props.wh/im.height*im.width)
             setHeight(props.wh)
@@ -51,7 +60,58 @@ const YOLOViz = (props) => {
         }
         setWaiting(false)
     }
+    
+    const auto_label = async (img) => {
+        const response = await fetch(
+            "https://api-inference.huggingface.co/models/facebook/detr-resnet-50",
+            {
+                headers: { Authorization: `Bearer ${process.env.NEXT_PUBLIC_HF_KEY as string}` },
+                method: "POST",
+                body: await dataURItoBlob(img),
+            }
+        ).then( (res) => res.json() ).then(
+            (data: Array<any>) => {
+                var arr_copy2 = labelMap
 
+                if (data.length > 0){
+                    var arr_copy0 = active;  
+                    var arr_copy: Array<any> = Object.values(updated_labels.current)
+                    for(var i = 0; i < data.length; i++){
+                        const res = data[i]
+                        console.log(res)
+                        var idx2 = Object.keys(arr_copy2).findIndex(el => arr_copy2[el]['label'].toLowerCase() == res.label.toLowerCase())
+                        if (idx2 > 0){
+                            arr_copy.push(
+                                [arr_copy2[idx2]['class'], (res.box.xmin + res.box.xmax)/(2 * imWidth), 
+                                (res.box.ymin + res.box.ymax)/(2 * imHeight), (res.box.xmax - res.box.xmin)/imWidth, 
+                                (res.box.ymax - res.box.ymin)/imHeight]   
+                                )
+                        } else {
+                            arr_copy.push(
+                            ['-1', (res.box.xmin + res.box.xmax)/(2 * imWidth), 
+                            (res.box.ymin + res.box.ymax)/(2 * imHeight), (res.box.xmax - res.box.xmin)/imWidth, 
+                            (res.box.ymax - res.box.ymin)/imHeight]   
+                            )
+                        }
+                        arr_copy0.push(true);
+                    }
+                    setActive(() => {return arr_copy0});
+                    setLabels(() => {return arr_copy})
+    
+                    var dic_copy = Object.assign({},arr_copy)
+                    dic_copy['keyId'] = props.keyId
+                    updated_labels.current = dic_copy
+    
+                    props.setnewLabels(() => {
+                        return updated_labels.current
+                    })
+                    props.setSubmit(true)
+                }
+
+            }
+        )
+    }
+    
     const addNewLabel = () => {
         var arr_copy: Array<any> = Object.values(updated_labels.current)
         arr_copy.push(
@@ -174,7 +234,7 @@ const YOLOViz = (props) => {
             rect.push({x: Math.floor(x), y: Math.floor(y), h: Math.floor(h), w: Math.floor(w), class: labels[i][0], new: newRef})
         }
 
-        boxes.push(<BoundingBoxes new={newRef} loading={props.loading} rect={rect}
+        boxes.push(<CanvasBoundingBoxes new={newRef} loading={props.loading} rect={rect}
             ww={props.ww} wh={props.wh} width={width} height={height} 
             updated_labels={updated_labels} setUsableStr={setUsableStr}
             setUsableStr2={setUsableStr2} img={im}
@@ -248,11 +308,11 @@ const YOLOViz = (props) => {
                                                     <VisibilityOff className="w-5 h-5"/> 
                                                     }
                                                 </button>
-                                                <div className="font-semibold text-justify text-gray-900 dark:text-white">
+                                                <div className="font-semibold text-center text-gray-900 dark:text-white">
                                                     {'Id'}
                                                 </div>
                                                 <div className="font-semibold text-justify text-gray-900 dark:text-white">
-                                                    {'Label'}
+                                                    {'Display'}
                                                 </div>
                                                 <div className="font-semibold  text-gray-900 dark:text-white">
                                                     {'Color'}
@@ -429,13 +489,18 @@ const YOLOViz = (props) => {
                                                 <AddIcon className="h-[20px] w-[20px]"/>
                                                 {'Add'}
                                             </button>
+
+                                            <button onClick={() => {auto_label(props.img)}} className={"z-30 flex gap-1 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"}>
+                                                <EmojiObjectsIcon className="h-[20px] w-[20px]"/>
+                                                {'AI-Suggestions'}
+                                            </button>
                                         </div>
                                     </div>
                                 }
                             </>
                         }
 
-        {
+            {
                             props.diff ? 
                             null
                             :

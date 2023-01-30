@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import FormData from "form-data";
-import DropdownSchema from "../../Dataset/Items/DropdownSchema";
+import DropdownSchema from "../Items/DropdownSchema";
 import LoadingScreen from "../../LoadingScreen";
 import posthog from 'posthog-js'
 import ClearIcon from '@mui/icons-material/Clear';

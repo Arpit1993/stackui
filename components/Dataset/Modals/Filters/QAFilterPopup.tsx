@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from "react"
-import BranchPopup from "./BranchPopup"
-import SlicePopup from "./SlicePopup";
+import BranchPopup from "../BranchPopup"
+import SlicePopup from "../SlicePopup";
 import Editor from 'react-simple-code-editor';
 import posthog from 'posthog-js'
-import LoadingScreen from "../../LoadingScreen"
+import LoadingScreen from "../../../LoadingScreen"
 import Slider from '@mui/material/Slider';
+import DownloadIcon from '@mui/icons-material/Download';
 import { highlight, languages } from 'prismjs/components/prism-core';
 import 'prismjs/components/prism-clike';
 import 'prismjs/components/prism-javascript';
@@ -51,7 +52,7 @@ const getbuttons = (variable, varFilter, setVarFilter, nullStr, setnullStr, n_va
     return var_buttons
 }
 
-const NERFilterPopup = (props) => {
+const QAFilterPopup = (props) => {
 
     const [code, setCode] = useState( `def filter(datapoint):\n\t# python condition applied to each datapoint \n\treturn True\n`)
     const [schema, setSchema] = useState( `datapoint: dict\n\tkey: string\n\tnum_entities: string<int>\n\tentities: list<string>\n\tresolution: string\n\ttags: list<string>\n\tlabels: list<dict>:\n\t\t'0': entity\n\t\t'1': x\n\t\t'2': y\n\t\t'3': w\n\t\t'4': h`)
@@ -61,20 +62,21 @@ const NERFilterPopup = (props) => {
     const [branch, setBranch] = useState(false)
     const [slice, setSlice] = useState(false)
     
-    const [sliderBox, setSliderBox] = useState([0,100])
-    const [sliderEntities, setSliderEntities] = useState([0,100])
-
-    const [entities, setEntities] = useState([])
-    const [n_entities, setNEntities] = useState({})
-    const [entitiesFilter, setClassFilter] = useState({})
-    
-    const [n_len, setNLengths] = useState({})
-    const [lengths, setLengths] = useState([])
-    const [resFilter, setResFilter] = useState({})
+    const [sliderAnswers, setSliderAnswers] = useState([0,100])
+    const [sliderParagraphs, setSliderParagraphs] = useState([0,100])
+    const [sliderQuestions, setSliderQuestion] = useState([0,100])
 
     const [n_tags, setNTags] = useState({})
     const [tags, setTags] = useState([])
-    const [numEntities, setNumEntities] = useState<number>(0)
+    
+    const [lenParagraph, setLenParagraph] = useState<number>(0)
+    const [lenQuestion, setLenQuestion] = useState<number>(0)
+    const [lenAnswer, setLenAnswer] = useState<number>(0)
+
+    const [pSearch, setPSearch] = useState<string>('')
+    const [qSearch, setQSearch] = useState<string>('')
+    const [aSearch, setASearch] = useState<string>('')
+
     const [tagFilter, setTagFilter] = useState({})
     
     const [time, setTime] = useState(true)
@@ -89,16 +91,6 @@ const NERFilterPopup = (props) => {
     const controller = new AbortController();
     const { signal } = controller;
 
-    const toggleVariable = (toggle, filter, setFilter) => {
-        var cf = filter
-        
-        for(var i = 0; i < Object.keys(cf).length; i++){
-            cf[Object.keys(cf)[i]] = toggle
-        }
-
-        setFilter(cf)
-        setnullStr(nullStr+'x')
-    }
 
     const handleApplyFilter = async () => {
         setLoading(true)
@@ -106,26 +98,6 @@ const NERFilterPopup = (props) => {
 
         var filters = {}
         var idx = 0
-
-        for(var i = 0; i < Object.keys(entitiesFilter).length; i++){
-            if (Object.values(entitiesFilter)[i]){
-                filters[idx] =
-                    {
-                        'entity': Object.keys(entitiesFilter)[i]
-                    }
-                idx+=1
-            }
-        }
-
-        for(var i = 0; i < Object.keys(resFilter).length; i++){
-            if (Object.values(resFilter)[i]){
-                filters[idx] =
-                    {
-                        'length': Object.keys(resFilter)[i]
-                    }
-                idx+=1
-            }
-        }
 
         for(var i = 0; i < Object.keys(tagFilter).length; i++){
             if (Object.values(tagFilter)[i]){
@@ -144,9 +116,44 @@ const NERFilterPopup = (props) => {
             idx+=1
         }
 
-        if(sliderBox[0] > 0 || sliderBox[1] < 100){
+        if(pSearch.length > 0){
             filters[idx] = {
-                'entity_len': sliderBox
+                'p_search': pSearch
+            }
+            idx+=1
+        }
+
+        if(qSearch.length > 0){
+            filters[idx] = {
+                'q_search': qSearch
+            }
+            idx+=1
+        }
+
+        if(aSearch.length > 0){
+            filters[idx] = {
+                'a_search': aSearch
+            }
+            idx+=1
+        }
+
+        if(sliderAnswers[0] > 0 || sliderAnswers[1] < 100){
+            filters[idx] = {
+                'ans_len': [Math.floor(sliderAnswers[0] * lenAnswer / 100),Math.floor(sliderAnswers[1] * lenAnswer / 100)]
+            }
+            idx+=1
+        }
+
+        if(sliderQuestions[0] > 0 || sliderQuestions[1] < 100){
+            filters[idx] = {
+                'q_len': [Math.floor(sliderQuestions[0] * lenQuestion / 100),Math.floor(sliderQuestions[1] * lenQuestion / 100)]
+            }
+            idx+=1
+        }
+
+        if(sliderParagraphs[0] > 0 || sliderParagraphs[1] < 100){
+            filters[idx] = {
+                'par_len': [Math.floor(sliderParagraphs[0] * lenParagraph / 100),Math.floor(sliderParagraphs[1] * lenParagraph / 100)]
             }
             idx+=1
         }
@@ -154,13 +161,6 @@ const NERFilterPopup = (props) => {
         if(date.endDate && date.startDate){
             filters[idx] = {
                 'date': [date.startDate.replace('-','/'), date.endDate.replace('-','/')]
-            }
-            idx+=1
-        }
-
-        if(sliderEntities[0] > 0 || sliderEntities[1] < 100){
-            filters[idx] = {
-                'num_entities': [Math.floor(numEntities * sliderEntities[0]/100),Math.floor(numEntities * sliderEntities[1]/100)]
             }
             idx+=1
         }
@@ -190,26 +190,16 @@ const NERFilterPopup = (props) => {
         await fetch('http://localhost:8000/reset_filters/')
         .then(() => props.setFiltering('w')).then(
             () =>{
-                const rFilter = resFilter
-                for(var i = 0; i < Object.keys(rFilter).length; i++){
-                    rFilter[Object.keys(rFilter)[i]] = false
-                }
-
-                const cFilter = entitiesFilter
-                for(var i = 0; i < Object.keys(cFilter).length; i++){
-                    cFilter[Object.keys(cFilter)[i]] = false
-                }
 
                 const tFilter = tagFilter
                 for(var i = 0; i < Object.keys(tFilter).length; i++){
                     tFilter[Object.keys(tFilter)[i]] = false
                 }
                 
-                setResFilter(rFilter)
-                setClassFilter(cFilter)
                 setTagFilter(tFilter)
-                setSliderBox([0,100])
-                setSliderEntities([0,100])
+                setSliderAnswers([0,100])
+                setSliderParagraphs([0,100])
+                setSliderQuestion([0,100])
                 setDate({startDate: null, endDate: null})
                 setnullStr('')
             }
@@ -225,35 +215,11 @@ const NERFilterPopup = (props) => {
             await fetch('http://localhost:8000/schema_metadata').then((res) => res.json()).then(
                 (res) =>
                 { 
-                    setNumEntities(Math.max(...res.entities_per_sentence))
-                    setEntities(res.entities)
-                    setNEntities(res.n_entity)
+                    // TODO
+                    setLenAnswer(Math.max(...res.answer_lengths))
+                    setLenParagraph(Math.max(...res.paragraph_lengths))
+                    setLenQuestion(Math.max(...res.question_lengths))
                     
-                    var cFilter: any = {}
-                    for(var i = 0; i < res.entities.length; i++){
-                        if(entitiesFilter[res.entities[i]]){
-                            cFilter[res.entities[i]] = true
-                        } else {
-                            cFilter[res.entities[i]] = false
-                        }
-                    }
-
-                    setClassFilter(cFilter)
-
-                    setLengths(res.lengths)
-                    setNLengths(res.n_len)
-            
-                    var rFilters: any = {}
-                    for(var i = 0; i < res.lengths.length; i++){
-                        if(resFilter[res.lengths[i]]){
-                            rFilters[res.lengths[i]] = true
-                        } else {
-                            rFilters[res.lengths[i]] = false
-                        }
-                    }
-
-                    setResFilter(rFilters)
-
                     setTags(res.tags)
                     setNTags(res.n_tags)
 
@@ -294,8 +260,6 @@ const NERFilterPopup = (props) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.callFilter, time])
 
-    var entities_buttons : Array<any> = getbuttons(entities, entitiesFilter, setClassFilter, nullStr, setnullStr, n_entities,'class', entities.length)
-    var res_buttons : Array<any> = getbuttons(lengths, resFilter, setResFilter, nullStr, setnullStr, n_len,'res', lengths.length)
     var tag_buttons : Array<any> = getbuttons(tags, tagFilter, setTagFilter, nullStr, setnullStr, n_tags,'tag', tags.length)
 
     return (
@@ -309,7 +273,7 @@ const NERFilterPopup = (props) => {
             {
                 slice ? <SlicePopup ref_={ref} key={'slicpp'} setPopup={setSlice}/> : <></>
             }
-            <div key={"flterpp"} ref={ref} className="bg-white absolute z-40 top-16 rounded-lg dark:bg-gray-900 w-full h-[250px] border-[0.5px] border-gray-500">
+            <div key={"flterpp"} ref={ref} className="bg-white absolute z-40 top-16 rounded-lg dark:bg-gray-900 w-[80%] h-[250px] border-[0.5px] border-gray-500">
                 <div className="w-full justify-between flex h-8">
                     <div className="px-2">
                         <button onClick={() => {
@@ -353,52 +317,64 @@ const NERFilterPopup = (props) => {
                     <div className="flex w-full overflow-x-scroll mb-[-400px] pb-[400px] justify-center gap-2 p-1">
                         <div> 
                             <div className="text-sm">
-                                Entities
+                                Paragraphs
                             </div>
-                            <div className="h-[100px] w-[200px] border rounded-md shadow-inner border-gray-300">
-                                <div className="overflow-y-scroll h-[98px]">
-                                    {entities_buttons}
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                        <div className="text-sm">
-                                Lengths
-                            </div>
-                            <div className="h-[100px] w-[200px] border rounded-md shadow-inner border-gray-300">
-                                <div className="overflow-y-scroll h-[98px]">
-                                    {res_buttons}
-                                </div>
-                            </div>
-                        </div>
-                        <div>
+                            <input onChange={(e) => {setPSearch(e.target.value)}} placeholder="paragraph search" value={pSearch}
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></input>
                             <div className="text-sm">
-                                Comments
+                                Questions
                             </div>
-                            <div className="h-[100px] w-[200px] border rounded-md shadow-inner border-gray-300">
-                                <div className="overflow-y-scroll h-[98px]">
-                                    {tag_buttons}
-                                </div>
+                            <div className="dark:text-white">
+                                <input onChange={(e) => {setQSearch(e.target.value)}} placeholder="question search" value={qSearch}
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></input>
                             </div>
                         </div>
-
                         <div className="h-[120px] w-[200px]">
                             <div className="text-sm">
-                                Entity length
+                                Answers
+                            </div>
+                            <div className="dark:text-white">
+                                <input onChange={(e) => {setASearch(e.target.value)}} placeholder="answer search" value={aSearch}
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></input>
+                            </div>
+                            <div className="text-sm mt-[6px]">
+                                Paragraph length
                             </div>
                             <div className="w-[200px] h-8 border rounded-md shadow-inner border-gray-300">
                                 {/* <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
                                 </div> */}
                                 <div className="w-full px-5">
                                     <Slider
-                                        getAriaLabel={() => 'Entity length'}
-                                        value={sliderBox}
-                                        step={0.01}
+                                        getAriaLabel={() => 'Chars per paragraph'}
+                                        value={sliderParagraphs}
                                         onChange={(event: Event, newValue: number | number[]) => {
-                                            setSliderBox(newValue as number[]);
+                                            setSliderParagraphs(newValue as number[]);
                                         }}
                                         valueLabelFormat={(x)=>{
-                                            return `${x} characters`
+                                            return `${Math.floor(lenParagraph * x/100)} chars`
+                                        }}
+                                        valueLabelDisplay="auto"
+                                        getAriaValueText={()=>{return ''}}
+                                        />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="h-[120px] w-[200px]">
+                            <div className="text-sm">
+                                Question length
+                            </div>
+                            <div className="w-[200px] h-8 border rounded-md shadow-inner border-gray-300">
+                                {/* <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
+                                </div> */}
+                                <div className="w-full px-5">
+                                    <Slider
+                                        getAriaLabel={() => 'Chars per question'}
+                                        value={sliderQuestions}
+                                        onChange={(event: Event, newValue: number | number[]) => {
+                                            setSliderQuestion(newValue as number[]);
+                                        }}
+                                        valueLabelFormat={(x)=>{
+                                            return `${Math.floor(lenQuestion * x/100)} chars`
                                         }}
                                         valueLabelDisplay="auto"
                                         getAriaValueText={()=>{return ''}}
@@ -406,24 +382,35 @@ const NERFilterPopup = (props) => {
                                 </div>
                             </div>
                             <div className="mt-[15px] text-sm">
-                                Entities per sentence
+                                Answer length
                             </div>
                             <div className="w-[200px] h-8 border rounded-md shadow-inner border-gray-300">
                                 {/* <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
                                 </div> */}
                                 <div className="w-full px-5">
                                     <Slider
-                                        getAriaLabel={() => 'Entities per sentence'}
-                                        value={sliderEntities}
+                                        getAriaLabel={() => 'Chars per Answer'}
+                                        value={sliderAnswers}
                                         onChange={(event: Event, newValue: number | number[]) => {
-                                            setSliderEntities(newValue as number[]);
+                                            setSliderAnswers(newValue as number[]);
                                         }}
                                         valueLabelFormat={(x)=>{
-                                            return `${Math.floor(numEntities * x/100)} entities`
+                                            return `${Math.floor(lenAnswer * x/100)} chars`
                                         }}
                                         valueLabelDisplay="auto"
                                         getAriaValueText={()=>{return ''}}
                                         />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div className="text-sm">
+                                Comments
+                            </div>
+                            <div className="h-[100px] w-[200px] border rounded-md shadow-inner border-gray-300">
+                                <div className="overflow-y-scroll h-[98px]">
+                                    {tag_buttons}
                                 </div>
                             </div>
                         </div>
@@ -461,7 +448,7 @@ const NERFilterPopup = (props) => {
                     </div>
                     <div className="px-5 py-4 flex justify-end gap-2">
                         <Tooltip title={'Resets query to full dataset'} placement="bottom">
-                            <button onClick={() => handleResetFilter()} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                            <button onClick={() => handleResetFilter()} className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">
                                 Reset
                             </button>
                         </Tooltip>
@@ -482,9 +469,10 @@ const NERFilterPopup = (props) => {
                                   setDownloading(false)
                                 });
                             }
-                        }} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                        }} className="flex gap-2 items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                            <DownloadIcon className="w-5 h-5"/>
                             {
-                                downloading ? 'Cancel' : 'download'
+                                downloading ? 'Cancel' : 'Download'
                             }
                         </button>
                     </div>
@@ -494,4 +482,4 @@ const NERFilterPopup = (props) => {
     )
 }
 
-export default NERFilterPopup
+export default QAFilterPopup

@@ -1,6 +1,6 @@
 import React from "react";
 import { useState} from "react";
-import ChangePopup from "../popups/ChangePopup";
+import ChangePopup from "../Modals/ChangePopup";
 
 const ItemChange = (props) => {
 

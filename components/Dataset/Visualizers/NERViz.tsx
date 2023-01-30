@@ -2,11 +2,11 @@ import React, { useEffect, useState, useRef, useCallback} from "react"
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PsychologyIcon from '@mui/icons-material/Psychology';
-
+import LoadingScreen from "../../LoadingScreen";
 
 async function auto_label(data) {
 	const response = await fetch(
-		"https://api-inference.huggingface.co/models/dslim/bert-base-NER",
+		"https://api-inference.huggingface.co/models/flair/ner-english-ontonotes-large",
 		{
 			headers: { Authorization: `Bearer ${process.env.NEXT_PUBLIC_HF_KEY as string}` },
 			method: "POST",
@@ -37,7 +37,8 @@ const NERViz = (props) => {
     const [newTag, setNewTag] = useState<string>('');
     const [fetched, setFetched] = useState<Boolean>(false);
     const [editing, setEditing] = useState<Boolean>(false);
-
+    const [loading, setLoading] = useState<Boolean>(false);
+    
     const [adding, setAdding] = useState<Boolean>(false);
     const [tag, setTag] = useState<any>('');
     const [nullStr, setNullStr] = useState('');
@@ -54,6 +55,7 @@ const NERViz = (props) => {
 
     
     const handleAutoLabel = () => {
+        setLoading(true)
         auto_label({"inputs": sentence}).then(
             (res) => {
                 console.log(res)
@@ -70,8 +72,9 @@ const NERViz = (props) => {
                         props.setSubmit(true)
                         setAdding(false)
                         setNullStr('z'.concat(nullStr))
-                        }
                     }
+                }
+                setLoading(false)
             }
         )
     }
@@ -99,19 +102,12 @@ const NERViz = (props) => {
                 const data = JSON.stringify({'key': props.keyId, 'text': sentence})
                 fetch('http://localhost:8000/set_text/', {method: 'POST',headers: {"Content-Type": "application/json"},body: data})
                 .then((res) => res.json())
-                .then( (res) => {props.enableLRshortcut.current = false; setEdited(false); setEditing(false);}).then(
-                    (res) => {
-                        fetch('http://localhost:8000/commit_req?comment='.concat(`fixed renamed sentence ${props.keyId}`)).then(
-                            () => {window.location.reload()}
-                        )
-                    }
-                )
-            props.setSubmit(true)
+                .then( (res) => {setEdited(false); setEditing(false); props.setSubmit(true); props.setKeyId(res['newKey'])})
         } else {setEditing(false)} } else {
+            props.enableLRshortcut.current = false; 
             setEditing(true)
         } 
     }
-
 
     const handleTag = (start, end, tag) => {
         if(adding){
@@ -285,8 +281,8 @@ const NERViz = (props) => {
                 const entity_type = updated_labels.current[entities_per_index[start][idx_2]]['type']
 
                 child = [
-                    <span key={`child${idx_1}-${idx_2}`} className="w-fit py-2 px-1 rounded-md relative bg-white text-justify" onClick={()=>{selected_labels.current[entities_per_index[idx_0][idx_2] as number] = !selected_labels.current[entities_per_index[idx_0][idx_2] as number]; setNullStr(nullStr.concat('?'))}}
-                     style={{ backgroundColor: (selected_labels.current[entities_per_index[idx_0][idx_2]]) ? `${stringToColour(entity_type)}BF` : `${stringToColour(entity_type)}70`}}>
+                    <span key={`child${idx_1}-${idx_2}`} className="w-fit py-1 px-1 rounded-md relative bg-white text-justify" onClick={()=>{selected_labels.current[entities_per_index[idx_0][idx_2] as number] = !selected_labels.current[entities_per_index[idx_0][idx_2] as number]; setNullStr(nullStr.concat('?'))}}
+                     style={{ border: (selected_labels.current[entities_per_index[idx_0][idx_2]]) ? `solid 2px ${stringToColour(entity_type)}BF` : `solid 2px ${stringToColour(entity_type)}70`, backgroundColor: (selected_labels.current[entities_per_index[idx_0][idx_2]]) ? `${stringToColour(entity_type)}AA` : `${stringToColour(entity_type)}70`}}>
                         {
                             (selected_labels.current[entities_per_index[idx_0][idx_2]] && (updated_labels.current[entities_per_index[idx_0][idx_2]]['end'] == idx_0 + order[idx_1].length))
                             ?
@@ -314,6 +310,9 @@ const NERViz = (props) => {
 
     return (
         <div className="items-center flex flex-col gap-2 h-full w-full p-2 dark:bg-gray-900 dark:text-white">
+            {
+                (loading) ? <LoadingScreen/> : null
+            }
             <div className="p-2 h-[5%] items-center justify-start flex w-full font-semibold">
                 {'Sentence:'}
             </div>
@@ -336,15 +335,15 @@ const NERViz = (props) => {
                     }
                     
                     handleTag(start + 1, start + selected_string.length, tag)
+                    setAdding(false)
                 }
-                setAdding(false)
             }} 
             className="h-[30%] border-gray-300 overflow-y-scroll
             border bg-gray-50 dark:bg-gray-800 rounded-md p-1 text-justify w-full font-normal">
                 {
                     (editing) ? 
                     <form className="w-full h-full">   
-                        <textarea onInput={(e) => {setSentence(e.currentTarget.textContent as string); setEdited(true)}} className="break-words h-full overflow-y-scroll text-start max-h-96 w-full text-base text-gray-900 rounded-lg bg-gray-50 focus:ring-blue-500 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500" contentEditable={true}>{sentence}</textarea>
+                        <textarea onChange={(e) => {setSentence(e.target.value); setEdited(true)}} className="break-words h-full overflow-y-scroll text-start max-h-96 w-full text-base text-gray-900 rounded-lg bg-gray-50 focus:ring-blue-500 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500" contentEditable={true} value={sentence}/>
                     </form>
                     : 
                     (order.length) ? array_spans : null
@@ -377,11 +376,11 @@ const NERViz = (props) => {
                         </button>
 
                     }
-                    {labels}
-                    <button onClick={() => handleAutoLabel()} className={"z-30 flex gap-1 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"}>
+                    <button onClick={() => handleAutoLabel()} className={"z-30 flex gap-1 focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"}>
                             <PsychologyIcon className="h-[20px] w-[20px]"/>
-                            {'AutoLabel'}
+                            {'AI-Suggestions'}
                     </button>
+                    {labels}
                 </div>
             </div>
             <div className="w-full h-fit">

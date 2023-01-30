@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Histogram from "./Items/Histogram";
 import Scatter from "./Items/Scatter";
 
-const NERStatistics = (props) => {
+const QAStatistics = (props) => {
     const [metadata, setMetadata]= useState<any>(null)
     useEffect(()=>{
         fetch('http://localhost:8000/schema_metadata').then((res) => res.json()).then((res) => {
@@ -11,19 +11,23 @@ const NERStatistics = (props) => {
     },[props.filtering])
 
     return (
-        <div className="w-full h-full overflow-y-scroll bg-white dark:bg-black">
-            <div className="w-full h-full mt-12 px-5 justify-between flex flex-col items-center">
+        <div className="w-full h-full p-4 bg-white dark:bg-black">
+            <div className="w-full">
                 {
                     (metadata) ?
-                    <Scatter data={metadata.lm} title={'Embedding'}/> : <></>
+                    <Scatter data={metadata.answer_lengths} title={'Embedding'}/> : <></>
                 }
                 {
                     (metadata) ?
-                    <Histogram data={metadata.n_entity} title={'Entity distribution'}/> : <></>
+                    <Histogram data={metadata.n_p_len} title={'Paragraph Length'}/> : <></>
                 }
                 {
                     (metadata) ?
-                    <Histogram data={metadata.n_len} title={'Sentence length distribution'}/> : <></>
+                    <Histogram data={metadata.n_q_len} title={'Question Length'}/> : <></>
+                }
+                {
+                    (metadata) ?
+                    <Histogram data={metadata.n_ans_len} title={'Answer Length'}/> : <></>
                 }
                 {
                     (metadata) ?
@@ -57,4 +61,4 @@ const NERStatistics = (props) => {
     )
 }
 
-export default NERStatistics;
+export default QAStatistics;

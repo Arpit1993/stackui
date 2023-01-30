@@ -2,7 +2,7 @@ import React from "react"
 import { useState } from "react"
 import LoadingScreen from "../components/LoadingScreen"
 import FormData from "form-data";
-import DropdownSchema from "../components/Dataset/Items/DropdownSchema";
+import DropdownSchema from "../components/Datasets/Items/DropdownSchema";
 import posthog from 'posthog-js'
 import { Tooltip } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';

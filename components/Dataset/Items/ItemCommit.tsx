@@ -1,5 +1,5 @@
 import { useState, useEffect, JSXElementConstructor, ReactElement, ReactFragment, ReactPortal } from "react";
-import CommitPopup from "../popups/CommitPopup";
+import CommitPopup from "../Modals/CommitPopup";
 import LoadingScreen from "../../LoadingScreen";
 import React from "react";
 

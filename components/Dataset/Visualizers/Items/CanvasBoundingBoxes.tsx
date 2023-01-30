@@ -40,7 +40,7 @@ function drawImageScaled(img, ctx) {
                        centerShift_x,centerShift_y,img.width*ratio, img.height*ratio);  
  }
 
-const BoundingBoxes = (props) => {
+const CanvasBoundingBoxes = (props) => {
     
     const [cursor, setCursor] = useState<number>(0)
     const [mouseInsideBB, setMouseInsideBB] = useState<Array<Boolean>>(Array(props.rect.length).fill(false))
@@ -81,7 +81,7 @@ const BoundingBoxes = (props) => {
             var in_box = false
 
             for(var i = 0; i < props.rect.length; i++){
-                if(props.active[i]){
+                if(props.active[i] || props.selected[i]){
                     if(props.editing && !props.loading){
                         if (props.new.current[i]){
                             dragBR.current[i] = true
@@ -220,7 +220,7 @@ const BoundingBoxes = (props) => {
     
         const mouseUp = () => {
             for(var i = 0; i < props.rect.length; i++){
-                if(props.active[i]){
+                if(props.active[i] || props.selected[i]){
                     if(dragBL.current[i] || dragBR.current[i] || dragTL.current[i] || dragTR.current[i] || dragAll.current[i]){
                         props.rect[i].w = (props.rect[i].w < 0) ? 0.1 : props.rect[i].w
                         props.rect[i].h = (props.rect[i].h < 0) ? 0.1 : props.rect[i].h
@@ -251,7 +251,7 @@ const BoundingBoxes = (props) => {
             }
                         
             for(var i = 0; i < props.rect.length; i++){
-                if(props.active[i]){
+                if(props.active[i] || props.selected[i]){
                     if (props.new.current[i]){
                         if (dragBR.current[i]){
                             props.rect[i].w = 0;
@@ -289,7 +289,6 @@ const BoundingBoxes = (props) => {
                     }
                     if(dragBL.current.includes(true) || dragBR.current.includes(true) || dragTL.current.includes(true) || dragTR.current.includes(true) || dragAll.current.includes(true)){
                         if(dragBL.current[i] || dragBR.current[i] || dragTL.current[i] || dragTR.current[i] || dragAll.current[i]){
-                            
                             const color = hexToRgb((props.labelMap[props.rect[i].class]) ? props.labelMap[props.rect[i].class].color : '#000000')
                             props.rect[i].w = (props.rect[i].w < 0) ? 0.1 : props.rect[i].w
                             props.rect[i].h = (props.rect[i].h < 0) ? 0.1 : props.rect[i].h
@@ -305,7 +304,7 @@ const BoundingBoxes = (props) => {
                             context.fillRect(props.rect[i].x, props.rect[i].y, props.rect[i].w, props.rect[i].h)
                             context.strokeStyle = (props.labelMap[props.rect[i].class]) ? props.labelMap[props.rect[i].class].color : '#000000'
                             context.strokeRect(props.rect[i].x, props.rect[i].y, props.rect[i].w, props.rect[i].h)
-            
+
                             context.font = '12px sans-serif';
                             context.fillStyle = '#ffff'
                             context.fillText((props.labelMap[props.rect[i].class]) ? props.labelMap[props.rect[i].class].label : '', props.rect[i].x, props.rect[i].y+12);
@@ -370,7 +369,7 @@ const BoundingBoxes = (props) => {
             var cursor_set = false
 
             for(var i = 0; i < props.rect.length; i++){
-                if(props.active[i]){
+                if(props.active[i] || props.selected[i]){
                     if(props.editing && !props.loading && !props.new.current[i]){
                         if (props.new.current[i]){
                             dragBR.current[i] = true
@@ -412,7 +411,7 @@ const BoundingBoxes = (props) => {
 
             var inside: Array<Boolean> = []
             for(var i = 0; i < props.rect.length; i++){
-                if(props.active[i]){
+                if(props.active[i] || props.selected[i]){
                     inside.push(checkIfInside(mouseX.current, mouseY.current, i))
                 } else {
                     inside.push(false)
@@ -438,7 +437,7 @@ const BoundingBoxes = (props) => {
         drawImageScaled(props.img, context)
 
         for(var i = 0; i < props.rect.length; i++){
-            if(props.active[i]){
+            if(props.active[i] || props.selected[i]){
                 const color = hexToRgb((props.labelMap[props.rect[i].class]) ? props.labelMap[props.rect[i].class].color : '#000000')
                 context.lineWidth = 2;
                 context.fillStyle = (props.selected[i]) ? `rgba(${color.r}, ${color.g}, ${color.b}, 0.4)` : `rgba(${color.r}, ${color.g}, ${color.b}, 0.1)`
@@ -489,4 +488,4 @@ const BoundingBoxes = (props) => {
     )
 }
 
-export default BoundingBoxes
+export default CanvasBoundingBoxes

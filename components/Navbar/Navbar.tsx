@@ -15,14 +15,14 @@ const Navbar = () => {
     }, [])
 
     return (
-        <div className='flex w-full justify-between'>
+        <div className='flex w-full h-full justify-between'>
             {
                 (false) ? <AuthModal setPopup={setLogin}/> : null
             }
-            <nav className="w-full p-2 bg-neutral-800">
+            <nav className="w-full p-2 bg-[#24292e]">
                 <div className="w-full container flex flex-wrap items-center justify-between mx-auto">
                     <a href="https://www.getstack.ai" className="flex items-center">
-                        <Image className="invert" src="/stack-logo.png" width={'200'} height={'30'} objectFit={'contain'} alt=''></Image>
+                        <Image className="invert-0" src="/stack-logo.png" width={'200'} height={'30'} objectFit={'contain'} alt=''></Image>
                     </a>
                     <div className="hidden w-full md:block md:w-auto" id="navbar-default">
                         <ul className="flex px-2 items-center rounded-lg flex-row space-x-8 text-sm font-medium">
