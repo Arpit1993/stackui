@@ -1,6 +1,5 @@
-import NERPopup from "../../Visualizers/NERPopup";
+import QA2Preview from "./Items/QA2Preview";
 import { useCallback, useEffect, useState } from "react";
-import NERPreview from "./Items/NERPreview";
 import React from "react";
 import SliceButton from "./Items/SliceButton";
 import SelectionTagPopup from "./Popups/SelectionTagPopup";
@@ -8,8 +7,8 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import BugReportIcon from '@mui/icons-material/BugReport';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { posthog } from "posthog-js";
+import QA2Popup from "../../Visualizers/QA2Popup";
 import ModelTrainingIcon from '@mui/icons-material/ModelTraining';
-import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import ExportModal from "../../Modals/ExportModal";
 
 function commit(comment: string){
@@ -25,15 +24,15 @@ function diagnose(){
     return true
 }
 
-const NERExplorer = (props) => {
+const QA2Explorer = (props) => {
+    const [addDP, setAddDP] = useState<Boolean>(false)
     const [keyVar, setKey] = useState<String>('');
     const [popup, setPopup] = useState<Boolean>(false)
-    const [addDP, setAddDP] = useState<Boolean>(false)
     const [anomalies, setAnomalies] = useState<Boolean>(false)
     const [selected, setSelected] = useState<Array<Boolean>>([])
     const [pointer, setPointer] = useState<number>(-1)
-    const [export_, setExport] = useState<Boolean>(false)
     const [tagsPopup, setTagsPopup] = useState<Boolean>(false)
+    const [export_, setExport] = useState<Boolean>(false)
 
     const files = props.files;
     console.log(files)
@@ -186,7 +185,7 @@ const NERExplorer = (props) => {
                 : 
                 <></>
             }
-            <div className="h-full">
+            <div className="h-[450px]">
                 <div className="z-10 flex text-xs w-full justify-between px-5">
                     <div className="w-min">
                         <SliceButton dataset={props.dataset} setFiltering={props.setFiltering}/>
@@ -200,8 +199,14 @@ const NERExplorer = (props) => {
                         Refresh
                     </button>
                     
+                    {/* <button onClick={()=>{posthog.capture('ask stack to label button', { property: 'value' })}} 
+                        className="flex w-1/2 h-fit items-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                        <ClassIcon className="h-5 w-5 mr-2"/>
+                        Outsource Labeling
+                    </button> */}
+
                     <button onClick={()=>{posthog.capture('bug report button', { property: 'value' }); diagnose()}} 
-                        className="text-white flex h-fit text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                        className="flex h-fit items-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
                         <BugReportIcon className="h-5 w-5 mr-2"/>
                         Diagnose
                     </button>
@@ -213,25 +218,28 @@ const NERExplorer = (props) => {
                     </button>
                     
                 </div>
-                <div className="z-0 h-fit w-full flex justify-center p-1">
+                <div className="z-0 h-full w-full flex justify-center p-1">
                     
                     <div className="relative w-full shadow-md sm:rounded-lg">
                         <div className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                            <div className="w-full grid grid-cols-3 text-xs font-medium text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                <div className="w-full px-6 py-3">
-                                    Text
+                            <div className="w-full grid grid-cols-12 text-xs font-medium text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                <div className="col-span-2 w-full px-6 py-3">
+                                    Title
                                 </div>
-                                <div className="w-full px-6 py-3">
-                                    Tokens
+                                <div className="col-span-4 w-full px-6 py-3">
+                                    Paragraph
                                 </div>
-                                <div className="w-full px-6 py-3">
-                                    Entities
+                                <div className="col-span-3 w-full px-6 py-3">
+                                    Question
+                                </div>
+                                <div className="col-span-3 w-full px-6 py-3">
+                                    Answer
                                 </div>
                             </div>
                             <div className="w-full">
                                 {
                                     files.map((file,index) =>
-                                        <NERPreview shortcuts={props.shortcuts} key={`thumb-${file['name']}`} setTagsPopup={setTagsPopup} selected={selected} setPointer={setPointer} setSelected={setSelected} dataset={props.dataset} max_view={props.max_view} file={file} index={index} waiting={props.waiting} handleObjectClick={handleObjectClick}/>
+                                        <QA2Preview shortcuts={props.shortcuts} key={`thumb-${file['name']}`} setTagsPopup={setTagsPopup} selected={selected} setPointer={setPointer} setSelected={setSelected} dataset={props.dataset} max_view={props.max_view} file={file} index={index} waiting={props.waiting} handleObjectClick={handleObjectClick}/>
                                     )
                                 }
                             </div>
@@ -239,7 +247,7 @@ const NERExplorer = (props) => {
                     </div>
                 </div>
                 <div className="z-10 flex justify-between items-center">
-                    <div className="flex justify-left text-xs py-2 rounded-sm">
+                    <div className="flex justify-left text-xs mt-2 mb-2 rounded-sm">
                         {listofButtons}
                     </div>
                     <button onClick={() => {setAddDP(true)}} className="mt-2 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
@@ -250,7 +258,7 @@ const NERExplorer = (props) => {
                     addDP ? <AddDatapointModal setPopup={setAddDP} /> : null
                 }
                 {
-                    popup ? <NERPopup setFiltering={props.setFiltering} shortcuts={props.shortcuts} schema={props.schema} popup={popup} setPopup={setPopup} setKeyId={setKey} keyId={keyVar} key={'fcp'}/> : <></>
+                    popup ? <QA2Popup shortcuts={props.shortcuts} setFiltering={props.setFiltering} setPage={props.setPage} schema={props.schema} popup={popup} setPopup={setPopup} setKeyId={setKey} keyId={keyVar} key={'fcp'}/> : <></>
                 }
                 {
                     export_ ? <ExportModal setPopup={setExport}/> : <></>
@@ -260,15 +268,18 @@ const NERExplorer = (props) => {
     )
 };
 
-export default NERExplorer;
+export default QA2Explorer;
 
 const AddDatapointModal = (props) => {
+    const [loading, setLoading] = useState(false)
     const [key, setKey] = useState('')
 
     const handleSubmit = () => {
         if (key.length > 0){
+            setLoading(true)
             fetch(`http://localhost:8000/add_datapoint?key=${key}`).then(
                 () => {
+                    setLoading(false)
                     window.location.reload()
                 }
             )
@@ -298,14 +309,23 @@ const AddDatapointModal = (props) => {
 
                         <div className="mb-6 mt-6 w-full flex justify-center">
                             <div className="w-[60%]">
-                                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">New Sentence</label>
-                                <input onChange={(e) => {setKey(e.target.value)}} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="sentence to add" value={key} required/>
+                                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Title</label>
+                                <input onChange={(e) => {setKey(e.target.value)}} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="Key title (e.g. New Book)" value={key} required/>
                             </div>
                         </div>
                         
                         <div className="flex justify-center items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
-                            <button onClick={() => {handleSubmit()}}  className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-                                Submit
+                            <button onClick={() => {handleSubmit()}}  className="text-white flex gap-2 items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                                Submit 
+                                {
+                                    (loading) ?
+                                    <svg aria-hidden="true" className="inline w-4 h-4 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                                        <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                                    </svg>
+                                    :
+                                    null
+                                }
                             </button>
 
                             <button onClick={() => {props.setPopup(false)}}  className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">

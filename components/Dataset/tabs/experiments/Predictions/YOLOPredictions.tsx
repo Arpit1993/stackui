@@ -286,13 +286,13 @@ const ComparePrediction = (props) => {
 						</div>
 					</div>
 					<div className="w-full px-5 h-fit flex gap-2 justify-end">
-						<button onClick={()=>{fetch(`http://localhost:8000/add_tag?file=${props.keys[props.keyIdx]}&tag=${'prediction: false positive'}`)}} type="button" className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+						<button onClick={()=>{fetch(`http://localhost:8000/add_tag?file=${props.keys[props.keyIdx]}&tag=${'prediction: false positive'}`); props.setModal(false)}} type="button" className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
 							False Positive
 						</button>
-						<button onClick={()=>{fetch(`http://localhost:8000/add_tag?file=${props.keys[props.keyIdx]}&tag=${'prediction: false negative'}`)}} type="button" className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+						<button onClick={()=>{fetch(`http://localhost:8000/add_tag?file=${props.keys[props.keyIdx]}&tag=${'prediction: false negative'}`); props.setModal(false)}} type="button" className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
 							False Negative
 						</button>
-						<button onClick={()=>{fetch(`http://localhost:8000/add_tag?file=${props.keys[props.keyIdx]}&tag=${'To relabel'}`)}} type="button" className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+						<button onClick={()=>{fetch(`http://localhost:8000/add_tag?file=${props.keys[props.keyIdx]}&tag=${'To relabel'}`); props.setModal(false)}} type="button" className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
 							Relabel
 						</button>
 					</div>

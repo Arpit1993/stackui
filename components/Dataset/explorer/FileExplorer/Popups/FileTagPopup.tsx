@@ -34,7 +34,7 @@ const FileTagPopup = (props) => {
                 <button onClick={() => {
                     props.shortcuts.current = true
                     props.setPopup(false)
-                    }} key={'ctp1'} className="z-40 bg-white/20 backdrop-blur-sm  fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
+                    }} key={'ctp1'} className="z-40 bg-white/20 backdrop-blur-sm fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
                     click to close
                 </button>
             }

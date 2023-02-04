@@ -98,11 +98,13 @@ const NERViz = (props) => {
 
     const handleEditor = () => {
         if (editing) {
+            props.enableLRshortcut.current = true; 
             if(edited){
+                props.setFiltering('dasdksl')
                 const data = JSON.stringify({'key': props.keyId, 'text': sentence})
                 fetch('http://localhost:8000/set_text/', {method: 'POST',headers: {"Content-Type": "application/json"},body: data})
                 .then((res) => res.json())
-                .then( (res) => {setEdited(false); setEditing(false); props.setSubmit(true); props.setKeyId(res['newKey'])})
+                .then( (res) => {setEdited(false); setEditing(false); props.setSubmit(true); props.setKeyId(res['newKey']); props.setFiltering('sdasl'); props.setFiltering('')})
         } else {setEditing(false)} } else {
             props.enableLRshortcut.current = false; 
             setEditing(true)
@@ -271,7 +273,7 @@ const NERViz = (props) => {
 
         for(var i = 0; i < order.length; i++){
             const idx_1 = i
-            var child: any = [<span key={`child${idx_1}--1`} style={{whiteSpace: 'pre-wrap', wordWrap: 'break-word', wordBreak: 'break-all'}} className="w-min h-min text-base cursor-text leading-loose"> {order[idx_1].replace(/ /g,'\u00A0')} </span>]
+            var child: any = [<span key={`child${idx_1}--1`} className="whitespace-pre-line break-all w-min h-min text-sm cursor-text"> {order[idx_1].replace(/ /g,'\u00A0')} </span>]
             
             start = (start >= entities_per_index.length) ? entities_per_index.length - 1 : start
 
@@ -295,7 +297,7 @@ const NERViz = (props) => {
                         {
                         (updated_labels.current[entities_per_index[idx_0][idx_2]]['end'] == idx_0 + order[idx_1].length)
                         ?   
-                        <span className="w-fit rounded-md bg-white/50 p-1">
+                        <span style={{userSelect: 'none'}} className="w-fit rounded-md bg-white/50 p-1">
                             {entity_type}
                         </span>
                         : null
@@ -319,6 +321,7 @@ const NERViz = (props) => {
             <span onMouseUp={()=>{
                 const select: any = window.getSelection()
                 const selected_string: String = select.toString()
+                console.log(selected_string)
                 const string_of_node = select?.anchorNode?.textContent.toString()
                 
                 if (adding && selected_string.length > 0 && tag != ''){
@@ -343,10 +346,14 @@ const NERViz = (props) => {
                 {
                     (editing) ? 
                     <form className="w-full h-full">   
-                        <textarea onChange={(e) => {setSentence(e.target.value); setEdited(true)}} className="break-words h-full overflow-y-scroll text-start max-h-96 w-full text-base text-gray-900 rounded-lg bg-gray-50 focus:ring-blue-500 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500" contentEditable={true} value={sentence}/>
+                        <textarea onChange={(e) => {setSentence(e.target.value); setEdited(true)}} className="break-words h-full overflow-y-scroll text-start max-h-96 w-full text-sm text-gray-900 rounded-lg bg-gray-50 focus:ring-blue-500 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500" contentEditable={true} value={sentence}/>
                     </form>
                     : 
-                    (order.length) ? array_spans : null
+                    <div className="breal-all border overflow-y-scroll h-full border-gray-400 rounded-md p-2">
+                        {
+                            (order.length) ? array_spans : null
+                        }
+                    </div>
                 }
             </span>
             <div className="p-2 h-[40%] items-start flex flex-col w-full font-normal gap-2">

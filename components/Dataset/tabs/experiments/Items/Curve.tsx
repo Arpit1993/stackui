@@ -4,6 +4,7 @@ import { Chart, registerables } from 'chart.js';
 import YOLOMetadata from "./YOLOMetadata";
 import NERMetadata from "./NERMetadata";
 import QAMetadata from "./QAMetadata";
+import Seq2SeqMetadata from "./Seq2SeqMetadata";
 
 Chart.register(...registerables);
 
@@ -125,13 +126,17 @@ const Curve = (props) => {
                     </div>
                 </div>
             </div>
-            {
-                (log && schema) ? 
-                (schema.value == 'yolo') ? <YOLOMetadata key={'metadata'} mtdt={log[log.length-1]['metadata']}  date={props.date} /> :
-                (schema.value.includes('ner'))  ? <NERMetadata key={'metadata'} mtdt={log[log.length-1]['metadata']} date={props.date} /> :
-                (schema.value.includes('qa'))  ? <QAMetadata key={'metadata'} mtdt={log[log.length-1]['metadata']} date={props.date} /> : null
-                : null
-            }
+            <div className="flex justify-center">
+
+                {
+                    (log && schema) ? 
+                    (schema.value == 'yolo') ? <YOLOMetadata key={'metadata'} mtdt={log[log.length-1]['metadata']}  date={props.date} /> :
+                    (schema.value.includes('ner'))  ? <NERMetadata key={'metadata'} mtdt={log[log.length-1]['metadata']} date={props.date} /> :
+                    (schema.value.includes('seq'))  ? <Seq2SeqMetadata key={'metadata'} mtdt={log[log.length-1]['metadata']} date={props.date} /> :
+                    (schema.value.includes('qa'))  ? <QAMetadata key={'metadata'} mtdt={log[log.length-1]['metadata']} date={props.date} /> : null
+                    : null
+                }
+            </div>
         </>
     );
 }

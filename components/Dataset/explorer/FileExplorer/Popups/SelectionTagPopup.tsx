@@ -77,11 +77,11 @@ const SelectionTagPopup = (props) => {
                 <button onClick={() => {
                     props.shortcuts.current = true
                     props.setPopup(false)}
-                    } key={'ctp1'} className="z-40 bg-white/20 backdrop-blur-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
+                    } key={'ctp1'} className="z-40 bg-white/20 backdrop-blur-sm fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
                     click to close
                 </button>
             }
-            <div className="z-50 p-2 text-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 bg-white dark:bg-gray-900 w-1/4 h-1/4">
+            <div className="z-50 p-2 text-sm fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 bg-white dark:bg-gray-900 w-1/4 h-1/4">
                 <div className="flex-col justify-between">
                     <div className="w-full justify-between flex">
                         <button onClick={() => {

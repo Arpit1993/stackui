@@ -1,19 +1,21 @@
 import React from "react";
 import { useEffect, useState, useRef } from "react";
-import Infobar from "./infobar/Infobar";
 import { useRouter } from "next/router"
 import LoadingScreen from "../LoadingScreen";
 import TopBar from "./explorer/topbar/topbar";
 import FileExplorer from "./explorer/FileExplorer/FileExplorer";
 import NERExplorer from "./explorer/FileExplorer/NERExplorer";
 import YOLOExplorer from "./explorer/FileExplorer/YOLOExplorer";
-import QAExplorer from "./explorer/FileExplorer/QAExplorer";
 import NERStatistics from './tabs/statistics/NERStatistics'
 import YOLOStatistics from './tabs/statistics/YOLOStatistics'
 import QAStatistics from './tabs/statistics/QAStatistics'
 import Experiments from './tabs/experiments/Experiments'
 
 import Link from "next/link";
+import Seq2SeqExplorer from "./explorer/FileExplorer/Seq2SeqExplorer";
+import SeqToSeqStatistics from "./tabs/statistics/SeqToSeqStatistics";
+import QA2Explorer from "./explorer/FileExplorer/QA2Explorer";
+import MultiSeq2SeqExplorer from "./explorer/FileExplorer/MultiSeq2SeqExplorer";
 
 const Dataset = () => {
     // states for each json
@@ -72,7 +74,7 @@ const Dataset = () => {
                                         })
                                     })
                                 }
-                                if(res.value.includes('ner') || res.value.includes('qa')){
+                                if(res.value.includes('ner') || res.value.includes('qa') || res.value.includes('seq')){
                                     view_ex = false
                                     max_view_var = 7
                                     setView(false)
@@ -263,17 +265,6 @@ const Dataset = () => {
                         </Link>
                     </li>
                     <li>
-                        <Link href="/Datasets">
-                            <button className="flex items-center">
-                                <svg aria-hidden="true" className="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd"></path></svg>
-                                <span className="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2 dark:text-gray-400 dark:hover:text-white">
-                                    Datasets
-                                </span>
-                            </button>
-                        </Link>
-                    </li>
-
-                    <li>
                         <div className="flex items-center">
                             <svg aria-hidden="true" className="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd"></path></svg>
                             <span className="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2 dark:text-gray-400 dark:hover:text-white">
@@ -292,18 +283,24 @@ const Dataset = () => {
                 <div className='w-full h-fit'>
                     <div className="h-fit bg-gray-100 dark:bg-gray-800">
                         <div className="h-fit">
-                            <TopBar tab={tab} setTab={setTab} shortcuts={shortcuts} props={props.dataprops} setFiltering={setFiltering} schema={schema} setPage={setPage} filtering={filtering}/>
+                            <TopBar tab={tab} setTab={setTab} commits={commits} dataset={URI.storage_dataset} shortcuts={shortcuts} props={props.dataprops} setFiltering={setFiltering} schema={schema} setPage={setPage} filtering={filtering}/>
                         </div>
                     </div>
                     <div className="flex w-full h-[80%]">
-                        <div className="px-5 relative w-[80%] h-[80%] mt-2">
+                        <div className="px-5 relative w-[100%] h-[80%] mt-2">
                             {
                                 (tab == 0) ?
                                     schema.includes('qa') ? 
-                                    <QAExplorer shortcuts={shortcuts} schema={schema} max_view={max_view} setFiltering={setFiltering} setMaxView={setMaxView} waiting={waiting} files={files} dataset={URI.dataset} page={page} setPage={setPage} view={view} setView={setView} len={len}/>
+                                    <QA2Explorer shortcuts={shortcuts} schema={schema} max_view={max_view} setFiltering={setFiltering} setMaxView={setMaxView} waiting={waiting} files={files} dataset={URI.dataset} page={page} setPage={setPage} view={view} setView={setView} len={len}/>
                                     :
                                     schema.includes('ner') ? 
                                     <NERExplorer shortcuts={shortcuts} schema={schema} max_view={max_view} setFiltering={setFiltering} setMaxView={setMaxView} waiting={waiting} files={files} dataset={URI.dataset} page={page} setPage={setPage} view={view} setView={setView} len={len}/>
+                                    :
+                                    schema.includes('multi_seq') ? 
+                                    <MultiSeq2SeqExplorer cancelRequest={cancelRequest} shortcuts={shortcuts} setFiltering={setFiltering} schema={schema} max_view={max_view} setMaxView={setMaxView} waiting={waiting} files={files} dataset={URI.dataset} page={page} setPage={setPage} view={view} setView={setView} len={len}/>
+                                    :
+                                    schema.includes('seq') ? 
+                                    <Seq2SeqExplorer cancelRequest={cancelRequest} shortcuts={shortcuts} setFiltering={setFiltering} schema={schema} max_view={max_view} setMaxView={setMaxView} waiting={waiting} files={files} dataset={URI.dataset} page={page} setPage={setPage} view={view} setView={setView} len={len}/>
                                     :
                                     (schema == 'yolo' || schema == 'labelbox') ? 
                                     <YOLOExplorer cancelRequest={cancelRequest} shortcuts={shortcuts} schema={schema} max_view={max_view} setFiltering={setFiltering} setMaxView={setMaxView} waiting={waiting} files={files} dataset={URI.dataset} page={page} setPage={setPage} view={view} setView={setView} len={len}/>
@@ -317,6 +314,10 @@ const Dataset = () => {
                                     (schema.includes('ner')) 
                                         ?  
                                         <NERStatistics schema={schema} filtering={filtering} shortcuts={shortcuts}  /> 
+                                        :
+                                    (schema.includes('seq')) 
+                                        ?  
+                                        <SeqToSeqStatistics schema={schema} filtering={filtering} shortcuts={shortcuts}  /> 
                                         : 
                                     (schema.includes('qa')) 
                                         ?
@@ -330,9 +331,9 @@ const Dataset = () => {
                                     <></>
                             }
                         </div>
-                        <div className="px-5 w-[20%] h-[80%]">
+                        {/* <div className="px-5 w-[20%] h-[80%]">
                             <Infobar shortcuts={shortcuts} commits={commits} dataset={URI.storage_dataset}/>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>

@@ -70,6 +70,13 @@ const FileFilterPopup = (props) => {
             {
                 loading ? <LoadingScreen key={'ldscfileflterppp'} /> : <></>
             }
+            {
+                <button key={'ccb'} onClick={() => {
+                    props.setPopup(false)
+                    }} className=" bg-black/10 z-[39] fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
+                    click to close
+                </button>
+            }
             {filtering ? <LoadingScreen key={'lds_fpp'}/> : <></>}
             {branch ? <BranchPopup key={'brpp'} setPopup={setBranch}/> : <></>}
             <div key={"flterpp"} className="bg-white absolute z-40 top-20 rounded-lg dark:bg-gray-900 w-full h-[100px] border-[0.5px] border-gray-500">

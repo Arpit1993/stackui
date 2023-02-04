@@ -7,22 +7,20 @@ import DropdownFileOptions from "./Components/DropdownFileOptions";
 import FileHistoryList from "./History/FileHistoryList";
 import path from 'path'
 import CloseIcon from '@mui/icons-material/Close';
-import NERViz from "./NERViz";
-import NERDiffPopup from "./DiffPopups/NERDiffPopup";
-import NERAnnotators from "./Annotators/NERAnnotators";
+import MultiSeq2SeqViz from "./MultiSeq2SeqViz";
+import md5 from 'md5'
 
-const NERPopup = (props) => {
+const MultiSeq2SeqPopup = (props) => {
 
     const [popup, setPopup] = useState<Boolean>(false)
-    const [admin, setAdmin] = useState<Boolean>(true)
-    const [viewAnnotations, setViewAnnotations] = useState<Boolean>(false)
-    const [approve, setApprove] = useState<Boolean>(false)
+
     const [compare, setCompare] = useState<Boolean>(false)
     const [loading, setLoading] = useState<Boolean>(false)
-    const [loadingViz, setLoadingViz] = useState<Boolean>(false)
     const [version, setVersions] = useState([{version: 'loading...', date: 'loading...',commit: 'loading...'}])
     const [Nversion, setNVersions] = useState<number>(0)
     const [dataComp, setDataComp] = useState<any>(null)
+
+    const currentKey = useRef<string>('')
 
     const enableLRshortcut = useRef(true)
     const [submit, setSubmit] = useState<Boolean>(false)
@@ -42,46 +40,33 @@ const NERPopup = (props) => {
         return true
     }
 
-    const submitLabels = useCallback(async () => {
+    const submitLabels = () => {
         if (submit){
             setLoading(true)
-            props.setFiltering('dasda')
+            props.setFiltering('w')
             const data = JSON.stringify(newLabels)
-            if (admin){
-                await fetch('http://localhost:8000/set_labels/', {
-                    method: 'POST',
-                    headers: { 
-                        "Content-Type": "application/json" 
-                    }, 
-                    body: data}
-                )
-                setSubmit(false)
-                setLoading(false)
-                setLoading(true)
-                await fetch('http://localhost:8000/commit_req?comment='.concat(`fixed annotation on ${newLabels['keyId']}`)).then(
-                    () => {
-                        setSubmit(false)
-                        posthog.capture('Submitted a commit', { property: 'value' })
-                        setLoading(false)
-                        props.setFiltering('')
-                    }
-                )
-    
-            } else {
-                await fetch('http://localhost:8000/submit_label_per_user/', {
-                    method: 'POST',
-                    headers: { 
-                        "Content-Type": "application/json" 
-                    }, 
-                    body: data}
-                )
-                setSubmit(false)
-                posthog.capture('Submitted a new annotation to review', { property: 'value' })
-                setLoading(false)
-            }
-
+            fetch('http://localhost:8000/set_labels/', {
+                method: 'POST',
+                headers: { 
+                    "Content-Type": "application/json" 
+                }, 
+                body: data}
+            ).then(
+                (res) => {
+                    setLoading(false)
+                    fetch('http://localhost:8000/commit_req?comment='.concat(`fixed annotation on ${newLabels['keyId']}`)).then(
+                        () => {
+                            setSubmit(false)
+                            posthog.capture('Submitted a commit', { property: 'value' })
+                            setLoading(false)
+                            props.setFiltering('z')
+                            props.setKeyId(md5(''.concat(...newLabels['label']['keys'])) as string)
+                        }
+                    )
+                }
+            )
         }
-    },[newLabels, submit])
+    }
 
 
     const handleKeyPress = useCallback(async (event) => {
@@ -108,7 +93,7 @@ const NERPopup = (props) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            setDataComp([<NERViz key={'nervz'} admin={admin} setFiltering={props.setFiltering} enableLRshortcut={enableLRshortcut} setKeyId={props.setKeyId} diff={false} loading={loading} label_version={'current'} keyId={props.keyId} ww={800} wh={500} ox={0} oy={0} setnewLabels={setnewLabels} setSubmit={setSubmit}/>])            
+            setDataComp([<MultiSeq2SeqViz key={'nervz'} admin={true} enableLRshortcut={enableLRshortcut} setKeyId={props.setKeyId} loading={loading} label_version={'current'} keyId={props.keyId} setnewLabels={setnewLabels} setSubmit={setSubmit}/>])            
         }
 
         const fetchVersions = () => {
@@ -124,28 +109,19 @@ const NERPopup = (props) => {
             fetchVersions()
         }
 
-        fetch('http://localhost:8000/get_user').then((res) => res.json()).then(
-            (res) => {
-                if (res['admin'] == 'True'){
-                    setAdmin(true)
-                    fetch(`http://localhost:8000/get_label_per_user?key=${props.keyId}`)
-                    .then((res) => res.json())
-                    .then((res) => {
-                        setViewAnnotations(res.length > 0)
-                    })
-                }
-            }
-        )
+        if(props.keyId != currentKey.current){
+            fetchStuff()
+            setSubmit(false)
+            currentKey.current = props.keyId
+        }
 
-        fetchStuff()
-        setSubmit(false)
 
         document.addEventListener('keydown', handleKeyPress);
         return () => {
             document.removeEventListener('keydown', handleKeyPress);
         }
 
-    }, [props, props.keyId, handleKeyPress, loading, admin])
+    }, [props, props.keyId, handleKeyPress, loading])
     
     const Versionspopup = popup ? [
         <>
@@ -155,7 +131,7 @@ const NERPopup = (props) => {
 
     const Diffpopup =  compare ? [
         <>
-            <NERDiffPopup schema={props.schema} enableLRshortcut={enableLRshortcut} keyId={props.keyId} setPopup={setCompare} popup={compare} dates={version} len={Nversion}/>
+            {/* <QADiffPopup schema={props.schema} enableLRshortcut={enableLRshortcut} keyId={props.keyId} setPopup={setCompare} popup={compare} dates={version} len={Nversion}/> */}
         </>
     ] : [<></>]
 
@@ -169,8 +145,8 @@ const NERPopup = (props) => {
                     click to close
                 </button>
             }
-            <div className="text-sm z-40 dark:bg-gray-900 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 rounded-lg bg-white w-[1100px]  h-[600px]">
-                <div className="w-full justify-between flex h-8">
+            <div className="text-sm z-40 dark:bg-gray-900 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 rounded-lg bg-white w-[90%] h-[80%]">
+                <div className="w-full justify-between items-center flex h-8">
                     <div className="py-1 px-2">
                         <button onClick={() => {
                             props.shortcuts.current = true
@@ -181,76 +157,62 @@ const NERPopup = (props) => {
                     </div>
                      
                     <div className="place-self-center py-2 font-bold w-full h-8 text-clip overflow-hidden">
-                        {'Sentence Id: '} {path.basename(props.keyId)}
+                        {'Title: '} {path.basename(props.keyId)}
                     </div>
-                    <div></div>
+
+                    <div>
+                    </div>
                 </div>
-                <ul className="text-xs font-body rounded-lg 
+                <div className="text-xs flex flex-col h-full font-body rounded-lg 
                         text-gray-900 bg-white
                         dark:bg-gray-900 dark:text-white px-1">
-                    <div className="flex h-[500px] ">
-                        <div className="w-[780px] relative rounded-md dark:text-black text-center flex flex-col justify-center bg-white dark:bg-gray-900">
-                            {
-                                props.popup ? (loadingViz ? null : dataComp) : null
-                            }
-                        </div>
-                        <div className="w-[300px]">
+                    <div className="flex flex-col h-[90%]">
+                        {
+                            dataComp
+                        }
+                        {/* <div className="w-[300px]">
                             <div className="flex justify-center">
                                 <DropdownFileOptions setHistory={setPopup} handleDelete={handleDelete} handleFullDelete={handleFullDelete}/>
                             </div>
                             {
                                 <FileHistoryList key={'FileHist'} keyId={props.keyId}/>  
                             }
-                        </div>
+                        </div> */}
                     </div>
-                    <div className="flex w-full">
-                        <div className="flex justify-center mt-4 w-[800px]">
+                    <div className="flex w-full h-[10%]">
+                        <div className="flex justify-center mt-4 w-[66%]">
                             <button onClick={() => {setPopup(true); enableLRshortcut.current = false; posthog.capture('Viewed datapoint history popup', { property: 'value' })}} className="h-min text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"> 
                                 See History 
                             </button>
                             <button onClick={() => {setCompare(true); enableLRshortcut.current = false; posthog.capture('Viewed datapoint compare popup', { property: 'value' })}} className="h-min text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"> 
                                 Compare versions
                             </button>
-                            {
-                                (viewAnnotations && admin)
-                                ? 
-                                <button onClick={() => {setApprove(true); enableLRshortcut.current = false; posthog.capture('Viewed review annotations popup', { property: 'value' })}} className="h-min text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"> 
-                                    Review annotations
-                                </button>
-                                : null
-                            }
 
                             {/* <button onClick={()=>{}} className={"h-min focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"}>
                                 Auto annotate
                             </button> */}
                         </div>
-                        <div className="w-[300px] flex justify-center mt-4"> 
+                        <div className="w-[34%] flex justify-center mt-4"> 
                             {
                                 submit ? 
                                 <button key={'cmit_button_1'} onClick={() => submitLabels()} className="z-10 focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-                                    {(admin) ? 'Commit changes' : 'Submit changes'}  
+                                    {(true) ? 'Commit changes' : 'Submit changes'}  
                                 </button>
                                 : 
                                 <button key={'cmit_button_2'} className="z-10 text-white bg-gray-800 focus:ring-4 focus:ring-gray-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:border-gray-700 hover:cursor-not-allowed" disabled={true}>
-                                    {(admin) ? 'Commit changes' : 'Submit changes'}  
+                                    {(true) ? 'Commit changes' : 'Submit changes'}  
                                 </button>
                             }
                         </div>
                     </div>
-                </ul>
+                </div>
             </div>
             {Versionspopup}
             {Diffpopup}
-            {
-                (approve) ? 
-                <NERAnnotators schema={props.schema} setLoading={setLoading} enableLRshortcut={enableLRshortcut} keyId={props.keyId} setPopup={setApprove} popup={approve} dates={version} len={Nversion}/>
-                :
-                null
-            }
             {
                 loading ? <LoadingScreen  key={'lscpp'}/> : null
             }
         </>)
 }
 
-export default NERPopup;
+export default MultiSeq2SeqPopup;

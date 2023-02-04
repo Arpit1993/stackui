@@ -47,7 +47,7 @@ const ImageThumbnail = (props) => {
             ).catch(() => {});
     }, [props.cancelRequest, props.file])
 
-    const width: number = Math.ceil(1100 / Math.sqrt(props.max_view))
+    const width: number = Math.ceil(1400 / Math.sqrt(props.max_view))
     const height: number = Math.ceil(465 / Math.sqrt(props.max_view))
 
     var anomaly: Boolean = false
@@ -111,8 +111,8 @@ const ImageThumbnail = (props) => {
                     }}>
                     </button>
             }
-            <div className={`w-full h-full flex z-10`}>
-                <button className={`justify-center flex flex-col z-10 h-full w-full bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 hover:dark:bg-black border-[0.5px] border-gray-400 text-left text-xs`} key={`${props.index.toString()}defg`} onClick={() => props.handleObjectClick(props.file['name'])}>
+            <div className={`w-full h-full flex justify-center z-10`}>
+                <button className={`justify-center flex flex-col z-10 h-full w-fit bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 hover:dark:bg-black border-[0.5px] border-gray-400 text-left text-xs`} key={`${props.index.toString()}defg`} onClick={() => props.handleObjectClick(props.file['name'])}>
                     {
                         <button className={props.selected[props.index] ? `absolute z-[21] justify-center flex flex-col rounded-lg h-full w-full bg-blue-500/30 hover:bg-blue-500/50` : `absolute  z-[21] justify-center flex flex-col rounded-lg h-full w-full hover:bg-white/20`} key={`${props.index.toString()}defg2`} onClick={() => props.handleObjectClick(props.file['name'])}>
                         </button>

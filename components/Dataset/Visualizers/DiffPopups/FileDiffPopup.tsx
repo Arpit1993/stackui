@@ -165,7 +165,7 @@ const FileDiffPopup = (props) => {
             )
         } else {
             return (
-                <div className="text-sm z-[500] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 rounded-lg bg-white dark:bg-gray-400 w-[1100px]  h-[700px]">
+                <div className="text-sm z-[500] fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 rounded-lg bg-white dark:bg-gray-400 w-[1100px]  h-[700px]">
                     <div className="w-full justify-between h-8 flex">
                         <button onClick={() => props.setPopup(false)} className= 'place-self-center justify-self-start w-[50px] h-8 flex-col bg-red-400 hover:bg-red-200 p-2 rounded-br-md'> x </button> 
                         <div className="place-self-center py-2 font-bold">

@@ -14,7 +14,7 @@ const DropdownSchema = (props) => {
     return (
         <Menu as="div" className="frelative inline-block text-left mb-2">
           <div className="flex gap-2">
-            <Menu.Button onClick={()=>{setOption(false)}} className="justify-center w-52 h-[40px] text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-body rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+            <Menu.Button onClick={()=>{setOption(0)}} className="justify-center w-52 h-[40px] text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-body rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
               <div className="flex justify-between text-sm">
                 <div className="py-2">
                   Dataset Type
@@ -25,7 +25,7 @@ const DropdownSchema = (props) => {
                 
               </div>
             </Menu.Button>
-            <div className="py-2 px-5 text-sm w-[120px] rounded-md text-center h-[40px] border border-gray-500">
+            <div className="py-2 px-5 text-sm w-[120px] overflow-scroll rounded-md text-center h-[40px] border border-gray-500">
               {props.schema.charAt(0).toUpperCase() + props.schema.slice(1).replace('_',' ')}
             </div>
           </div>
@@ -117,7 +117,7 @@ const DropdownSchema = (props) => {
                           </button>
                           <button
                             className={'hover:bg-gray-100 hover:text-gray-900 text-gray-700 block px-4 py-2 text-sm w-full'}
-                            onClick={()=>props.setSchema('squad_qa')}
+                            onClick={()=>props.setSchema('squad2_qa')}
                           >
                             Question Answering (SQUAD2)
                           </button>
@@ -126,14 +126,13 @@ const DropdownSchema = (props) => {
                             disabled={true}
                             onClick={()=>props.setSchema('files')}
                           >
-                            Text Classification (Spacy)
+                            Text Classification (CSV)
                           </button>
                           <button
-                            className={'hover:bg-gray-100 hover:cursor-not-allowed hover:text-gray-900 text-gray-700 block px-4 py-2 text-sm w-full'}
-                            disabled={true}
-                            onClick={()=>props.setSchema('files')}
+                            className={'hover:bg-gray-100 hover:text-gray-900 text-gray-700 block px-4 py-2 text-sm w-full'}
+                            onClick={()=>props.setSchema('multi_seq2seq_csv')}
                           >
-                            Text Summarization (Spacy)
+                            Multi-Sequence to Sequence (CSV)
                           </button>
                         </div>
                         : null

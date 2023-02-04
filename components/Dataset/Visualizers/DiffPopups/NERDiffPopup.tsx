@@ -116,7 +116,7 @@ const NERDiffPopup = (props) => {
     },[props.keyId, props.popup, v1, v2])
 
     return (
-        <div className="text-sm z-[200] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 rounded-lg bg-white dark:bg-gray-400 w-[1100px]  h-[600px]">
+        <div className="text-sm z-[200] fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-[0.5px] border-gray-500 rounded-lg bg-white dark:bg-gray-400 w-[1100px]  h-[600px]">
             <div className="w-full justify-between h-8 flex p-2">
                 <button onClick={() => {
                     props.setPopup(false)

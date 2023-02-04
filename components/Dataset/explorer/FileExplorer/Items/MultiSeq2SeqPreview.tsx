@@ -5,7 +5,7 @@ import { Tooltip } from "@mui/material"
 import ErrorOutline from "@mui/icons-material/ErrorOutline";
 import FmdBadIcon from '@mui/icons-material/FmdBad';
 
-const QAPreview = (props) => {
+const MultiSeq2SeqPreview = (props) => {
 
     const [labels, setLabels] = useState<any>(null)
     const [hover, setHover] = useState<Boolean>(false)
@@ -40,8 +40,7 @@ const QAPreview = (props) => {
             }
             {
                 (labels) ?
-                <div onMouseEnter={()=>{setHover(true)}} onMouseLeave={()=>{setHover(false)}} className={`relative h-full w-full`}>
-                    
+                <div onMouseEnter={()=>{setHover(true)}} onMouseLeave={()=>{setHover(false)}} className={`relative h-full w-full`}>             
                     <div className="absolute z-auto right-2">
                         <DropdownFile hover={hover} selected={props.selected[props.index]} shortcuts={props.shortcuts} setTagsPopup={props.setTagsPopup} setPopup={setPopup}/>
                     </div>
@@ -54,8 +53,6 @@ const QAPreview = (props) => {
                                     <ErrorOutline className="w-1/10 h-1/10 shadow-sm fill-white rounded-full overflow-hidden bg-red-500 hover:bg-red-700"/>
                                 </button>
                                 :
-                                // <button key={`tags-${props.file['name']}`} className="absolute border z-20 ml-1 mt-1 w-[15px] h-4 bg-red-500 rounded-full hover:bg-red-700" onClick={() => setPopup(true)}>
-                                // </button>
                                 <button key={`tags-${props.file['name']}`} className="absolute mt-2 ml-1 z-20" onClick={() => setPopup(true)}>
                                     <FmdBadIcon className="w-7 h-7 shadow-sm fill-red-500 hover:fill-red-700 rounded-full overflow-hidden bg-white"/>
                                     
@@ -96,21 +93,18 @@ const QAPreview = (props) => {
                             <button className={props.selected[props.index] ? `absolute top-0 z-[19] justify-center flex flex-col h-full w-full bg-blue-500/30 hover:bg-blue-500/50` : `absolute  top-0 z-[19] justify-center flex flex-col h-full w-full hover:bg-white/20`} key={`${props.index.toString()}defg2`} onClick={() => props.handleObjectClick(props.file['name'])}>
                             </button>
                         }
-                        <div className="grid grid-cols-3 bg-white z-[10] border-b w-full h-full dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600"  key={`${props.index.toString()}abc`}  onClick={() => props.handleObjectClick(props.file['name'])}>
-                            <div className="w-full flex px-6 py-4 font-normal whitespace-nowrap text-ellipsis overflow-hidden text-gray-900 dark:text-white text-left">
-                                {
-                                    props.file['name']
-                                }
-                            </div>
-                            <div className="w-full px-6 py-4 flex overflow-hidden gap-2 items-center">
-                                {
-                                    `Paragraphs: ${labels.length}`
-                                }
-                            </div>
-                            <div className="w-full px-6 py-4 flex overflow-hidden gap-2 items-center">
-                                {
-                                    `Questions: ${labels.map((val) => val['qas'].length).reduce((partialSum, a) => partialSum + a, 0)}`
-                                }
+                        <div className="grid grid-cols-4 py-1 bg-white z-[10] overflow-scroll border-b dark:border-gray-700 w-full dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600"  key={`${props.index.toString()}abc`}  onClick={() => props.handleObjectClick(props.file['name'])}>
+                            {
+                                labels.keys.map(
+                                    (k) => {
+                                        return <div key={`dasdsdsa${k}`} className="w-full gap-3 flex px-6 py-2 font-medium whitespace-nowrap text-ellipsis overflow-hidden text-gray-900 dark:text-white text-left">
+                                        <span className="py-1 px-2 text-ellipsis" key={`label ${k}`}>{k}</span> 
+                                        </div>
+                                    }
+                                )
+                            }
+                            <div style={{gridColumn: `4`}} className="w-full gap-3 flex px-6 py-2 font-base whitespace-nowrap text-ellipsis overflow-hidden text-gray-900 dark:text-white text-left">
+                                <span className="border border-gray-300 py-1 px-2 text-ellipsis">{`${labels.res}`}</span> 
                             </div>
                         </div>
                     </button>
@@ -122,4 +116,4 @@ const QAPreview = (props) => {
     
 }
 
-export default QAPreview;
+export default MultiSeq2SeqPreview;

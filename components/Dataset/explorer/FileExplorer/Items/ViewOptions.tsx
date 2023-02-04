@@ -18,7 +18,7 @@ const ViewOptions = (props) => {
                 </div>
             </Popover.Button>
 
-            <Popover.Panel className="absolute z-auto">
+            <Popover.Panel className="absolute right-0 z-auto">
                 <div className="flex flex-col z-auto w-44 border border-gray-300 dark:border-gray-800  bg-white rounded divide-y divide-gray-300 shadow dark:bg-gray-900">
                     <div className="flex justify-center p-2">
                         <button className="text-gray-900 w-max bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-body rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700" onClick={() => {

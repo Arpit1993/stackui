@@ -1,6 +1,6 @@
-import NERPopup from "../../Visualizers/NERPopup";
+import Seq2SeqPopup from "../../Visualizers/Seq2SeqPopup";
 import { useCallback, useEffect, useState } from "react";
-import NERPreview from "./Items/NERPreview";
+import Seq2SeqPreview from "./Items/Seq2SeqPreview";
 import React from "react";
 import SliceButton from "./Items/SliceButton";
 import SelectionTagPopup from "./Popups/SelectionTagPopup";
@@ -25,7 +25,7 @@ function diagnose(){
     return true
 }
 
-const NERExplorer = (props) => {
+const Seq2SeqExplorer = (props) => {
     const [keyVar, setKey] = useState<String>('');
     const [popup, setPopup] = useState<Boolean>(false)
     const [addDP, setAddDP] = useState<Boolean>(false)
@@ -201,7 +201,7 @@ const NERExplorer = (props) => {
                     </button>
                     
                     <button onClick={()=>{posthog.capture('bug report button', { property: 'value' }); diagnose()}} 
-                        className="text-white flex h-fit text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                        className="flex h-fit text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
                         <BugReportIcon className="h-5 w-5 mr-2"/>
                         Diagnose
                     </button>
@@ -213,26 +213,21 @@ const NERExplorer = (props) => {
                     </button>
                     
                 </div>
-                <div className="z-0 h-fit w-full flex justify-center p-1">
+                <div className="z-0 h-[419px] w-full flex justify-center p-1">
                     
                     <div className="relative w-full shadow-md sm:rounded-lg">
                         <div className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                            <div className="w-full grid grid-cols-3 text-xs font-medium text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                            <div className="w-full grid grid-cols-2 text-xs font-medium text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                 <div className="w-full px-6 py-3">
-                                    Text
+                                    Input Sequence
                                 </div>
                                 <div className="w-full px-6 py-3">
-                                    Tokens
-                                </div>
-                                <div className="w-full px-6 py-3">
-                                    Entities
+                                    Output Sequence
                                 </div>
                             </div>
                             <div className="w-full">
                                 {
-                                    files.map((file,index) =>
-                                        <NERPreview shortcuts={props.shortcuts} key={`thumb-${file['name']}`} setTagsPopup={setTagsPopup} selected={selected} setPointer={setPointer} setSelected={setSelected} dataset={props.dataset} max_view={props.max_view} file={file} index={index} waiting={props.waiting} handleObjectClick={handleObjectClick}/>
-                                    )
+                                    files.map((file,index) => <Seq2SeqPreview shortcuts={props.shortcuts} key={`thumb-${file['name']}`} setTagsPopup={setTagsPopup} selected={selected} setPointer={setPointer} setSelected={setSelected} dataset={props.dataset} max_view={props.max_view} file={file} index={index} waiting={props.waiting} handleObjectClick={handleObjectClick}/>)
                                 }
                             </div>
                         </div>
@@ -240,7 +235,9 @@ const NERExplorer = (props) => {
                 </div>
                 <div className="z-10 flex justify-between items-center">
                     <div className="flex justify-left text-xs py-2 rounded-sm">
-                        {listofButtons}
+                        {
+                            listofButtons  
+                        }
                     </div>
                     <button onClick={() => {setAddDP(true)}} className="mt-2 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
                             {'Add Datapoint'}
@@ -250,7 +247,7 @@ const NERExplorer = (props) => {
                     addDP ? <AddDatapointModal setPopup={setAddDP} /> : null
                 }
                 {
-                    popup ? <NERPopup setFiltering={props.setFiltering} shortcuts={props.shortcuts} schema={props.schema} popup={popup} setPopup={setPopup} setKeyId={setKey} keyId={keyVar} key={'fcp'}/> : <></>
+                    popup ? <Seq2SeqPopup shortcuts={props.shortcuts} setFiltering={props.setFiltering} schema={props.schema} popup={popup} setPopup={setPopup} setKeyId={setKey} keyId={keyVar} key={'fcp'}/> : <></>
                 }
                 {
                     export_ ? <ExportModal setPopup={setExport}/> : <></>
@@ -260,7 +257,7 @@ const NERExplorer = (props) => {
     )
 };
 
-export default NERExplorer;
+export default Seq2SeqExplorer;
 
 const AddDatapointModal = (props) => {
     const [key, setKey] = useState('')
@@ -298,8 +295,8 @@ const AddDatapointModal = (props) => {
 
                         <div className="mb-6 mt-6 w-full flex justify-center">
                             <div className="w-[60%]">
-                                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">New Sentence</label>
-                                <input onChange={(e) => {setKey(e.target.value)}} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="sentence to add" value={key} required/>
+                                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">New input sequence</label>
+                                <input onChange={(e) => {setKey(e.target.value)}} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="input sequence" value={key} required/>
                             </div>
                         </div>
                         

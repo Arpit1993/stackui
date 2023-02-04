@@ -11,7 +11,9 @@ import ScienceIcon from '@mui/icons-material/Science';
 import NERFilterPopup from "../../Modals/Filters/NERFilterPopup";
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-
+import Seq2SeqFilterPopup from "../../Modals/Filters/Seq2SeqFilterPopup";
+import ReadMoreIcon from '@mui/icons-material/ReadMore';
+import Infobar from "./infobar/Infobar";
 
 const TopBar = (props) => {
 
@@ -19,6 +21,7 @@ const TopBar = (props) => {
     const [addPopup, setAddPopup] = useState<Boolean>(false)
     const [txt, setText] = useState<String>('')
     const [callFilter, setCallFilter] = useState<Boolean>(false)
+    const [infobar, setInfobar] = useState<Boolean>(false)
 
     const handleChange = (event: React.ChangeEvent<any>) => {
         setText(event.target.value)
@@ -34,7 +37,7 @@ const TopBar = (props) => {
     return (    
         <>
             <div className="flex w-full h-full justify-between relative">
-               <div className="w-[20%] flex h-max py-2 px-5 justify-center flex-col">
+               <div className="w-[15%] flex h-max py-2 px-5 justify-center flex-col">
                     <div className="w-3/4 overflow-x-auto">
                         <h1 className="font-medium dark:text-white w-max"> {props.props.dataset} </h1>
                     </div>
@@ -44,20 +47,9 @@ const TopBar = (props) => {
                         </h2>
                     </div>
                </div>
-                <div className="w-[80%] flex text-ellipsis justify-end  items-center">
-                    {/*
-
-                        
-
-                        <Tooltip title={'Filter'} placement="top">
-                            <button onClick={()=>{if(props.tab != 2){props.shortcuts.current = filterPopup; setFilterPopup(!filterPopup)}}} className="w-[60px] h-[40px] flex flex-col justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" > 
-                                {<Image className="invert" src={'/Icons/filter-search.png'} alt='' width={'40px'} height={'40px'} objectFit={'contain'} />}
-                            </button>
-                        </Tooltip>
-                        
-                    </div> */}
+                <div className="w-[95%] flex text-ellipsis justify-end items-center">
                     
-                    <div className="w-3/4 items-end">
+                    <div className="w-[65%] items-end">
                         <ul className="w-full flex items-end flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
                             <li className="mr-2">
                                 <button onClick={()=> {props.shortcuts.current = addPopup; setAddPopup(!addPopup)}} 
@@ -98,8 +90,7 @@ const TopBar = (props) => {
                         </ul>
                     </div>
 
-
-                    <div className="w-1/4 py-2 text-black inline-block align-middle">
+                    <div className="w-[25%] py-2 text-black inline-block align-middle">
                         <form className="px-3" onSubmit={handleSubmit}>
                             <label className="flex justify-end gap-2"> 
                                 <div className="dark:text-white">
@@ -114,9 +105,23 @@ const TopBar = (props) => {
                                 </Tooltip>
                             </label> 
                         </form> 
-                        
                     </div>
+
+                    <button type="button" onClick={()=>{setInfobar(!infobar)}} className="text-gray-900 bg-white border border-gray-300 focus:outline-none
+                     hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2
+                      dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600
+                       dark:focus:ring-gray-700">
+                        <ReadMoreIcon className="w-5 h-5"/>
+                    </button>
+
                 </div>
+                {
+                    (infobar)
+                    ?
+                    <Infobar setPopup={setInfobar} shortcuts={props.shortcuts} commits={props.commits} dataset={props.dataset}/>
+                    :
+                    <></>
+                }
                 {
                     (props.schema == 'yolo' || props.schema == 'labelbox') 
                     ? 
@@ -132,6 +137,14 @@ const TopBar = (props) => {
                             (filterPopup && props.tab != 2) 
                             ? 
                                 <NERFilterPopup shortcuts={props.shortcuts} setPage={props.setPage} callFilter={callFilter} setCallFilter={setCallFilter} schema={props.schema} txt={txt} popup={filterPopup} setFiltering={props.setFiltering} setPopup={setFilterPopup} key={'yffp'}/> 
+                            : 
+                                <></>
+                        :
+                        (props.schema.includes('seq'))
+                        ?
+                            (filterPopup && props.tab != 2) 
+                            ? 
+                                <Seq2SeqFilterPopup shortcuts={props.shortcuts} setPage={props.setPage} callFilter={callFilter} setCallFilter={setCallFilter} schema={props.schema} txt={txt} popup={filterPopup} setFiltering={props.setFiltering} setPopup={setFilterPopup} key={'yffp'}/> 
                             : 
                                 <></>
                         :

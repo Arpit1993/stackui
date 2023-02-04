@@ -315,7 +315,14 @@ const YOLOFilterPopup = (props) => {
             {
                 slice ? <SlicePopup ref_={ref} key={'slicpp'} setPopup={setSlice}/> : <></>
             }
-            <div key={"flterpp"} ref={ref} className="bg-white absolute flex flex-col items-center z-40 top-16 rounded-lg dark:bg-gray-900 w-[80%] h-[300px] border-[0.5px] border-gray-500">
+            {
+                <button key={'ccb'} onClick={() => {
+                    props.setPopup(false)
+                    }} className=" bg-black/10 z-[39] fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen  h-screen">
+                    click to close
+                </button>
+            }
+            <div key={"flterpp"} ref={ref} className="transform -translate-x-1/2 left-1/2 bg-white absolute flex flex-col items-center z-40 top-16 rounded-lg dark:bg-gray-900 w-[85%] h-[330px] border-[0.5px] border-gray-500">
                 <div className="w-full justify-between flex h-8">
                     <div className="px-2">
                         <button onClick={() => {
@@ -323,36 +330,41 @@ const YOLOFilterPopup = (props) => {
                         props.setPopup(false)
                         }} className='text-xs px-1 w-[15px] h-4 flex-col bg-red-400 hover:bg-red-200 rounded-full'></button>
                     </div>
-
+                    
                     <div className="px-2">
                         <button onClick={() => setQuery(!query)} className='text-xs text-center text-white font-base w-[120px] h-[20px] bg-blue-600 hover:bg-blue-800 rounded-full'>
                             structured query
                         </button>
                     </div>
                 </div>
-                <div className="w-[90%] mt-2 mb-2 flex gap-2 items-center">
-                    <div className="dark:text-white w-[80%]">
-                        <input onChange={(e) => {setSemanticSearch(e.target.value)}} placeholder="AI-Powered search (specific queries lead to better results)" value={semanticSearch}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></input>
+                <div className="w-[90%] mt-2 mb-2 items-center">
+                    <div className="text-sm">
+                        Semantic search
                     </div>
-                    <div className="w-[200px] h-8 border rounded-md shadow-inner border-gray-300">
-                        {/* <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
-                        </div> */}
-                        <div className="w-full px-5">
-                            <Slider
-                                aria-label="Small steps"
-                                value={slideThreshold}
-                                onChange={(event: Event, newValue: number) => {
-                                    setSliderThreshold(newValue);
-                                }}
-                                step={0.001}
-                                valueLabelFormat={(x)=>{
-                                    return `Threshold: ${x}`
-                                }}
-                                min={0}
-                                max={1}
-                                valueLabelDisplay="auto"
-                            />
+                    <div className="flex items-center gap-2">
+                        <div className="dark:text-white w-[80%]">
+                            <input onChange={(e) => {setSemanticSearch(e.target.value)}} placeholder="AI-Powered search (detailed queries lead to better results)" value={semanticSearch}
+                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></input>
+                        </div>
+                        <div className="w-[200px] h-8 border rounded-md shadow-inner border-gray-300">
+                            {/* <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
+                            </div> */}
+                            <div className="w-full px-5">
+                                <Slider
+                                    aria-label="Small steps"
+                                    value={slideThreshold}
+                                    onChange={(event: Event, newValue: number) => {
+                                        setSliderThreshold(newValue);
+                                    }}
+                                    step={0.001}
+                                    valueLabelFormat={(x)=>{
+                                        return `Threshold: ${x}`
+                                    }}
+                                    min={0}
+                                    max={1}
+                                    valueLabelDisplay="auto"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -382,7 +394,7 @@ const YOLOFilterPopup = (props) => {
                         </div>
                     </div>
                     :
-                    <div className="flex w-full overflow-x-scroll mb-[-400px] pb-[400px] justify-center gap-2 p-1">
+                    <div className="flex w-full overflow-x-scroll justify-center gap-2 p-2">
                         <div> 
                             <div className="text-sm">
                                 Classes
@@ -482,13 +494,13 @@ const YOLOFilterPopup = (props) => {
                 <div className="flex w-full justify-around">
                     <div className="px-5 py-4 justify-start">
                         <Tooltip title={'Creates a separate branch with the query results'} placement="bottom">
-                            <button onClick={() => {setBranch(true);}} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                            <button onClick={() => {setBranch(true);}} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
                                 Branch
                             </button>
                         </Tooltip>
 
                         <Tooltip title={'Groups the query results under a slice'} placement="bottom">
-                            <button onClick={() => {setSlice(true)}} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                            <button onClick={() => {setSlice(true)}} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
                                 Slice
                             </button>
                         </Tooltip>
@@ -519,7 +531,7 @@ const YOLOFilterPopup = (props) => {
                                   setLoading(false)
                                 });
                             }
-                        }} className="flex gap-2 items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-body rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                        }} className="flex gap-2 items-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
                             <DownloadIcon className="w-5 h-5"/>
                             {
                                 downloading ? 'Cancel' : 'Download'

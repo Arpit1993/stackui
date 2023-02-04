@@ -52,29 +52,27 @@ const getbuttons = (variable, varFilter, setVarFilter, nullStr, setnullStr, n_va
     return var_buttons
 }
 
-const QAFilterPopup = (props) => {
+const Seq2SeqFilterPopup = (props) => {
+
+    const [code, setCode] = useState( `def filter(datapoint):\n\t# python condition applied to each datapoint \n\treturn True\n`)
+    const [schema, setSchema] = useState( `datapoint: dict\n\tkey: string\n\tnum_entities: string<int>\n\tentities: list<string>\n\tresolution: string\n\ttags: list<string>\n\tlabels: list<dict>:\n\t\t'0': entity\n\t\t'1': x\n\t\t'2': y\n\t\t'3': w\n\t\t'4': h`)
+    const [query, setQuery] = useState(false)
 
     const [date, setDate] = useState({startDate: null, endDate: null});
     const [branch, setBranch] = useState(false)
     const [slice, setSlice] = useState(false)
     
-    const [sliderNumAnswers, setSliderNumAnswers] = useState([0,100])
     const [sliderAnswers, setSliderAnswers] = useState([0,100])
-    const [sliderParagraphs, setSliderParagraphs] = useState([0,100])
     const [sliderQuestions, setSliderQuestion] = useState([0,100])
 
     const [n_tags, setNTags] = useState({})
     const [tags, setTags] = useState([])
     
-    const [numAnswers, setNumAnswers] = useState<number>(0)
-    const [lenParagraph, setLenParagraph] = useState<number>(0)
     const [lenQuestion, setLenQuestion] = useState<number>(0)
     const [lenAnswer, setLenAnswer] = useState<number>(0)
 
-    const [tSearch, setTSearch] = useState<string>('')
     const [pSearch, setPSearch] = useState<string>('')
     const [qSearch, setQSearch] = useState<string>('')
-    const [aSearch, setASearch] = useState<string>('')
 
     const [tagFilter, setTagFilter] = useState({})
     
@@ -108,9 +106,9 @@ const QAFilterPopup = (props) => {
             }
         }
 
-        if (tSearch.length > 0) {
+        if(pSearch.length > 0){
             filters[idx] = {
-                'name': tSearch
+                'name': pSearch
             }
             idx+=1
         } else if(props.txt.length > 0){
@@ -120,51 +118,24 @@ const QAFilterPopup = (props) => {
             idx+=1
         }
 
-        if(pSearch.length > 0){
-            filters[idx] = {
-                'p_search': pSearch
-            }
-            idx+=1
-        }
-
         if(qSearch.length > 0){
             filters[idx] = {
-                'q_search': qSearch
+                'out': qSearch
             }
             idx+=1
         }
 
-        if(aSearch.length > 0){
-            filters[idx] = {
-                'a_search': aSearch
-            }
-            idx+=1
-        }
-
-        if(sliderNumAnswers[0] > 0 || sliderNumAnswers[1] < 100){
-            filters[idx] = {
-                'n_ans': [Math.floor(sliderNumAnswers[0] * numAnswers / 100),Math.floor(sliderNumAnswers[1] * numAnswers / 100)]
-            }
-            idx+=1
-        }
 
         if(sliderAnswers[0] > 0 || sliderAnswers[1] < 100){
             filters[idx] = {
-                'ans_len': [Math.floor(sliderAnswers[0] * lenAnswer / 100),Math.floor(sliderAnswers[1] * lenAnswer / 100)]
+                'out_len': [Math.floor(sliderAnswers[0] * lenAnswer / 100),Math.floor(sliderAnswers[1] * lenAnswer / 100)]
             }
             idx+=1
         }
 
         if(sliderQuestions[0] > 0 || sliderQuestions[1] < 100){
             filters[idx] = {
-                'q_len': [Math.floor(sliderQuestions[0] * lenQuestion / 100),Math.floor(sliderQuestions[1] * lenQuestion / 100)]
-            }
-            idx+=1
-        }
-
-        if(sliderParagraphs[0] > 0 || sliderParagraphs[1] < 100){
-            filters[idx] = {
-                'par_len': [Math.floor(sliderParagraphs[0] * lenParagraph / 100),Math.floor(sliderParagraphs[1] * lenParagraph / 100)]
+                'in_len': [Math.floor(sliderQuestions[0] * lenQuestion / 100),Math.floor(sliderQuestions[1] * lenQuestion / 100)]
             }
             idx+=1
         }
@@ -209,8 +180,9 @@ const QAFilterPopup = (props) => {
                 
                 setTagFilter(tFilter)
                 setSliderAnswers([0,100])
-                setSliderParagraphs([0,100])
                 setSliderQuestion([0,100])
+                setPSearch('')
+                setQSearch('')
                 setDate({startDate: null, endDate: null})
                 setnullStr('')
             }
@@ -226,11 +198,8 @@ const QAFilterPopup = (props) => {
             await fetch('http://localhost:8000/schema_metadata').then((res) => res.json()).then(
                 (res) =>
                 { 
-                    // TODO
-                    setNumAnswers(Math.max(...res.n_answers))
-                    setLenAnswer(Math.max(...res.answer_lengths))
-                    setLenParagraph(Math.max(...res.paragraph_lengths))
-                    setLenQuestion(Math.max(...res.question_lengths))
+                    setLenAnswer(Math.max(...res.out_len))
+                    setLenQuestion(Math.max(...res.in_len))
                     
                     setTags(res.tags)
                     setNTags(res.n_tags)
@@ -272,7 +241,7 @@ const QAFilterPopup = (props) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.callFilter, time])
 
-    var tag_buttons : Array<any> = getbuttons(tags, tagFilter, setTagFilter, nullStr, setnullStr, n_tags,'tag', tags.length)
+    var tag_buttons : Array<any> = getbuttons(tags, tagFilter, setTagFilter, nullStr, setnullStr, n_tags, 'tag', tags.length)
 
     return (
         <>
@@ -292,7 +261,7 @@ const QAFilterPopup = (props) => {
                     click to close
                 </button>
             }
-            <div key={"flterpp"} ref={ref} className="transform -translate-x-1/2 left-1/2 items-center bg-white flex flex-col absolute z-40 top-16 rounded-lg dark:bg-gray-900 w-[80%] h-[250px] border-[0.5px] border-gray-500">
+            <div key={"flterpp"} ref={ref} className="transform -translate-x-1/2 left-1/2 bg-white absolute z-40 top-16 rounded-lg dark:bg-gray-900 w-[80%] h-[250px] border-[0.5px] border-gray-500">
                 <div className="w-full justify-between flex h-8">
                     <div className="px-2">
                         <button onClick={() => {
@@ -301,152 +270,94 @@ const QAFilterPopup = (props) => {
                         }} className='text-xs px-1 w-[15px] h-4 flex-col bg-red-400 hover:bg-red-200 rounded-full'></button>
                     </div>
                 </div>
-                
-                <div className="grid grid-cols-6 w-full overflow-x-scroll justify-center gap-24 p-2">
-                    <div className="w-max">
-                        <div className="text-sm">
-                            Title
+                {
+                    <div className="flex w-full overflow-x-scroll justify-center gap-2 p-1">
+                        <div> 
+                            <div className="text-sm">
+                                Input
+                            </div>
+                            <input onChange={(e) => {setPSearch(e.target.value)}} placeholder="input search" value={pSearch}
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></input>
+                            <div className="text-sm">
+                                Output
+                            </div>
+                            <div className="dark:text-white">
+                                <input onChange={(e) => {setQSearch(e.target.value)}} placeholder="output search" value={qSearch}
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></input>
+                            </div>
                         </div>
-                        <div className="dark:text-white">
-                            <input onChange={(e) => {setTSearch(e.target.value)}} placeholder="title search" value={tSearch}
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></input>
+                        <div className="h-[120px] w-[200px]">
+                            <div className="text-sm">
+                                Input length
+                            </div>
+                            <div className="w-[200px] h-8 border rounded-md shadow-inner border-gray-300">
+                                {/* <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
+                                </div> */}
+                                <div className="w-full px-5">
+                                    <Slider
+                                        getAriaLabel={() => 'Chars per question'}
+                                        value={sliderQuestions}
+                                        onChange={(event: Event, newValue: number | number[]) => {
+                                            setSliderQuestion(newValue as number[]);
+                                        }}
+                                        valueLabelFormat={(x)=>{
+                                            return `${Math.floor(lenQuestion * x/100)} chars`
+                                        }}
+                                        valueLabelDisplay="auto"
+                                        getAriaValueText={()=>{return ''}}
+                                        />
+                                </div>
+                            </div>
+                            <div className="mt-[15px] text-sm">
+                                Output length
+                            </div>
+                            <div className="w-[200px] h-8 border rounded-md shadow-inner border-gray-300">
+                                {/* <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
+                                </div> */}
+                                <div className="w-full px-5">
+                                    <Slider
+                                        getAriaLabel={() => 'Chars per Answer'}
+                                        value={sliderAnswers}
+                                        onChange={(event: Event, newValue: number | number[]) => {
+                                            setSliderAnswers(newValue as number[]);
+                                        }}
+                                        valueLabelFormat={(x)=>{
+                                            return `${Math.floor(lenAnswer * x/100)} chars`
+                                        }}
+                                        valueLabelDisplay="auto"
+                                        getAriaValueText={()=>{return ''}}
+                                        />
+                                </div>
+                            </div>
                         </div>
-                        <div className="text-sm mt-[6px]">
-                            Answers per question
+
+                        <div>
+                            <div className="text-sm">
+                                Comments
+                            </div>
+                            <div className="h-[100px] w-[200px] border rounded-md shadow-inner border-gray-300">
+                                <div className="overflow-y-scroll h-[98px]">
+                                    {tag_buttons}
+                                </div>
+                            </div>
                         </div>
-                        <div className="w-[200px] h-8 border rounded-md shadow-inner border-gray-300">
-                            {/* <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
-                            </div> */}
-                            <div className="w-full px-5">
-                                <Slider
-                                    getAriaLabel={() => 'Answers per question'}
-                                    value={sliderNumAnswers}
-                                    onChange={(event: Event, newValue: number | number[]) => {
-                                        setSliderNumAnswers(newValue as number[]);
-                                    }}
-                                    valueLabelFormat={(x)=>{
-                                        return `${Math.floor(numAnswers * x/100)} answers`
-                                    }}
-                                    valueLabelDisplay="auto"
-                                    getAriaValueText={()=>{return ''}}
+                        <div>
+                            <div className="text-sm">
+                                Date of change
+                            </div>
+                            <div className="relative w-[300px] h-[100px] border rounded-md shadow-inner border-gray-300">
+                                <div className="absolute w-full p-8 gap-3">
+                                    <Datepicker
+                                        useRange={false}
+                                        separator={"to"}
+                                        value={date}
+                                        onChange={setDate}
                                     />
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div className="w-max"> 
-                        <div className="text-sm">
-                            Paragraphs
-                        </div>
-                        <input onChange={(e) => {setPSearch(e.target.value)}} placeholder="paragraph search" value={pSearch}
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></input>
-                        <div className="text-sm">
-                            Questions
-                        </div>
-                        <div className="dark:text-white">
-                            <input onChange={(e) => {setQSearch(e.target.value)}} placeholder="question search" value={qSearch}
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></input>
-                        </div>
-                    </div>
-                    <div className="w-max">
-                        <div className="text-sm">
-                            Answers
-                        </div>
-                        <div className="dark:text-white">
-                            <input onChange={(e) => {setASearch(e.target.value)}} placeholder="answer search" value={aSearch}
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></input>
-                        </div>
-                        <div className="text-sm mt-[6px]">
-                            Paragraph length
-                        </div>
-                        <div className="w-[200px] h-8 border rounded-md shadow-inner border-gray-300">
-                            {/* <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
-                            </div> */}
-                            <div className="w-full px-5">
-                                <Slider
-                                    getAriaLabel={() => 'Chars per paragraph'}
-                                    value={sliderParagraphs}
-                                    onChange={(event: Event, newValue: number | number[]) => {
-                                        setSliderParagraphs(newValue as number[]);
-                                    }}
-                                    valueLabelFormat={(x)=>{
-                                        return `${Math.floor(lenParagraph * x/100)} chars`
-                                    }}
-                                    valueLabelDisplay="auto"
-                                    getAriaValueText={()=>{return ''}}
-                                    />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="w-max">
-                        <div className="text-sm">
-                            Question length
-                        </div>
-                        <div className="w-[200px] h-8 border rounded-md shadow-inner border-gray-300">
-                            {/* <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
-                            </div> */}
-                            <div className="w-full px-5">
-                                <Slider
-                                    getAriaLabel={() => 'Chars per question'}
-                                    value={sliderQuestions}
-                                    onChange={(event: Event, newValue: number | number[]) => {
-                                        setSliderQuestion(newValue as number[]);
-                                    }}
-                                    valueLabelFormat={(x)=>{
-                                        return `${Math.floor(lenQuestion * x/100)} chars`
-                                    }}
-                                    valueLabelDisplay="auto"
-                                    getAriaValueText={()=>{return ''}}
-                                    />
-                            </div>
-                        </div>
-                        <div className="mt-[15px] text-sm">
-                            Answer length
-                        </div>
-                        <div className="w-[200px] h-8 border rounded-md shadow-inner border-gray-300">
-                            {/* <div className="flex gap-1 text-xs px-1 w-[198px] text-center rounded-t-md dark:bg-gray-900 bg-gray-200">
-                            </div> */}
-                            <div className="w-full px-5">
-                                <Slider
-                                    getAriaLabel={() => 'Chars per Answer'}
-                                    value={sliderAnswers}
-                                    onChange={(event: Event, newValue: number | number[]) => {
-                                        setSliderAnswers(newValue as number[]);
-                                    }}
-                                    valueLabelFormat={(x)=>{
-                                        return `${Math.floor(lenAnswer * x/100)} chars`
-                                    }}
-                                    valueLabelDisplay="auto"
-                                    getAriaValueText={()=>{return ''}}
-                                    />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="w-max">
-                        <div className="text-sm">
-                            Comments
-                        </div>
-                        <div className="h-[100px] w-[200px] border rounded-md shadow-inner border-gray-300">
-                            <div className="overflow-y-scroll h-[98px]">
-                                {tag_buttons}
-                            </div>
-                        </div>
-                    </div>
-                    <div className="w-max">
-                        <div className="text-sm">
-                            Date of change
-                        </div>
-                        <div className="relative w-[300px] h-[100px] border rounded-md shadow-inner border-gray-300">
-                            <div className="absolute w-full p-8 gap-3">
-                                <Datepicker
-                                    useRange={false}
-                                    separator={"to"}
-                                    value={date}
-                                    onChange={setDate}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                }
                 
                 <div className="flex justify-around">
                     <div className="px-5 py-4 justify-start">
@@ -498,4 +409,4 @@ const QAFilterPopup = (props) => {
     )
 }
 
-export default QAFilterPopup
+export default Seq2SeqFilterPopup

@@ -1,5 +1,5 @@
-import QAPreview from "./Items/QAPreview";
 import { useCallback, useEffect, useState } from "react";
+import MultiSeq2SeqPreview from "./Items/MultiSeq2SeqPreview";
 import React from "react";
 import SliceButton from "./Items/SliceButton";
 import SelectionTagPopup from "./Popups/SelectionTagPopup";
@@ -7,10 +7,9 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import BugReportIcon from '@mui/icons-material/BugReport';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { posthog } from "posthog-js";
-import QAPopup from "../../Visualizers/QAPopup";
 import ModelTrainingIcon from '@mui/icons-material/ModelTraining';
-import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import ExportModal from "../../Modals/ExportModal";
+import MultiSeq2SeqPopup from "../../Visualizers/MultiSeq2SeqPopup";
 
 function commit(comment: string){
     fetch('http://localhost:8000/commit_req?comment='.concat(comment))
@@ -25,15 +24,15 @@ function diagnose(){
     return true
 }
 
-const QAExplorer = (props) => {
-    const [addDP, setAddDP] = useState<Boolean>(false)
+const MultiSeq2SeqExplorer = (props) => {
     const [keyVar, setKey] = useState<String>('');
     const [popup, setPopup] = useState<Boolean>(false)
+    const [addDP, setAddDP] = useState<Boolean>(false)
     const [anomalies, setAnomalies] = useState<Boolean>(false)
     const [selected, setSelected] = useState<Array<Boolean>>([])
     const [pointer, setPointer] = useState<number>(-1)
-    const [tagsPopup, setTagsPopup] = useState<Boolean>(false)
     const [export_, setExport] = useState<Boolean>(false)
+    const [tagsPopup, setTagsPopup] = useState<Boolean>(false)
 
     const files = props.files;
     console.log(files)
@@ -201,7 +200,7 @@ const QAExplorer = (props) => {
                     </button>
                     
                     <button onClick={()=>{posthog.capture('bug report button', { property: 'value' }); diagnose()}} 
-                        className="flex h-fit items-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                        className="flex h-fit text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
                         <BugReportIcon className="h-5 w-5 mr-2"/>
                         Diagnose
                     </button>
@@ -213,37 +212,32 @@ const QAExplorer = (props) => {
                     </button>
                     
                 </div>
-                <div className="z-0 h-fit w-full flex justify-center p-1">
+                <div className="z-0 h-[440px] w-full flex justify-center p-1">
                     
                     <div className="relative w-full shadow-md sm:rounded-lg">
                         <div className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                            <div className="w-full grid grid-cols-3 text-xs font-medium text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                <div className="w-full px-6 py-3">
-                                    Title
+                            <div 
+                            className="grid grid-cols-4 w-full text-xs font-medium text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                <div className="col-span-3 w-full px-6 py-3">
+                                    Input Sequences
                                 </div>
-                                <div className="w-full px-6 py-3">
-                                    Paragraphs
-                                </div>
-                                <div className="w-full px-6 py-3">
-                                    Questions
+                                <div className=" w-full px-6 py-3">
+                                    Output Sequence
                                 </div>
                             </div>
                             <div className="w-full">
                                 {
-                                    files.map((file,index) =>
-                                        <QAPreview shortcuts={props.shortcuts} key={`thumb-${file['name']}`} setTagsPopup={setTagsPopup} selected={selected} setPointer={setPointer} setSelected={setSelected} dataset={props.dataset} max_view={props.max_view} file={file} index={index} waiting={props.waiting} handleObjectClick={handleObjectClick}/>
-                                    )
+                                    files.map((file,index) => <MultiSeq2SeqPreview shortcuts={props.shortcuts} key={`thumb-${file['name']}`} setTagsPopup={setTagsPopup} selected={selected} setPointer={setPointer} setSelected={setSelected} dataset={props.dataset} max_view={props.max_view} file={file} index={index} waiting={props.waiting} handleObjectClick={handleObjectClick}/>)
                                 }
                             </div>
                         </div>
                     </div>
                 </div>
                 <div className="z-10 flex justify-between items-center">
-                    <div className="flex justify-left text-xs mt-2 mb-2 rounded-sm">
-                        {listofButtons}
-                    </div>
-                    <div className="z-10 w-1/6 flex flex-col justify-center h-max text-sm py-2"> 
-                        Page {props.page+1 | 0} of {max_pages-0.001+1 | 0}
+                    <div className="flex justify-left text-xs py-2 rounded-sm">
+                        {
+                            listofButtons  
+                        }
                     </div>
                     <button onClick={() => {setAddDP(true)}} className="mt-2 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
                             {'Add Datapoint'}
@@ -253,9 +247,8 @@ const QAExplorer = (props) => {
                     addDP ? <AddDatapointModal setPopup={setAddDP} /> : null
                 }
                 {
-                    popup ? <QAPopup shortcuts={props.shortcuts} schema={props.schema} popup={popup} setPopup={setPopup} setKeyId={setKey} keyId={keyVar} key={'fcp'}/> : <></>
+                    popup ? <MultiSeq2SeqPopup shortcuts={props.shortcuts} setFiltering={props.setFiltering} schema={props.schema} popup={popup} setPopup={setPopup} setKeyId={setKey} keyId={keyVar} key={'fcp'}/> : <></>
                 }
-
                 {
                     export_ ? <ExportModal setPopup={setExport}/> : <></>
                 }
@@ -264,7 +257,7 @@ const QAExplorer = (props) => {
     )
 };
 
-export default QAExplorer;
+export default MultiSeq2SeqExplorer;
 
 const AddDatapointModal = (props) => {
     const [key, setKey] = useState('')
@@ -302,8 +295,8 @@ const AddDatapointModal = (props) => {
 
                         <div className="mb-6 mt-6 w-full flex justify-center">
                             <div className="w-[60%]">
-                                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Title</label>
-                                <input onChange={(e) => {setKey(e.target.value)}} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="sentence to add" value={key} required/>
+                                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">New input sequence</label>
+                                <input onChange={(e) => {setKey(e.target.value)}} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="input sequence" value={key} required/>
                             </div>
                         </div>
                         

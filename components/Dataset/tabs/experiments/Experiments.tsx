@@ -32,7 +32,7 @@ const Experiments = (props) => {
                             {'No experiments yet'}
                         </div>
                         :
-                        <div className="p-2 grid grid-cols-2 justify-items-center gap-2 w-full h-full">
+                        <div className="p-2 grid grid-cols-3 justify-items-center gap-2 w-full h-full">
                             {
                                 Object.keys(projects).map(
                                 (proj) =>  

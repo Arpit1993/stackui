@@ -7,9 +7,9 @@ import DropdownFileOptions from "./Components/DropdownFileOptions";
 import FileHistoryList from "./History/FileHistoryList";
 import path from 'path'
 import CloseIcon from '@mui/icons-material/Close';
-import QAViz from "./QAViz";
+import Seq2SeqViz from "./Seq2SeqViz";
 
-const QAPopup = (props) => {
+const Seq2SeqPopup = (props) => {
 
     const [popup, setPopup] = useState<Boolean>(false)
 
@@ -18,6 +18,8 @@ const QAPopup = (props) => {
     const [version, setVersions] = useState([{version: 'loading...', date: 'loading...',commit: 'loading...'}])
     const [Nversion, setNVersions] = useState<number>(0)
     const [dataComp, setDataComp] = useState<any>(null)
+
+    const [newKey, setNewKey] = useState<string>('')
 
     const enableLRshortcut = useRef(true)
     const [submit, setSubmit] = useState<Boolean>(false)
@@ -39,6 +41,9 @@ const QAPopup = (props) => {
 
     const submitLabels = useCallback(async () => {
         if (submit){
+            props.setFiltering('')
+            props.setFiltering('z')
+            props.setFiltering('')
             setLoading(true)
             const data = JSON.stringify(newLabels)
             if (true){
@@ -59,7 +64,9 @@ const QAPopup = (props) => {
                         setLoading(false)
                     }
                 )
-    
+                // props.setKeyId(newKey)
+                props.setFiltering('z')
+                props.setFiltering('')
             } else {
                 await fetch('http://localhost:8000/submit_label_per_user/', {
                     method: 'POST',
@@ -101,7 +108,7 @@ const QAPopup = (props) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            setDataComp([<QAViz key={'nervz'}  admin={true} enableLRshortcut={enableLRshortcut} setKeyId={props.setKeyId} diff={false} loading={loading} label_version={'current'} keyId={props.keyId} ww={800} wh={500} ox={0} oy={0} setnewLabels={setnewLabels} setSubmit={setSubmit}/>])            
+            setDataComp([<Seq2SeqViz key={'nervz'} setNewKey={setNewKey} admin={true} enableLRshortcut={enableLRshortcut} setKeyId={props.setKeyId} loading={loading} label_version={'current'} keyId={props.keyId} setnewLabels={setnewLabels} setSubmit={setSubmit}/>])            
         }
 
         const fetchVersions = () => {
@@ -174,14 +181,14 @@ const QAPopup = (props) => {
                                 dataComp
                             }
                         </div>
-                        {/* <div className="w-[300px]">
+                        <div className="w-[300px]">
                             <div className="flex justify-center">
                                 <DropdownFileOptions setHistory={setPopup} handleDelete={handleDelete} handleFullDelete={handleFullDelete}/>
                             </div>
                             {
                                 <FileHistoryList key={'FileHist'} keyId={props.keyId}/>  
                             }
-                        </div> */}
+                        </div>
                     </div>
                     <div className="flex w-full">
                         <div className="flex justify-center mt-4 w-[800px]">
@@ -219,4 +226,4 @@ const QAPopup = (props) => {
         </>)
 }
 
-export default QAPopup;
+export default Seq2SeqPopup;

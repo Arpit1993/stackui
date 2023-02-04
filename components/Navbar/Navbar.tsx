@@ -35,14 +35,6 @@ const Navbar = () => {
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/Datasets">
-                                    <div className="flex gap-2 pl-3 pr-4 text-white  hover:cursor-pointer rounded hover:bg-gray-100 md:hover:bg-transparent border-0 hover:text-blue-700">
-                                        <Image className="invert" src={'/Icons/DatasetIcon.png'} width={'20'} height={'20'} objectFit={'contain'} alt=''/>
-                                        <div> Datasets </div>
-                                    </div>
-                                </Link>
-                            </li>
-                            <li>
                                 {
                                     (user != '') ? 
                                     <button onClick={()=>{setUser('')}} className="flex justify-center">
