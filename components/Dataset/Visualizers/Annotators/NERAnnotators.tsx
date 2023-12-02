@@ -4,14 +4,14 @@ import { useState, useEffect } from "react";
 import DropdownVersion from "../Components/DropdownVersion";
 
 const stringToColour = (str: string) => {
-    var hash = 0;
+    let hash = 0;
 
-    for (var i = 0; i < str.length; i++) {
+    for (let i = 0; i < str.length; i++) {
       hash = str.charCodeAt(i) + ((hash << 5) - hash);
     }
-    var colour = '#';
-    for (var i = 0; i < 3; i++) {
-      var value = (hash >> (i * 8)) & 0xFF;
+    let colour = '#';
+    for (let i = 0; i < 3; i++) {
+      let value = (hash >> (i * 8)) & 0xFF;
       colour += ('00' + value.toString(16)).substr(-2);
     }
 
@@ -91,12 +91,12 @@ const NERAnnotators = (props) => {
                             (datapoint, idx) => {
                                 
                                 
-                                var updated_labels = datapoint.label.label
+                                let updated_labels = datapoint.label.label
 
                                 console.log(datapoint)
                                 
-                                var order: Array<any> = []
-                                var array_spans: Array<any> = []
+                                let order: Array<any> = []
+                                let array_spans: Array<any> = []
 
                                 updated_labels = updated_labels.sort((a, b) => {
                                     if(a.start > b.start){
@@ -106,19 +106,19 @@ const NERAnnotators = (props) => {
                                     }
                                 })
                                 
-                                var start = 0
+                                let start = 0
 
-                                var x: Array<any> = Array(0)
-                                for (var j = 0; j < updated_labels.length; j++){
+                                let x: Array<any> = Array(0)
+                                for (let j = 0; j < updated_labels.length; j++){
                                     if (updated_labels[j].start <= 1 && updated_labels[j].end > 0){
                                         x.push(j)
                                     }
                                 }
 
-                                var entities_per_index: Array<any> = [x]
-                                var chars: Array<any> = [sentence[0]]
+                                let entities_per_index: Array<any> = [x]
+                                let chars: Array<any> = [sentence[0]]
                         
-                                for(var i = 1; i < sentence.length; i++){
+                                for(let i = 1; i < sentence.length; i++){
                                     if (updated_labels.map((val) => (val.end == i)).includes(true)) {
                                         order.push(sentence.slice(start, i).replace(/ /g,'\u00A0'));
                                         start = i;
@@ -129,8 +129,8 @@ const NERAnnotators = (props) => {
                                         order.push(sentence.slice(start, i+1).replace(/ /g,'\u00A0'));
                                     }
                         
-                                    var x: Array<any> = Array(0)
-                                    for (var j = 0; j < updated_labels.length; j++){
+                                    let x: Array<any> = Array(0)
+                                    for (let j = 0; j < updated_labels.length; j++){
                                         if (updated_labels[j].start <= i + 1 && updated_labels[j].end > i){
                                             x.push(j)
                                         }
@@ -140,13 +140,13 @@ const NERAnnotators = (props) => {
                                 }
                                 
                                 start = 0
-                                for(var i = 0; i < order.length; i++){
+                                for(let i = 0; i < order.length; i++){
                                     const idx_1 = i
-                                    var child: any = [<span key={`child${idx_1}--1`} className="w-max flex justify-start items-center h-min text-base cursor-text"> {order[idx_1].replace(/ /g,'\u00A0')} </span>]
+                                    let child: any = [<span key={`child${idx_1}--1`} className="w-max flex justify-start items-center h-min text-base cursor-text"> {order[idx_1].replace(/ /g,'\u00A0')} </span>]
                                     
                                     start = (start >= entities_per_index.length) ? entities_per_index.length - 1 : start
                         
-                                    for(var j = 0; j < entities_per_index[start].length; j++){
+                                    for(let j = 0; j < entities_per_index[start].length; j++){
                                         const idx_2 = j
                                         const entity_type = updated_labels[entities_per_index[start][idx_2]]['type']
                         
@@ -174,7 +174,7 @@ const NERAnnotators = (props) => {
                                             </div>
                                             <button type="button" onClick={() => {
                                                 setLabel(datapoint['label']['label']); 
-                                                var arr = Array(d.length).fill(false)
+                                                let arr = Array(d.length).fill(false)
                                                 arr[idx] = true
                                                 setSelected(arr)
                                                 }} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Select</button>

@@ -18,14 +18,14 @@ async function auto_label(data) {
 }
 
 const stringToColour = (str: string) => {
-    var hash = 0;
+    let hash = 0;
 
-    for (var i = 0; i < str.length; i++) {
+    for (let i = 0; i < str.length; i++) {
       hash = str.charCodeAt(i) + ((hash << 5) - hash);
     }
-    var colour = '#';
-    for (var i = 0; i < 3; i++) {
-      var value = (hash >> (i * 8)) & 0xFF;
+    let colour = '#';
+    for (let i = 0; i < 3; i++) {
+      let value = (hash >> (i * 8)) & 0xFF;
       colour += ('00' + value.toString(16)).substr(-2);
     }
 
@@ -59,7 +59,7 @@ const NERViz = (props) => {
         auto_label({"inputs": sentence}).then(
             (res) => {
                 console.log(res)
-                for(var i = 0; i < res.length; i++ ){
+                for(let i = 0; i < res.length; i++ ){
                     if (res[i]['score'] >= 0.77){
                         updated_labels.current.push(
                             {
@@ -126,19 +126,19 @@ const NERViz = (props) => {
     } 
 
     const recomputeTags = () => {
-        var tag_array: Array<any> = [];
-        var seen_tags: Array<any> = [];
-        var all_tags: Array<any> = tags.current;
+        let tag_array: Array<any> = [];
+        let seen_tags: Array<any> = [];
+        let all_tags: Array<any> = tags.current;
         const res = updated_labels.current;
         selected_labels.current = Array(res.length).fill(false);
 
         if(all_tags.length == 0){
-            for(var i = 0; i < res.length; i++){
+            for(let i = 0; i < res.length; i++){
                 all_tags.push(res[i]['type'])
             }    
         }
 
-        for(var i = 0; i < all_tags.length; i++){
+        for(let i = 0; i < all_tags.length; i++){
             const tag_ = all_tags[i]
             if(!seen_tags.includes(tag_)){
                 if (tag == tag_){
@@ -172,7 +172,7 @@ const NERViz = (props) => {
     }
 
     const addNewTag = (new_tag) => {
-        var all_tags: Array<any> = tags.current;
+        let all_tags: Array<any> = tags.current;
         const res = updated_labels.current;
         selected_labels.current = Array(res.length).fill(false);
 
@@ -226,8 +226,8 @@ const NERViz = (props) => {
         getComments()
     },[props.keyId, props.loading, tag])
 
-    var order: Array<any> = Array(0)
-    var array_spans: Array<any> = Array(0)
+    let order: Array<any> = Array(0)
+    let array_spans: Array<any> = Array(0)
 
     if (fetched && sentence){
 
@@ -239,17 +239,17 @@ const NERViz = (props) => {
             }
         })
         
-        var start = 0
-        var x: Array<any> = []
-        for (var j = 0; j < updated_labels.current.length; j++){
+        let start = 0
+        let x: Array<any> = []
+        for (let j = 0; j < updated_labels.current.length; j++){
             if (updated_labels.current[j].start <= 1 && updated_labels.current[j].end > 0){
                 x.push(j)
             }
         }
 
-        var entities_per_index: Array<any> = [x]
+        let entities_per_index: Array<any> = [x]
 
-        for(var i = 1; i < sentence.length; i++){
+        for(let i = 1; i < sentence.length; i++){
             if (updated_labels.current.map((val) => (val.end == i+1)).includes(true)) {
                 order.push(sentence.slice(start, i+1).replace(/ /g,'\u00A0'));
                 start = i+1;
@@ -260,8 +260,8 @@ const NERViz = (props) => {
                 order.push(sentence.slice(start, i+1).replace(/ /g,'\u00A0'));
             }
 
-            var x: Array<any> = []
-            for (var j = 0; j < updated_labels.current.length; j++){
+            let x: Array<any> = []
+            for (let j = 0; j < updated_labels.current.length; j++){
                 if (updated_labels.current[j].start <= i + 1 && updated_labels.current[j].end > i){
                     x.push(j)
                 }
@@ -271,13 +271,13 @@ const NERViz = (props) => {
         
         start = 0
 
-        for(var i = 0; i < order.length; i++){
+        for(let i = 0; i < order.length; i++){
             const idx_1 = i
-            var child: any = [<span key={`child${idx_1}--1`} className="whitespace-pre-line break-all w-min h-min text-sm cursor-text"> {order[idx_1].replace(/ /g,'\u00A0')} </span>]
+            let child: any = [<span key={`child${idx_1}--1`} className="whitespace-pre-line break-all w-min h-min text-sm cursor-text"> {order[idx_1].replace(/ /g,'\u00A0')} </span>]
             
             start = (start >= entities_per_index.length) ? entities_per_index.length - 1 : start
 
-            for(var j = 0; j < entities_per_index[start].length; j++){
+            for(let j = 0; j < entities_per_index[start].length; j++){
                 const idx_0 = start
                 const idx_2 = j
                 const entity_type = updated_labels.current[entities_per_index[start][idx_2]]['type']
@@ -325,10 +325,10 @@ const NERViz = (props) => {
                 const string_of_node = select?.anchorNode?.textContent.toString()
                 
                 if (adding && selected_string.length > 0 && tag != ''){
-                    var add = true
-                    var start = 0
+                    let add = true
+                    let start = 0
                     
-                    for(var i = 0; i < order.length; i++){
+                    for(let i = 0; i < order.length; i++){
                         if(order[i] == string_of_node){
                             add = false
                             start = start + Math.min(select?.focusOffset,select?.anchorOffset)

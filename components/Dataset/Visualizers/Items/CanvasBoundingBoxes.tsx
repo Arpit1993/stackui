@@ -14,14 +14,14 @@ const hexToRgb = (hex: string) => {
   }
 
 const stringToColour = (str: string) => {
-    var hash = 0;
+    let hash = 0;
 
-    for (var i = 0; i < str.length; i++) {
+    for (let i = 0; i < str.length; i++) {
       hash = str.charCodeAt(i) + ((hash << 5) - hash);
     }
-    var colour = '#';
-    for (var i = 0; i < 3; i++) {
-      var value = (hash >> (i * 8)) & 0xFF;
+    let colour = '#';
+    for (let i = 0; i < 3; i++) {
+      let value = (hash >> (i * 8)) & 0xFF;
       colour += ('00' + value.toString(16)).substr(-2);
     }
 
@@ -29,12 +29,12 @@ const stringToColour = (str: string) => {
 }
 
 function drawImageScaled(img, ctx) {
-    var canvas = ctx.canvas ;
-    var hRatio = canvas.width  / img.width    ;
-    var vRatio =  canvas.height / img.height  ;
-    var ratio  = Math.min ( hRatio, vRatio );
-    var centerShift_x = ( canvas.width - img.width*ratio ) / 2;
-    var centerShift_y = ( canvas.height - img.height*ratio ) / 2;  
+    let canvas = ctx.canvas ;
+    let hRatio = canvas.width  / img.width    ;
+    let vRatio =  canvas.height / img.height  ;
+    let ratio  = Math.min ( hRatio, vRatio );
+    let centerShift_x = ( canvas.width - img.width*ratio ) / 2;
+    let centerShift_y = ( canvas.height - img.height*ratio ) / 2;  
     ctx.clearRect(0,0,canvas.width, canvas.height);
     ctx.drawImage(img, 0,0, img.width, img.height,
                        centerShift_x,centerShift_y,img.width*ratio, img.height*ratio);  
@@ -68,7 +68,7 @@ const CanvasBoundingBoxes = (props) => {
         const canvas: any = canvasRef.current
         const client_rect = canvas.getBoundingClientRect()
         
-        // var dpr = window.devicePixelRatio || 1;
+        // let dpr = window.devicePixelRatio || 1;
         // canvas.width = client_rect.width * dpr;
         // canvas.height = client_rect.height * dpr;
         const context =  canvas.getContext('2d')
@@ -78,21 +78,21 @@ const CanvasBoundingBoxes = (props) => {
             mouseX.current = e.pageX - client_rect.left;
             mouseY.current = e.pageY - client_rect.top;
 
-            var in_box = false
+            let in_box = false
 
-            for(var i = 0; i < props.rect.length; i++){
+            for(let i = 0; i < props.rect.length; i++){
                 if(props.active[i] || props.selected[i]){
                     if(props.editing && !props.loading){
                         if (props.new.current[i]){
                             dragBR.current[i] = true
-                            var arr = Array(props.rect.length).fill(false)
+                            let arr = Array(props.rect.length).fill(false)
                             arr[i] = true
                             props.setEdit(() => {return arr})
                             in_box = true
                         } else {
                             if (checkCloseEnough(mouseX.current, props.rect[i].x) && checkCloseEnough(mouseY.current, props.rect[i].y) && (props.selected[i])) {
                                 dragTL.current[i] = true
-                                var arr = Array(props.rect.length).fill(false)
+                                let arr = Array(props.rect.length).fill(false)
                                 arr[i] = true
                                 props.setEdit(() => {return arr})
                                 props.setUsableStr(props.rect[i].class)
@@ -107,7 +107,7 @@ const CanvasBoundingBoxes = (props) => {
                             }
                             else if (checkCloseEnough(mouseX.current, props.rect[i].x + props.rect[i].w) && checkCloseEnough(mouseY.current, props.rect[i].y) && (props.selected[i])) {
                                 dragTR.current[i] = true
-                                var arr = Array(props.rect.length).fill(false)
+                                let arr = Array(props.rect.length).fill(false)
                                 arr[i] = true
                                 props.setEdit(() => {return arr})
                                 props.setUsableStr(props.rect[i].class)
@@ -122,7 +122,7 @@ const CanvasBoundingBoxes = (props) => {
                             }
                             else if (checkCloseEnough(mouseX.current, props.rect[i].x) && checkCloseEnough(mouseY.current, props.rect[i].y + props.rect[i].h) && (props.selected[i])) {
                                 dragBL.current[i] = true
-                                var arr = Array(props.rect.length).fill(false)
+                                let arr = Array(props.rect.length).fill(false)
                                 arr[i] = true
                                 props.setEdit(() => {return arr})
                                 props.setUsableStr(props.rect[i].class)
@@ -137,7 +137,7 @@ const CanvasBoundingBoxes = (props) => {
                             }
                             else if (checkCloseEnough(mouseX.current, props.rect[i].x + props.rect[i].w) && checkCloseEnough(mouseY.current, props.rect[i].y + props.rect[i].h) && (props.selected[i])) {
                                 dragBR.current[i] = true
-                                var arr = Array(props.rect.length).fill(false)
+                                let arr = Array(props.rect.length).fill(false)
                                 arr[i] = true
                                 props.setEdit(() => {return arr})
                                 props.setUsableStr(props.rect[i].class)
@@ -152,7 +152,7 @@ const CanvasBoundingBoxes = (props) => {
                             } 
                             // else if (checkCloseEnough(mouseX.current, props.rect[i].x) && (props.selected[i])) {
                             //     dragL.current[i] = true
-                            //     var arr = Array(props.rect.length).fill(false)
+                            //     let arr = Array(props.rect.length).fill(false)
                             //     arr[i] = true
                             //     props.setEdit(() => {return arr})
                             //     props.setUsableStr(props.rect[i].class)
@@ -162,7 +162,7 @@ const CanvasBoundingBoxes = (props) => {
                             // }
                             // else if (checkCloseEnough(mouseX.current, props.rect[i].x + props.rect[i].w) && (props.selected[i])) {
                             //     dragR.current[i] = true
-                            //     var arr = Array(props.rect.length).fill(false)
+                            //     let arr = Array(props.rect.length).fill(false)
                             //     arr[i] = true
                             //     props.setEdit(() => {return arr})
                             //     props.setUsableStr(props.rect[i].class)
@@ -172,7 +172,7 @@ const CanvasBoundingBoxes = (props) => {
                             // }
                             // else if (checkCloseEnough(mouseY.current, props.rect[i].y) && (props.selected[i])) {
                             //     dragT.current[i] = true
-                            //     var arr = Array(props.rect.length).fill(false)
+                            //     let arr = Array(props.rect.length).fill(false)
                             //     arr[i] = true
                             //     props.setEdit(() => {return arr})
                             //     props.setUsableStr(props.rect[i].class)
@@ -182,7 +182,7 @@ const CanvasBoundingBoxes = (props) => {
                             // }
                             // else if (checkCloseEnough(mouseX.current, props.rect[i].y + props.rect[i].h) && (props.selected[i])) {
                             //     dragB.current[i] = true
-                            //     var arr = Array(props.rect.length).fill(false)
+                            //     let arr = Array(props.rect.length).fill(false)
                             //     arr[i] = true
                             //     props.setEdit(() => {return arr})
                             //     props.setUsableStr(props.rect[i].class)
@@ -192,7 +192,7 @@ const CanvasBoundingBoxes = (props) => {
                             // }
                             else if (checkIfInside(mouseX.current, mouseY.current, i) && (!props.selected.includes(true) || props.selected[i])) {
                                 dragAll.current[i] = true
-                                var arr = Array(props.rect.length).fill(false)
+                                let arr = Array(props.rect.length).fill(false)
                                 arr[i] = true
                                 props.setEdit(() => {return arr})
                                 props.setUsableStr(props.rect[i].class)
@@ -219,13 +219,13 @@ const CanvasBoundingBoxes = (props) => {
         }
     
         const mouseUp = () => {
-            for(var i = 0; i < props.rect.length; i++){
+            for(let i = 0; i < props.rect.length; i++){
                 if(props.active[i] || props.selected[i]){
                     if(dragBL.current[i] || dragBR.current[i] || dragTL.current[i] || dragTR.current[i] || dragAll.current[i]){
                         props.rect[i].w = (props.rect[i].w < 0) ? 0.1 : props.rect[i].w
                         props.rect[i].h = (props.rect[i].h < 0) ? 0.1 : props.rect[i].h
                         
-                        var arr_copy = Object.values(props.updated_labels.current)
+                        let arr_copy = Object.values(props.updated_labels.current)
                         const idx = arr_copy.indexOf(props.keyId)
                         if (idx > -1){
                             arr_copy.splice(idx,1)
@@ -250,7 +250,7 @@ const CanvasBoundingBoxes = (props) => {
                 drawImageScaled(props.img, context)
             }
                         
-            for(var i = 0; i < props.rect.length; i++){
+            for(let i = 0; i < props.rect.length; i++){
                 if(props.active[i] || props.selected[i]){
                     if (props.new.current[i]){
                         if (dragBR.current[i]){
@@ -336,7 +336,7 @@ const CanvasBoundingBoxes = (props) => {
                                 "4": props.rect[i].h/props.height
                             }
             
-                            var new_labels = props.updated_labels.current
+                            let new_labels = props.updated_labels.current
                             new_labels[i] = new_label
                             
                             new_labels['keyId'] = props.keyId
@@ -345,9 +345,9 @@ const CanvasBoundingBoxes = (props) => {
                             props.setSubmit(true)
                             props.setnewLabels(() => {return props.updated_labels.current})
                         }  else {
-                            var splitString = `${props.rect[i].class}`.split("");
-                            var reverseArray = splitString.reverse();
-                            var joinArray = reverseArray.join("");
+                            let splitString = `${props.rect[i].class}`.split("");
+                            let reverseArray = splitString.reverse();
+                            let joinArray = reverseArray.join("");
                             const color_hex = stringToColour(`${joinArray}c${props.rect[i].class}`)
                             const color = hexToRgb(color_hex)
                             props.rect[i].w = (props.rect[i].w < 0) ? 0.1 : props.rect[i].w
@@ -366,14 +366,14 @@ const CanvasBoundingBoxes = (props) => {
                 }
             }
 
-            var cursor_set = false
+            let cursor_set = false
 
-            for(var i = 0; i < props.rect.length; i++){
+            for(let i = 0; i < props.rect.length; i++){
                 if(props.active[i] || props.selected[i]){
                     if(props.editing && !props.loading && !props.new.current[i]){
                         if (props.new.current[i]){
                             dragBR.current[i] = true
-                            var arr = Array(props.rect.length).fill(false)
+                            let arr = Array(props.rect.length).fill(false)
                             arr[i] = true
                             props.setEdit(() => {return arr})
                         } else {
@@ -409,8 +409,8 @@ const CanvasBoundingBoxes = (props) => {
                 setCursor(0)
             }
 
-            var inside: Array<Boolean> = []
-            for(var i = 0; i < props.rect.length; i++){
+            let inside: Array<Boolean> = []
+            for(let i = 0; i < props.rect.length; i++){
                 if(props.active[i] || props.selected[i]){
                     inside.push(checkIfInside(mouseX.current, mouseY.current, i))
                 } else {
@@ -436,7 +436,7 @@ const CanvasBoundingBoxes = (props) => {
 
         drawImageScaled(props.img, context)
 
-        for(var i = 0; i < props.rect.length; i++){
+        for(let i = 0; i < props.rect.length; i++){
             if(props.active[i] || props.selected[i]){
                 const color = hexToRgb((props.labelMap[props.rect[i].class]) ? props.labelMap[props.rect[i].class].color : '#000000')
                 context.lineWidth = 2;

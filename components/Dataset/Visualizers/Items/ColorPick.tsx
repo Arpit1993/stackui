@@ -17,7 +17,7 @@ const ColorPick = (props) => {
     const handleChange = (color) => {
         setColor(color.hex)
         props.setMap(() => {
-            var arr = props.map
+            let arr = props.map
             arr[props.idx].color = color.hex 
             return arr
         })
@@ -26,9 +26,9 @@ const ColorPick = (props) => {
 
     const handleSubmit = () => {
 
-        var arr = props.map
+        let arr = props.map
         arr[props.idx].color = color
-        var data = JSON.stringify(arr)
+        let data = JSON.stringify(arr)
 
         fetch('http://localhost:8000/set_class_map/', {
             method: 'POST',

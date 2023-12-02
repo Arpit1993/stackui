@@ -19,14 +19,14 @@ async function auto_label(data) {
 }
 
 const stringToColour = (str: string) => {
-    var hash = 0;
+    let hash = 0;
 
-    for (var i = 0; i < str.length; i++) {
+    for (let i = 0; i < str.length; i++) {
       hash = str.charCodeAt(i) + ((hash << 5) - hash);
     }
-    var colour = '#';
-    for (var i = 0; i < 3; i++) {
-      var value = (hash >> (i * 8)) & 0xFF;
+    let colour = '#';
+    for (let i = 0; i < 3; i++) {
+      let value = (hash >> (i * 8)) & 0xFF;
       colour += ('00' + value.toString(16)).substr(-2);
     }
 
@@ -103,8 +103,8 @@ const QA2Viz = (props) => {
         getComments()
     },[props.keyId, props.loading])
     
-    var order: Array<any> = Array(0)
-    var array_spans: Array<any> = Array(0)
+    let order: Array<any> = Array(0)
+    let array_spans: Array<any> = Array(0)
 
     if (fetched && updated_labels.current){
         updated_labels.current['answers'] = updated_labels.current['answers'].sort((a, b) => {
@@ -115,17 +115,17 @@ const QA2Viz = (props) => {
             }
         })
         
-        var start = 0
-        var x: Array<any> = []
-        for (var j = 0; j < updated_labels.current['answers'].length; j++){
+        let start = 0
+        let x: Array<any> = []
+        for (let j = 0; j < updated_labels.current['answers'].length; j++){
             if (updated_labels.current['answers'][j].answer_start <= 0 && updated_labels.current['answers'][j].answer_start  > 1-updated_labels.current['answers'][j].text.length){
                 x.push(j)
             }
         }
 
-        var answers_per_index: Array<any> = [x]
+        let answers_per_index: Array<any> = [x]
         console.log(updated_labels.current['answers'])
-        for(var i = 1; i < updated_labels.current['paragraph'].length; i++){
+        for(let i = 1; i < updated_labels.current['paragraph'].length; i++){
             if (updated_labels.current['answers'].map((val) => (val.answer_start == i+1-val.text.length)).includes(true)) {
                 order.push(updated_labels.current['paragraph'].slice(start, i+1).replace(/ /g,'\u00A0'));
                 start = i+1;
@@ -136,8 +136,8 @@ const QA2Viz = (props) => {
                 order.push(updated_labels.current['paragraph'].slice(start, i+1).replace(/ /g,'\u00A0'));
             }
 
-            var x: Array<any> = []
-            for (var j = 0; j < updated_labels.current['answers'].length; j++){
+            let x: Array<any> = []
+            for (let j = 0; j < updated_labels.current['answers'].length; j++){
                 if (updated_labels.current['answers'][j].answer_start <= i + 1 && updated_labels.current['answers'][j].answer_start > i - updated_labels.current['answers'][j].text.length + 1 ){
                     x.push(j)
                 }
@@ -147,16 +147,16 @@ const QA2Viz = (props) => {
         
         start = 0
 
-        for(var i = 0; i < order.length; i++){
+        for(let i = 0; i < order.length; i++){
             const idx_1 = i
-            var child: any = [
+            let child: any = [
             <span key={`child${idx_1}--1`} 
             className="whitespace-pre-line break-all w-min h-min text-sm cursor-text"> 
                 {order[idx_1].replace(/ /g,'\u00A0')} 
             </span>]
             start = (start >= answers_per_index.length) ? answers_per_index.length - 1 : start
 
-            for(var j = 0; j < answers_per_index[start].length; j++){
+            for(let j = 0; j < answers_per_index[start].length; j++){
                 const idx_0 = start
                 const idx_2 = j
                 const answer = updated_labels.current['answers'][answers_per_index[idx_0][idx_2]]['text']
@@ -189,10 +189,10 @@ const QA2Viz = (props) => {
                             const string_of_node = select?.anchorNode?.textContent.toString()
                             
                             if (adding && selected_string.length > 0){
-                                var add = true
-                                var start = 0
+                                let add = true
+                                let start = 0
                                 
-                                for(var i = 0; i < order.length; i++){
+                                for(let i = 0; i < order.length; i++){
                                     if(order[i] == string_of_node){
                                         add = false
                                         start = start + Math.min(select?.focusOffset,select?.anchorOffset)

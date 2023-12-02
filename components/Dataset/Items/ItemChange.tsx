@@ -4,8 +4,8 @@ import ChangePopup from "../Modals/ChangePopup";
 
 const ItemChange = (props) => {
 
-    // var date = new Date(props.date.concat(' GMT')).toString();
-    var date = new Date(props.date.concat(' GMT')).toLocaleString("en-US");
+    // let date = new Date(props.date.concat(' GMT')).toString();
+    let date = new Date(props.date.concat(' GMT')).toLocaleString("en-US");
     
     return (
         <div>

@@ -87,7 +87,7 @@ const MultiSeq2SeqViz = (props) => {
                 onMouseLeave={()=>{props.enableLRshortcut.current = true}}
                 onMouseDown={() => {
                     setEditing(()=>{
-                        var arr_ref = Array(updated_labels.current['keys'].length).fill(false)
+                        let arr_ref = Array(updated_labels.current['keys'].length).fill(false)
                         return arr_ref
                     }); setnullStr(nullStr.concat('w'))
                 }}
@@ -120,7 +120,7 @@ const MultiSeq2SeqViz = (props) => {
                                     
                                     onMouseDown={() => {
                                         setEditing(()=>{
-                                            var arr_ref = Array(updated_labels.current['keys'].length).fill(false)
+                                            let arr_ref = Array(updated_labels.current['keys'].length).fill(false)
                                             arr_ref[i] = true
                                             return arr_ref
                                         }); setnullStr(nullStr.concat('w'))
